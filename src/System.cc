@@ -22,25 +22,25 @@
 
 //包含了一些自建库
 #include "System.h"
-#include "Converter.h"		// TODO 目前还不是很明白这个是做什么的
+#include "Converter.h"      // TODO 目前还不是很明白这个是做什么的
 //包含共有库
-#include <thread>					//多线程
-#include <pangolin/pangolin.h>		//可视化界面
-#include <iomanip>					//主要是对cin,cout之类的一些操纵运算子
+#include <thread>                   //多线程
+#include <pangolin/pangolin.h>      //可视化界面
+#include <iomanip>                  //主要是对cin,cout之类的一些操纵运算子
 #include <unistd.h>
 namespace ORB_SLAM2
 {
 
 //系统的构造函数，将会启动其他的线程
-System::System(const string &strVocFile,					//词典文件路径
-			   const string &strSettingsFile,				//配置文件路径
-			   const eSensor sensor,						//传感器类型
-               const bool bUseViewer):						//是否使用可视化界面
-					 mSensor(sensor), 							//初始化传感器类型
-					 mpViewer(static_cast<Viewer*>(NULL)),		//空。。。对象指针？  TODO 
-					 mbReset(false),							//无复位标志
-					 mbActivateLocalizationMode(false),			//没有这个模式转换标志
-        			 mbDeactivateLocalizationMode(false)		//没有这个模式转换标志
+System::System(const string &strVocFile,                    //词典文件路径
+               const string &strSettingsFile,               //配置文件路径
+               const eSensor sensor,                        //传感器类型
+               const bool bUseViewer):                      //是否使用可视化界面
+                     mSensor(sensor),                           //初始化传感器类型
+                     mpViewer(static_cast<Viewer*>(NULL)),      //空。。。对象指针？  TODO 
+                     mbReset(false),                            //无复位标志
+                     mbActivateLocalizationMode(false),         //没有这个模式转换标志
+                     mbDeactivateLocalizationMode(false)        //没有这个模式转换标志
 {
     // Output welcome message
     cout << endl <<
@@ -60,8 +60,8 @@ System::System(const string &strVocFile,					//词典文件路径
         cout << "RGB-D" << endl;
 
     //Check settings file
-    cv::FileStorage fsSettings(strSettingsFile.c_str(), 	//将配置文件名转换成为字符串
-    						   cv::FileStorage::READ);		//只读
+    cv::FileStorage fsSettings(strSettingsFile.c_str(),     //将配置文件名转换成为字符串
+                               cv::FileStorage::READ);      //只读
     //如果打开失败，就输出调试信息
     if(!fsSettings.isOpened())
     {
@@ -99,45 +99,46 @@ System::System(const string &strVocFile,					//词典文件路径
     mpFrameDrawer = new FrameDrawer(mpMap);
     mpMapDrawer = new MapDrawer(mpMap, strSettingsFile);
 
+    // STEP: 2 创建线程
     //在本主进程中初始化追踪线程
     //Initialize the Tracking thread
     //(it will live in the main thread of execution, the one that called this constructor)
-    mpTracker = new Tracking(this,						//现在还不是很明白为什么这里还需要一个this指针  TODO  
-    						 mpVocabulary,				//字典
-    						 mpFrameDrawer, 			//帧绘制器
-    						 mpMapDrawer,				//地图绘制器
-                             mpMap, 					//地图
-                             mpKeyFrameDatabase, 		//关键帧地图
-                             strSettingsFile, 			//设置文件路径
-                             mSensor);					//传感器类型iomanip
+    mpTracker = new Tracking(this,                      //现在还不是很明白为什么这里还需要一个this指针  TODO  
+                             mpVocabulary,              //字典
+                             mpFrameDrawer,             //帧绘制器
+                             mpMapDrawer,               //地图绘制器
+                             mpMap,                     //地图
+                             mpKeyFrameDatabase,        //关键帧地图
+                             strSettingsFile,           //设置文件路径
+                             mSensor);                  //传感器类型iomanip
 
     //初始化局部建图线程并运行
     //Initialize the Local Mapping thread and launch
-    mpLocalMapper = new LocalMapping(mpMap, 				//指定使iomanip
-    								 mSensor==MONOCULAR);	// TODO 为什么这个要设置成为MONOCULAR？？？
+    mpLocalMapper = new LocalMapping(mpMap,                 //指定使iomanip
+                                     mSensor==MONOCULAR);   // TODO 为什么这个要设置成为MONOCULAR？？？
     //运行这个局部建图线程
-    mptLocalMapping = new thread(&ORB_SLAM2::LocalMapping::Run,	//这个线程会调用的函数
-    							 mpLocalMapper);				//这个调用函数的参数
+    mptLocalMapping = new thread(&ORB_SLAM2::LocalMapping::Run, //这个线程会调用的函数
+                                 mpLocalMapper);                //这个调用函数的参数
 
     //Initialize the Loop Closing thread and launchiomanip
-    mpLoopCloser = new LoopClosing(mpMap, 						//地图
-    							   mpKeyFrameDatabase, 			//关键帧数据库
-    							   mpVocabulary, 				//ORB字典
-    							   mSensor!=MONOCULAR);			//当前的传感器是否是单目
+    mpLoopCloser = new LoopClosing(mpMap,                       //地图
+                                   mpKeyFrameDatabase,          //关键帧数据库
+                                   mpVocabulary,                //ORB字典
+                                   mSensor!=MONOCULAR);         //当前的传感器是否是单目
     //创建回环检测线程
-    mptLoopClosing = new thread(&ORB_SLAM2::LoopClosing::Run,	//线程的主函数
-    							mpLoopCloser);					//该函数的参数
+    mptLoopClosing = new thread(&ORB_SLAM2::LoopClosing::Run,   //线程的主函数
+                                mpLoopCloser);                  //该函数的参数
 
     //Initialize the Viewer thread and launch
     if(bUseViewer)
     {
-    	//如果指定了，程序的运行过程中需要运行可视化部分
-    	//新建viewer
-        mpViewer = new Viewer(this, 			//又是这个
-        					  mpFrameDrawer,	//帧绘制器
-        					  mpMapDrawer,		//地图绘制器
-        					  mpTracker,		//追踪器
-        					  strSettingsFile);	//配置文件的访问路径
+        //如果指定了，程序的运行过程中需要运行可视化部分
+        //新建viewer
+        mpViewer = new Viewer(this,             //又是这个
+                              mpFrameDrawer,    //帧绘制器
+                              mpMapDrawer,      //地图绘制器
+                              mpTracker,        //追踪器
+                              strSettingsFile); //配置文件的访问路径
         //新建viewer线程
         mptViewer = new thread(&Viewer::Run, mpViewer);
         //给运动追踪器设置其查看器
@@ -145,7 +146,8 @@ System::System(const string &strVocFile,					//词典文件路径
     }
 
     //Set pointers between threads
-    //设置进程间的指针
+    //设置进程间的指针, for 进程之间的communication
+    // 使用队列来实现进程之间的通信
     mpTracker->SetLocalMapper(mpLocalMapper);
     mpTracker->SetLoopClosing(mpLoopCloser);
 
@@ -157,14 +159,14 @@ System::System(const string &strVocFile,					//词典文件路径
 }
 
 //双目输入时的追踪器接口
-cv::Mat System::TrackStereo(const cv::Mat &imLeft, 		//左侧图像
-							const cv::Mat &imRight, 	//右侧图像
-							const double &timestamp)	//时间戳
+cv::Mat System::TrackStereo(const cv::Mat &imLeft,      //左侧图像
+                            const cv::Mat &imRight,     //右侧图像
+                            const double &timestamp)    //时间戳
 {
-	//检查输入数据类型是否合法
+    //检查输入数据类型是否合法
     if(mSensor!=STEREO)
     {
-    	//不合法那就退出
+        //不合法那就退出
         cerr << "ERROR: you called TrackStereo but input sensor was not set to STEREO." << endl;
         exit(-1);
     }   
@@ -172,12 +174,12 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft, 		//左侧图像
     //检查是否有运行模式的改变
     // Check mode change
     {
-    	// TODO 锁住这个变量？防止其他的线程对它的更改？
+        // TODO 锁住这个变量？防止其他的线程对它的更改？
         unique_lock<mutex> lock(mMutexMode);
         //如果激活定位模式
         if(mbActivateLocalizationMode)
         {
-        	//调用局部建图器的请求停止函数
+            //调用局部建图器的请求停止函数
             mpLocalMapper->RequestStop();
 
             // Wait until Local Mapping has effectively stopped
@@ -193,8 +195,8 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft, 		//左侧图像
         }//如果激活定位模式
         if(mbDeactivateLocalizationMode)
         {
-        	//如果取消定位模式
-        	//告知追踪器，现在地图构建部分也要开始工作了
+            //如果取消定位模式
+            //告知追踪器，现在地图构建部分也要开始工作了
             mpTracker->InformOnlyTracking(false);
             //局部建图器要开始工作呢
             mpLocalMapper->Release();
@@ -205,16 +207,16 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft, 		//左侧图像
 
     // Check reset，检查是否有复位的操作
     {
-    	//上锁
-	    unique_lock<mutex> lock(mMutexReset);
-	    //是否有复位请求？
-	    if(mbReset)
-	    {
-	    	//有，追踪器复位
-	        mpTracker->Reset();
-	        //清除标志
-	        mbReset = false;
-	    }//是否有复位请求
+        //上锁
+        unique_lock<mutex> lock(mMutexReset);
+        //是否有复位请求？
+        if(mbReset)
+        {
+            //有，追踪器复位
+            mpTracker->Reset();
+            //清除标志
+            mbReset = false;
+        }//是否有复位请求
     }//检查是否有复位的操作
 
     //用矩阵Tcw来保存估计的相机 位姿，运动追踪器的GrabImageStereo函数才是真正进行运动估计的函数
@@ -235,7 +237,7 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft, 		//左侧图像
 //当输入图像 为RGBD时进行的追踪，参数就不在一一说明了
 cv::Mat System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const double &timestamp)
 {
-	//判断输入数据类型是否合法
+    //判断输入数据类型是否合法
     if(mSensor!=RGBD)
     {
         cerr << "ERROR: you called TrackRGBD but input sensor was not set to RGBD." << endl;
@@ -351,7 +353,7 @@ cv::Mat System::TrackMonocular(const cv::Mat &im, const double &timestamp)
 //激活定位模式
 void System::ActivateLocalizationMode()
 {
-	//上锁
+    //上锁
     unique_lock<mutex> lock(mMutexMode);
     //设置标志
     mbActivateLocalizationMode = true;
@@ -389,13 +391,13 @@ void System::Reset()
 //退出
 void System::Shutdown()
 {
-	//对局部建图线程和回环检测线程发送终止请求
+    //对局部建图线程和回环检测线程发送终止请求
     mpLocalMapper->RequestFinish();
     mpLoopCloser->RequestFinish();
     //如果使用了可视化窗口查看器
     if(mpViewer)
     {
-    	//向查看器发送终止请求
+        //向查看器发送终止请求
         mpViewer->RequestFinish();
         //等到，知道真正地停止
         while(!mpViewer->isFinished())
@@ -404,15 +406,15 @@ void System::Shutdown()
 
     // Wait until all thread have effectively stopped
     while(!mpLocalMapper->isFinished() || 
-    	  !mpLoopCloser->isFinished()  || 
-    	   mpLoopCloser->isRunningGBA())			
+          !mpLoopCloser->isFinished()  || 
+           mpLoopCloser->isRunningGBA())            
     {
         usleep(5000);
     }
 
     if(mpViewer)
-    	//如果使用了可视化的窗口查看器执行这个
-    	// TODO 但是不明白这个是做什么的。如果我注释掉了呢？
+        //如果使用了可视化的窗口查看器执行这个
+        // TODO 但是不明白这个是做什么的。如果我注释掉了呢？
         pangolin::BindToContext("ORB-SLAM2: Map Viewer");
 }
 
@@ -460,13 +462,13 @@ void System::SaveTrajectoryTUM(const string &filename)
     for(list<cv::Mat>::iterator lit=mpTracker->mlRelativeFramePoses.begin(),
         lend=mpTracker->mlRelativeFramePoses.end();
         lit!=lend;
-        lit++, lRit++, lT++, lbL++)		// TODO 为什么是在这里更新参考关键帧？
+        lit++, lRit++, lT++, lbL++)     // TODO 为什么是在这里更新参考关键帧？
     {
-    	//如果该帧追踪失败，不管它，进行下一个
+        //如果该帧追踪失败，不管它，进行下一个
         if(*lbL)
             continue;
 
-       	//获取其对应的参考关键帧
+        //获取其对应的参考关键帧
         KeyFrame* pKF = *lRit;
 
         //变换矩阵的初始化，初始化为一个单位阵
@@ -475,7 +477,7 @@ void System::SaveTrajectoryTUM(const string &filename)
         // If the reference keyframe was culled（剔除）, traverse（扫描？） the spanning tree to get a suitable keyframe.
         while(pKF->isBad())
         {
-        	//更新关键帧变换矩阵的初始值，
+            //更新关键帧变换矩阵的初始值，
             Trw = Trw*pKF->mTcp;
             //并且更新到原关键帧的父关键帧
             pKF = pKF->GetParent();
@@ -529,7 +531,7 @@ void System::SaveKeyFrameTrajectoryTUM(const string &filename)
     //对于每个关键帧
     for(size_t i=0; i<vpKFs.size(); i++)
     {
-    	//获取该 关键帧
+        //获取该 关键帧
         KeyFrame* pKF = vpKFs[i];
 
         //原本有个原点校正，这里注释掉了
