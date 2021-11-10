@@ -1035,6 +1035,7 @@ vector<cv::KeyPoint> ORBextractor::DistributeOctTree(const vector<cv::KeyPoint>&
 
 
 //计算四叉树的特征点，函数名字后面的OctTree只是说明了在过滤和分配特征点时所使用的方式
+// shun: 直接使用的opencv的数据结构KeyPoint
 void ORBextractor::ComputeKeyPointsOctTree(
 	vector<vector<KeyPoint> >& allKeypoints)	//所有的特征点，这里第一层vector存储的是某图层里面的所有特征点，
 												//第二层存储的是整个图像金字塔中的所有图层里面的所有特征点
@@ -1151,6 +1152,7 @@ void ORBextractor::ComputeKeyPointsOctTree(
         // 根据mnFeatuvector<KeyPoint> & keypoints = allKeypoints[level];resPerLevel,即该层的兴趣点数,对特征点进行剔除
 		//返回值是一个保存有特征点的vector容器，含有剔除后的保留下来的特征点
         //得到的特征点的坐标，依旧是在当前图层下来讲的
+        // shun: 核心的均匀化
         keypoints = DistributeOctTree(vToDistributeKeys, 			//当前图层提取出来的特征点，也即是等待剔除的特征点
 																	//NOTICE 注意此时特征点所使用的坐标都是在“半径扩充图像”下的
 									  minBorderX, maxBorderX,		//当前图层图像的边界，而这里的坐标却都是在“边缘扩充图像”下的

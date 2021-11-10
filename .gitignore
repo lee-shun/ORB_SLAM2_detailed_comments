@@ -25,3 +25,5 @@ doc/
 lib/
 */html/
 .ccls-cache/
+Data/
+.vscode/
