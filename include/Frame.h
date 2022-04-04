@@ -2,7 +2,7 @@
  * This file is part of ORB-SLAM2.
  *
  * Copyright (C) 2014-2016 Raúl Mur-Artal <raulmur at unizar dot es> (University
- * of Zaragoza) For more information see <https://github.com/raulmur/ORB_SLAM2>
+ * of Zaragoza) For more information see <https://github.com/raulmur/ ORB_SLAM2>
  *
  * ORB-SLAM2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
+ * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/ >.
  */
 
 /**
@@ -128,14 +128,14 @@ public:
   /**
    * @brief 为单目相机准备的帧构造函数
    *
-   * @param[in] imGray                            //灰度图
-   * @param[in] timeStamp                         //时间戳
-   * @param[in & out] extractor                   //ORB特征点提取器的句柄
-   * @param[in] voc                               //ORB字典的句柄
-   * @param[in] K                                 //相机的内参数矩阵
-   * @param[in] distCoef                          //相机的去畸变参数
-   * @param[in] bf                                //baseline*f
-   * @param[in] thDepth                           //区分远近点的深度阈值
+   * @param[in] imGray                            // 灰度图
+   * @param[in] timeStamp                         // 时间戳
+   * @param[in & out] extractor                   // ORB特征点提取器的句柄
+   * @param[in] voc                               // ORB字典的句柄
+   * @param[in] K                                 // 相机的内参数矩阵
+   * @param[in] distCoef                          // 相机的去畸变参数
+   * @param[in] bf                                // baseline*f
+   * @param[in] thDepth                           // 区分远近点的深度阈值
    */
   Frame(const cv::Mat &imGray, const double &timeStamp, ORBextractor *extractor,
         ORBVocabulary *voc, cv::Mat &K, cv::Mat &distCoef, const float &bf,
@@ -251,8 +251,8 @@ public:
    * \n 说白了，就是为左图的每一个特征点在右图中找到匹配点
    * \n 方法是根据基线(有冗余范围)上描述子距离找到匹配, 再进行SAD精确定位
    * \n
-   * 这里所说的SAD是一种双目立体视觉匹配算法，可参考[https://blog.csdn.net/u012507022/article/details/51446891]
-   * \n 最后对所有SAD的值进行排序,
+   * 这里所说的SAD是一种双目立体视觉匹配算法，可参考[https://blog.csdn.net/u012507022/article/details/
+   * 51446891] \n 最后对所有SAD的值进行排序,
    * 剔除SAD值较大的匹配对，然后利用抛物线拟合得到亚像素精度的匹配 \n
    * 这里所谓的亚像素精度，就是使用这个拟合得到一个小于一个单位像素的修正量，这样可以取得更好的估计结果，计算出来的点的深度也就越准确
    * \n 匹配成功后会更新 Frame::mvuRight (ur) 和 Frame::mvDepth (Z)
@@ -266,7 +266,8 @@ public:
    * @brief
    * 对于RGBD输入,如果某个特征点的深度值有效,那么这里将会反向计算出假想的"右目图像中对应特征点的坐标".
    * @detials
-   * 博客[https://www.cnblogs.com/panda1/p/7001052.html]中说，这个是将地图点和其深度对应起来.
+   * 博客[https://www.cnblogs.com/panda1/p/
+   * 7001052.html]中说，这个是将地图点和其深度对应起来.
    * 是不是可以这样理解，为了能够将特征点反投影到三维空间中得到其在相机坐标系以及在世界坐标系下的坐标，我们需要获得它
    * 在当前相机下的深度。对于双目相机，我们是通过计算左侧图像中特征点在右图中的坐标，然后计算其深度；对于RGBD图像我们可以直接
    * 从深度图像上获得特征点的深度，不过为了处理上的一致这里使用这个深度计算了彩色图像（左图）中的特征点在假想的“右图”中的
@@ -289,15 +290,15 @@ public:
 
 public:
   // Vocabulary used for relocalization.
-  ///用于重定位的ORB特征字典
+  /// 用于重定位的ORB特征字典
   ORBVocabulary *mpORBvocabulary;
 
   // Feature extractor. The right is used only in the stereo case.
-  /// ORB特征提取器句柄,其中右侧的提取器句柄只会在双目输入的情况中才会被用到
+  ///  ORB特征提取器句柄,其中右侧的提取器句柄只会在双目输入的情况中才会被用到
   ORBextractor *mpORBextractorLeft, *mpORBextractorRight;
 
   // Frame timestamp.
-  ///帧的时间戳
+  /// 帧的时间戳
   double mTimeStamp;
 
   // Calibration matrix and OpenCV distortion parameters.
@@ -307,29 +308,29 @@ public:
    * @{
    */
 
-  ///相机的内参数矩阵
+  /// 相机的内参数矩阵
   cv::Mat mK;
   // NOTICE
   // 注意这里的相机内参数其实都是类的静态成员变量；此外相机的内参数矩阵和矫正参数矩阵却是普通的成员变量，
   // NOTE 这样是否有些浪费内存空间？
 
-  static float fx;    ///< x轴方向焦距
-  static float fy;    ///< y轴方向焦距
-  static float cx;    ///< x轴方向光心偏移
-  static float cy;    ///< y轴方向光心偏移
-  static float invfx; ///< x轴方向焦距的逆
-  static float invfy; ///< x轴方向焦距的逆
+  static float fx;    /// < x轴方向焦距
+  static float fy;    /// < y轴方向焦距
+  static float cx;    /// < x轴方向光心偏移
+  static float cy;    /// < y轴方向光心偏移
+  static float invfx; /// < x轴方向焦距的逆
+  static float invfy; /// < x轴方向焦距的逆
 
   // TODO 目测是opencv提供的图像去畸变参数矩阵的，但是其具体组成未知
-  ///去畸变参数
+  /// 去畸变参数
   cv::Mat mDistCoef;
 
   // Stereo baseline multiplied by fx.
-  /// baseline x fx
+  ///  baseline x fx
   float mbf;
 
   // Stereo baseline in meters.
-  ///相机的基线长度,单位为米
+  /// 相机的基线长度,单位为米
   float mb;
 
   /** @} */
@@ -337,8 +338,8 @@ public:
   // Threshold close/far points. Close points are inserted from 1 view.
   // Far points are inserted as in the monocular case from 2 views.
   // TODO 这里它所说的话还不是很理解。尤其是后面的一句。
-  //而且,这个阈值不应该是在哪个帧中都一样吗?
-  ///判断远点和近点的深度阈值
+  // 而且,这个阈值不应该是在哪个帧中都一样吗?
+  /// 判断远点和近点的深度阈值
   float mThDepth;
 
   // Number of KeyPoints.
@@ -356,29 +357,29 @@ public:
   // mvKeysRight:原始右图像提取出的特征点（未校正）
   // mvKeysUn:校正mvKeys后的特征点，对于双目摄像头，一般得到的图像都是校正好的，再校正一次有点多余
 
-  ///原始左图像提取出的特征点（未校正）
+  /// 原始左图像提取出的特征点（未校正）
   std::vector<cv::KeyPoint> mvKeys;
-  ///原始右图像提取出的特征点（未校正）
+  /// 原始右图像提取出的特征点（未校正）
   std::vector<cv::KeyPoint> mvKeysRight;
-  ///校正mvKeys后的特征点
+  /// 校正mvKeys后的特征点
   std::vector<cv::KeyPoint> mvKeysUn;
 
-  ///@note
-  ///之所以对于双目摄像头只保存左图像矫正后的特征点,是因为对于双目摄像头,一般得到的图像都是矫正好的,这里再矫正一次有些多余.\n
-  ///校正操作是在帧的构造函数中进行的。
+  /// @note
+  /// 之所以对于双目摄像头只保存左图像矫正后的特征点,是因为对于双目摄像头,一般得到的图像都是矫正好的,这里再矫正一次有些多余.\n
+  /// 校正操作是在帧的构造函数中进行的。
 
   // Corresponding stereo coordinate and depth for each keypoint.
   // "Monocular" keypoints have a negative value.
   // 对于双目，mvuRight存储了左目像素点在右目中的对应点的横坐标
   // （因为纵坐标是一样的） mvDepth对应的深度 单目摄像头，这两个容器中存的都是-1
 
-  ///@note 对于单目摄像头，这两个容器中存的都是-1
-  ///对于双目相机,存储左目像素点在右目中的对应点的横坐标 （因为纵坐标是一样的）
+  /// @note 对于单目摄像头，这两个容器中存的都是-1
+  /// 对于双目相机,存储左目像素点在右目中的对应点的横坐标 （因为纵坐标是一样的）
 
   std::vector<float>
       mvuRight; // m-member v-vector
                 // u-指代横坐标,因为最后这个坐标是通过各种拟合方法逼近出来的，所以使用float存储
-  ///对应的深度
+  /// 对应的深度
   std::vector<float> mvDepth;
 
   // Bag of Words Vector structures.
@@ -391,45 +392,46 @@ public:
   DBoW2::FeatureVector mFeatVec;
 
   // ORB descriptor, each row associated to a keypoint.
-  /// 左目摄像头和右目摄像头特征点对应的描述子
+  ///  左目摄像头和右目摄像头特征点对应的描述子
   cv::Mat mDescriptors, mDescriptorsRight;
 
   // MapPoints associated to keypoints, NULL pointer if no association.
-  /// 每个特征点对应的MapPoint.如果特征点没有对应的地图点,那么将存储一个空指针
+  ///  每个特征点对应的MapPoint.如果特征点没有对应的地图点,那么将存储一个空指针
   std::vector<MapPoint *> mvpMapPoints;
 
   // Flag to identify outlier associations.
   // 观测不到Map中的3D点
-  /// 属于外点的特征点标记,在 Optimizer::PoseOptimization 使用了
+  ///  属于外点的特征点标记,在 Optimizer::PoseOptimization 使用了
   std::vector<bool> mvbOutlier;
 
   // Keypoints are assigned to cells in a grid to reduce matching complexity
   // when projecting MapPoints.
-  //原来通过对图像分区域还能够降低重投影地图点时候的匹配复杂度啊。。。。。
-  ///@note 注意到上面也是类的静态成员变量，
-  ///有一个专用的标志mbInitialComputations用来在帧的构造函数中标记这些静态成员变量是否需要被赋值
-  /// 坐标乘以mfGridElementWidthInv和mfGridElementHeightInv就可以确定在哪个格子
+  // 原来通过对图像分区域还能够降低重投影地图点时候的匹配复杂度啊。。。。。
+  /// @note 注意到上面也是类的静态成员变量，
+  /// 有一个专用的标志mbInitialComputations用来在帧的构造函数中标记这些静态成员变量是否需要被赋值
+  ///  坐标乘以mfGridElementWidthInv和mfGridElementHeightInv就可以确定在哪个格子
   static float mfGridElementWidthInv;
-  /// 坐标乘以mfGridElementWidthInv和mfGridElementHeightInv就可以确定在哪个格子
+  ///  坐标乘以mfGridElementWidthInv和mfGridElementHeightInv就可以确定在哪个格子
   static float mfGridElementHeightInv;
 
   // 每个格子分配的特征点数，将图像分成格子，保证提取的特征点比较均匀
   // FRAME_GRID_ROWS 48
   // FRAME_GRID_COLS 64
-  ///这个向量中存储的是每个图像网格内特征点的id（左图）
+  /// 这个向量中存储的是每个图像网格内特征点的id（左图）
   std::vector<std::size_t> mGrid[FRAME_GRID_COLS][FRAME_GRID_ROWS];
 
   /** @} */
 
   // Camera pose.
   cv::Mat
-      mTcw; ///< 相机姿态
-            ///< 世界坐标系到相机坐标坐标系的变换矩阵,是我们常规理解中的相机位姿
+      mTcw; /// < 相机姿态
+            /// <
+            /// 世界坐标系到相机坐标坐标系的变换矩阵,是我们常规理解中的相机位姿
 
   // Current and Next Frame id.
   // 类的静态成员变量，这些变量则是在整个系统开始执行的时候被初始化的——它在全局区被初始化
-  static long unsigned int nNextId; ///< Next Frame id.
-  long unsigned int mnId;           ///< Current Frame id.
+  static long unsigned int nNextId; /// < Next Frame id.
+  long unsigned int mnId;           /// < Current Frame id.
 
   // Reference Keyframe.
   // 普通帧与自己共视程度最高的关键帧作为参考关键帧
@@ -440,15 +442,15 @@ public:
    * @{
    */
   // Scale pyramid info.
-  int mnScaleLevels;   ///<图像金字塔的层数
-  float mfScaleFactor; ///<图像金字塔的尺度因子
+  int mnScaleLevels;   /// <图像金字塔的层数
+  float mfScaleFactor; /// <图像金字塔的尺度因子
   float
-      mfLogScaleFactor; ///<图像金字塔的尺度因子的对数值，用于仿照特征点尺度预测地图点的尺度
+      mfLogScaleFactor; /// <图像金字塔的尺度因子的对数值，用于仿照特征点尺度预测地图点的尺度
 
-  vector<float> mvScaleFactors;    ///<图像金字塔每一层的缩放因子
-  vector<float> mvInvScaleFactors; ///<以及上面的这个变量的倒数
-  vector<float> mvLevelSigma2; ///@todo 目前在frame.c中没有用到，无法下定论
-  vector<float> mvInvLevelSigma2; ///<上面变量的倒数
+  vector<float> mvScaleFactors;    /// <图像金字塔每一层的缩放因子
+  vector<float> mvInvScaleFactors; /// <以及上面的这个变量的倒数
+  vector<float> mvLevelSigma2; /// @todo 目前在frame.c中没有用到，无法下定论
+  vector<float> mvInvLevelSigma2; /// <上面变量的倒数
 
   /** @} */
 
@@ -505,10 +507,10 @@ private:
    * @{
    */
   // Rotation, translation and camera center
-  cv::Mat mRcw; ///< Rotation from world to camera
-  cv::Mat mtcw; ///< Translation from world to camera
-  cv::Mat mRwc; ///< Rotation from camera to world
-  cv::Mat mOw;  ///< mtwc,Translation from camera to world
+  cv::Mat mRcw; /// < Rotation from world to camera
+  cv::Mat mtcw; /// < Translation from world to camera
+  cv::Mat mRwc; /// < Rotation from camera to world
+  cv::Mat mOw;  /// < mtwc,Translation from camera to world
 
   /** @} */
 };

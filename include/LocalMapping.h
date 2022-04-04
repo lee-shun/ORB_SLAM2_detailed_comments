@@ -13,7 +13,7 @@
  * This file is part of ORB-SLAM2.
  *
  * Copyright (C) 2014-2016 Raúl Mur-Artal <raulmur at unizar dot es> (University
- * of Zaragoza) For more information see <https://github.com/raulmur/ORB_SLAM2>
+ * of Zaragoza) For more information see <https://github.com/raulmur/ ORB_SLAM2>
  *
  * ORB-SLAM2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
+ * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/ >.
  */
 
 #ifndef LOCALMAPPING_H
@@ -51,7 +51,7 @@ class LocalMapping {
 public:
   /**
    * @brief 构造函数
-   * @param[in] pMap          局部地图的句柄？ //?
+   * @param[in] pMap          局部地图的句柄？ // ?
    * @param[in] bMonocular    当前系统是否是单目输入
    */
   LocalMapping(Map *pMap, const float bMonocular);
@@ -115,7 +115,7 @@ public:
   void RequestFinish();
   /** @brief 当前线程的run函数是否已经终止 */
   bool isFinished();
-  //查看队列中等待插入的关键帧数目
+  // 查看队列中等待插入的关键帧数目
   int KeyframesInQueue() {
     unique_lock<std::mutex> lock(mMutexNewKFs);
     return mlNewKeyFrames.size();
@@ -171,23 +171,23 @@ protected:
    */
   cv::Mat SkewSymmetricMatrix(const cv::Mat &v);
 
-  /// 当前系统输入数单目还是双目RGB-D的标志
+  ///  当前系统输入数单目还是双目RGB-D的标志
   bool mbMonocular;
 
   /** @brief 检查当前是否有复位线程的请求 */
   void ResetIfRequested();
-  /// 当前系统是否收到了请求复位的信号
+  ///  当前系统是否收到了请求复位的信号
   bool mbResetRequested;
-  /// 和复位信号有关的互斥量
+  ///  和复位信号有关的互斥量
   std::mutex mMutexReset;
 
   /** @brief 检查是否已经有外部线程请求终止当前线程 */
   bool CheckFinish();
   /** @brief 设置当前线程已经真正地结束了,由本线程run函数调用 */
   void SetFinish();
-  /// 当前线程是否收到了请求终止的信号
+  ///  当前线程是否收到了请求终止的信号
   bool mbFinishRequested;
-  /// 当前线程的主函数是否已经终止
+  ///  当前线程的主函数是否已经终止
   bool mbFinished;
   // 和"线程真正结束"有关的互斥锁
   std::mutex mMutexFinish;
@@ -201,31 +201,31 @@ protected:
   Tracking *mpTracker;
 
   // Tracking线程向LocalMapping中插入关键帧是先插入到该队列中
-  std::list<KeyFrame *> mlNewKeyFrames; ///< 等待处理的关键帧列表
-  /// 当前正在处理的关键帧
+  std::list<KeyFrame *> mlNewKeyFrames; /// < 等待处理的关键帧列表
+  ///  当前正在处理的关键帧
   KeyFrame *mpCurrentKeyFrame;
 
-  /// 存储当前关键帧生成的地图点,也是等待检查的地图点列表
+  ///  存储当前关键帧生成的地图点,也是等待检查的地图点列表
   std::list<MapPoint *> mlpRecentAddedMapPoints;
 
-  /// 操作关键帧列表时使用的互斥量
+  ///  操作关键帧列表时使用的互斥量
   std::mutex mMutexNewKFs;
 
-  /// 终止BA的标志
+  ///  终止BA的标志
   bool mbAbortBA;
 
-  /// 当前线程是否已经真正地终止了
+  ///  当前线程是否已经真正地终止了
   bool mbStopped;
-  /// 终止当前线程的请求
+  ///  终止当前线程的请求
   bool mbStopRequested;
-  /// 标志这当前线程还不能够停止工作,优先级比那个"mbStopRequested"要高.只有这个和mbStopRequested都满足要求的时候,线程才会进行一系列的终止操作
+  ///  标志这当前线程还不能够停止工作,优先级比那个"mbStopRequested"要高.只有这个和mbStopRequested都满足要求的时候,线程才会进行一系列的终止操作
   bool mbNotStop;
-  /// 和终止线程相关的互斥锁
+  ///  和终止线程相关的互斥锁
   std::mutex mMutexStop;
 
-  /// 当前局部建图线程是否允许关键帧输入
+  ///  当前局部建图线程是否允许关键帧输入
   bool mbAcceptKeyFrames;
-  /// 和操作上面这个变量有关的互斥量
+  ///  和操作上面这个变量有关的互斥量
   std::mutex mMutexAccept;
 };
 

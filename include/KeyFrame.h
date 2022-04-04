@@ -13,7 +13,7 @@
  * This file is part of ORB-SLAM2.
  *
  * Copyright (C) 2014-2016 Raúl Mur-Artal <raulmur at unizar dot es> (University
- * of Zaragoza) For more information see <https://github.com/raulmur/ORB_SLAM2>
+ * of Zaragoza) For more information see <https://github.com/raulmur/ ORB_SLAM2>
  *
  * ORB-SLAM2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
+ * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/ >.
  */
 
 #ifndef KEYFRAME_H
@@ -73,13 +73,13 @@ public:
    * @param[in] Tcw 位姿
    */
   void SetPose(const cv::Mat &Tcw);
-  cv::Mat GetPose();         ///< 获取位姿
-  cv::Mat GetPoseInverse();  ///< 获取位姿的逆
-  cv::Mat GetCameraCenter(); ///< 获取(左目)相机的中心
+  cv::Mat GetPose();         /// < 获取位姿
+  cv::Mat GetPoseInverse();  /// < 获取位姿的逆
+  cv::Mat GetCameraCenter(); /// < 获取(左目)相机的中心
   cv::Mat
-  GetStereoCenter(); ///< 获取双目相机的中心,这个只有在可视化的时候才会用到
-  cv::Mat GetRotation();    ///< 获取姿态
-  cv::Mat GetTranslation(); ///< 获取位置
+  GetStereoCenter(); /// < 获取双目相机的中心,这个只有在可视化的时候才会用到
+  cv::Mat GetRotation();    /// < 获取姿态
+  cv::Mat GetTranslation(); /// < 获取位置
 
   /**
    * @brief Bag of Words Representation
@@ -287,7 +287,7 @@ public:
    */
   float ComputeSceneMedianDepth(const int q);
 
-  /// 比较两个int型权重的大小的比较函数
+  ///  比较两个int型权重的大小的比较函数
   static bool weightComp(int a, int b) { return a > b; }
 
   static bool lId(KeyFrame *pKF1, KeyFrame *pKF2) {
@@ -297,15 +297,15 @@ public:
   // The following variables are accesed from only 1 thread or never change (no
   // mutex needed).
 public:
-  /// nNextID名字改为nLastID更合适，表示上一个KeyFrame的ID号
+  ///  nNextID名字改为nLastID更合适，表示上一个KeyFrame的ID号
   static long unsigned int nNextId;
-  /// 在nNextID的基础上加1就得到了mnID，为当前KeyFrame的ID号
+  ///  在nNextID的基础上加1就得到了mnID，为当前KeyFrame的ID号
   long unsigned int mnId;
-  /// 每个KeyFrame基本属性是它是一个Frame，KeyFrame初始化的时候需要Frame，
-  /// mnFrameId记录了该KeyFrame是由哪个Frame初始化的
+  ///  每个KeyFrame基本属性是它是一个Frame，KeyFrame初始化的时候需要Frame，
+  ///  mnFrameId记录了该KeyFrame是由哪个Frame初始化的
   const long unsigned int mnFrameId;
 
-  /// 时间戳
+  ///  时间戳
   const double mTimeStamp;
 
   // Grid (to speed up feature matching)
@@ -318,7 +318,7 @@ public:
   // Variables used by the tracking
   long unsigned int mnTrackReferenceForFrame; // 记录它
   long unsigned int
-      mnFuseTargetForKF; ///< 标记在局部建图线程中,和哪个关键帧进行融合的操作
+      mnFuseTargetForKF; /// < 标记在局部建图线程中,和哪个关键帧进行融合的操作
 
   // Variables used by the local mapping
   // local
@@ -331,17 +331,17 @@ public:
 
   // Variables used by the keyframe database
   // 下面的这些变量都是临时的,由外部调用暂时存放一些数据
-  /// 标记了当前关键帧是id为mnLoopQuery的回环检测的候选关键帧
+  ///  标记了当前关键帧是id为mnLoopQuery的回环检测的候选关键帧
   long unsigned int mnLoopQuery;
-  /// 当前关键帧和这个形成回环的候选关键帧中,具有相同word的个数
+  ///  当前关键帧和这个形成回环的候选关键帧中,具有相同word的个数
   int mnLoopWords;
-  /// 和那个形成回环的关键帧的词袋匹配程度的评分
+  ///  和那个形成回环的关键帧的词袋匹配程度的评分
   float mLoopScore;
   // 用来存储在辅助进行重定位的时候，要进行重定位的那个帧的id
   long unsigned int mnRelocQuery;
-  /// 和那个要进行重定位的帧,所具有相同的单词的个数
+  ///  和那个要进行重定位的帧,所具有相同的单词的个数
   int mnRelocWords;
-  /// 还有和那个帧的词袋的相似程度的评分
+  ///  还有和那个帧的词袋的相似程度的评分
   float mRelocScore;
 
   // Variables used by loop closing
@@ -356,7 +356,7 @@ public:
   // Calibration parameters
   const float fx, fy, cx, cy, invfx, invfy, mbf, mb, mThDepth;
 
-  /// Number of KeyPoints
+  ///  Number of KeyPoints
   const int N;
 
   // KeyPoints, stereo coordinate and descriptors (all associated by an index)
@@ -379,7 +379,7 @@ public:
   // 中实际存的是该节点id下所有特征点在图像中的索引
   DBoW2::FeatureVector mFeatVec;
 
-  /// Pose relative to parent (this is computed when bad flag is activated)
+  ///  Pose relative to parent (this is computed when bad flag is activated)
   cv::Mat mTcp;
 
   // Scale
@@ -391,7 +391,7 @@ public:
   const std::vector<float> mvLevelSigma2; // 尺度因子的平方
   const std::vector<float> mvInvLevelSigma2;
 
-  /// Image bounds and calibration
+  ///  Image bounds and calibration
   const int mnMinX;
   const int mnMinY;
   const int mnMaxX;
@@ -406,18 +406,18 @@ protected:
   cv::Mat Twc; // 当前相机位姿的逆
   cv::Mat Ow; // 相机光心(左目)在世界坐标系下的坐标,这里和普通帧中的定义是一样的
 
-  cv::Mat Cw; ///< Stereo middel point. Only for visualization
+  cv::Mat Cw; /// < Stereo middel point. Only for visualization
 
-  /// MapPoints associated to keypoints
+  ///  MapPoints associated to keypoints
   std::vector<MapPoint *> mvpMapPoints;
 
   // BoW
   KeyFrameDatabase *mpKeyFrameDB;
-  /// 词袋对象
+  ///  词袋对象
   ORBVocabulary *mpORBvocabulary;
 
-  /// Grid over the image to speed up feature matching
-  /// ,其实应该说是二维的,第三维的 vector中保存的是这个网格内的特征点的索引
+  ///  Grid over the image to speed up feature matching
+  ///  ,其实应该说是二维的,第三维的 vector中保存的是这个网格内的特征点的索引
   std::vector<std::vector<std::vector<size_t>>> mGrid;
 
   // Covisibility Graph
@@ -437,20 +437,21 @@ protected:
 
   // Bad flags
   bool
-      mbNotErase; ///< 当前关键帧已经和其他的关键帧形成了回环关系，因此在各种优化的过程中不应该被删除
-  bool mbToBeErased; ///<
-  bool mbBad;        ///<
+      mbNotErase; /// <
+                  /// 当前关键帧已经和其他的关键帧形成了回环关系，因此在各种优化的过程中不应该被删除
+  bool mbToBeErased; /// <
+  bool mbBad;        /// <
 
-  float mHalfBaseline; ///< 对于双目相机来说,双目相机基线长度的一半. Only for
-                       ///< visualization
+  float mHalfBaseline; /// < 对于双目相机来说,双目相机基线长度的一半. Only for
+                       /// < visualization
 
   Map *mpMap;
 
-  /// 在对位姿进行操作时相关的互斥锁
+  ///  在对位姿进行操作时相关的互斥锁
   std::mutex mMutexPose;
-  /// 在操作当前关键帧和其他关键帧的公式关系的时候使用到的互斥锁
+  ///  在操作当前关键帧和其他关键帧的公式关系的时候使用到的互斥锁
   std::mutex mMutexConnections;
-  /// 在操作和特征点有关的变量的时候的互斥锁
+  ///  在操作和特征点有关的变量的时候的互斥锁
   std::mutex mMutexFeatures;
 };
 

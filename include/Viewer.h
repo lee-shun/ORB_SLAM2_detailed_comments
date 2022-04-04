@@ -13,7 +13,7 @@
  * This file is part of ORB-SLAM2.
  *
  * Copyright (C) 2014-2016 Raúl Mur-Artal <raulmur at unizar dot es> (University
- * of Zaragoza) For more information see <https://github.com/raulmur/ORB_SLAM2>
+ * of Zaragoza) For more information see <https://github.com/raulmur/ ORB_SLAM2>
  *
  * ORB-SLAM2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
+ * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/ >.
  */
 
 #ifndef VIEWER_H
@@ -90,21 +90,21 @@ private:
    */
   bool Stop();
 
-  ///系统对象指针
+  /// 系统对象指针
   System *mpSystem;
-  ///帧绘制器
+  /// 帧绘制器
   FrameDrawer *mpFrameDrawer;
-  ///地图绘制器
+  /// 地图绘制器
   MapDrawer *mpMapDrawer;
-  ///追踪线程句柄
+  /// 追踪线程句柄
   Tracking *mpTracker;
 
   // 1/fps in ms
-  ///每一帧图像持续的时间
+  /// 每一帧图像持续的时间
   double mT;
-  ///图像的尺寸
+  /// 图像的尺寸
   float mImageWidth, mImageHeight;
-  ///显示窗口的的查看视角,最后一个是相机的焦距
+  /// 显示窗口的的查看视角,最后一个是相机的焦距
   float mViewpointX, mViewpointY, mViewpointZ, mViewpointF;
 
   /**
@@ -120,20 +120,20 @@ private:
    */
   void SetFinish();
 
-  ///请求结束当前线程的标志
+  /// 请求结束当前线程的标志
   bool mbFinishRequested;
-  //当前线程是否已经终止
+  // 当前线程是否已经终止
   bool mbFinished;
-  ///线程锁对象,用于锁住和finsh,终止当前查看器进程相关的变量
-  //?
-  //但是我现在还是不明白,它是怎么知道我的这个线程锁对象和我的这个线程产生绑定关系的
+  /// 线程锁对象,用于锁住和finsh,终止当前查看器进程相关的变量
+  // ?
+  // 但是我现在还是不明白,它是怎么知道我的这个线程锁对象和我的这个线程产生绑定关系的
   std::mutex mMutexFinish;
 
-  ///当前进程是否停止
+  /// 当前进程是否停止
   bool mbStopped;
-  ///是否头停止请求
+  /// 是否头停止请求
   bool mbStopRequested;
-  ///用于锁住stop,停止更新变量相关的互斥量
+  /// 用于锁住stop,停止更新变量相关的互斥量
   std::mutex mMutexStop;
 };
 

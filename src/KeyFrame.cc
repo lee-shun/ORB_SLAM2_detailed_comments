@@ -13,7 +13,7 @@
  * This file is part of ORB-SLAM2.
  *
  * Copyright (C) 2014-2016 Raúl Mur-Artal <raulmur at unizar dot es> (University
- * of Zaragoza) For more information see <https://github.com/raulmur/ORB_SLAM2>
+ * of Zaragoza) For more information see <https://github.com/raulmur/ ORB_SLAM2>
  *
  * ORB-SLAM2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
+ * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/ >.
  */
 
 #include "KeyFrame.h"
@@ -39,7 +39,7 @@ namespace ORB_SLAM2 {
 // 下一个关键帧的id
 long unsigned int KeyFrame::nNextId = 0;
 
-//关键帧的构造函数
+// 关键帧的构造函数
 KeyFrame::KeyFrame(Frame &F, Map *pMap, KeyFrameDatabase *pKFDB)
     : mnFrameId(F.mnId), mTimeStamp(F.mTimeStamp), mnGridCols(FRAME_GRID_COLS),
       mnGridRows(FRAME_GRID_ROWS),
@@ -86,7 +86,7 @@ void KeyFrame::ComputeBoW() {
     vector<cv::Mat> vCurrentDesc = Converter::toDescriptorVector(mDescriptors);
     // Feature vector associate features with nodes in the 4th level (from
     // leaves up) We assume the vocabulary tree has 6 levels, change the 4
-    // otherwise  //?
+    // otherwise  // ?
     mpORBvocabulary->transform(vCurrentDesc, mBowVec, mFeatVec, 4);
   }
 }
@@ -185,8 +185,9 @@ void KeyFrame::AddConnection(KeyFrame *pKF, const int &weight) {
 void KeyFrame::UpdateBestCovisibles() {
   // 互斥锁，防止同时操作共享数据产生冲突
   unique_lock<mutex> lock(mMutexConnections);
-  // http://stackoverflow.com/questions/3389648/difference-between-stdliststdpair-and-stdmap-in-c-stl
-  // (std::map 和 std::list<std::pair>的区别)
+  // http://stackoverflow.com/questions/3389648/
+  // difference-between-stdliststdpair-and-stdmap-in-c-stl (std::map 和
+  // std::list<std::pair>的区别)
 
   vector<pair<int, KeyFrame *>> vPairs;
   vPairs.reserve(mConnectedKeyFrameWeights.size());
@@ -262,13 +263,13 @@ vector<KeyFrame *> KeyFrame::GetCovisiblesByWeight(const int &w) {
   if (mvpOrderedConnectedKeyFrames.empty())
     return vector<KeyFrame *>();
 
-  // http://www.cplusplus.com/reference/algorithm/upper_bound/
+  // http://www.cplusplus.com/reference/algorithm/ upper_bound/
   // 从mvOrderedWeights找出第一个大于w的那个迭代器
   vector<int>::iterator it =
-      upper_bound(mvOrderedWeights.begin(), //起点
-                  mvOrderedWeights.end(),   //终点
-                  w,                        //目标阈值
-                  KeyFrame::weightComp);    //比较函数从大到小排序
+      upper_bound(mvOrderedWeights.begin(), // 起点
+                  mvOrderedWeights.end(),   // 终点
+                  w,                        // 目标阈值
+                  KeyFrame::weightComp);    // 比较函数从大到小排序
 
   // 如果没有找到，说明最大的权重也比给定的阈值小，返回空
   if (it == mvOrderedWeights.end() && *mvOrderedWeights.rbegin() < w)
@@ -312,7 +313,7 @@ void KeyFrame::EraseMapPointMatch(const size_t &idx) {
 
 // 同上
 void KeyFrame::EraseMapPointMatch(MapPoint *pMP) {
-  //获取当前地图点在某个关键帧的观测中，对应的特征点的索引，如果没有观测，索引为-1
+  // 获取当前地图点在某个关键帧的观测中，对应的特征点的索引，如果没有观测，索引为-1
   int idx = pMP->GetIndexInKeyFrame(this);
   if (idx >= 0)
     mvpMapPoints[idx] = static_cast<MapPoint *>(NULL);
@@ -350,9 +351,9 @@ int KeyFrame::TrackedMapPoints(const int &minObs) {
   // N是当前帧中特征点的个数
   for (int i = 0; i < N; i++) {
     MapPoint *pMP = mvpMapPoints[i];
-    if (pMP) //没有被删除
+    if (pMP) // 没有被删除
     {
-      if (!pMP->isBad()) //并且不是坏点
+      if (!pMP->isBad()) // 并且不是坏点
       {
         if (bCheckObs) {
           // 满足输入阈值要求的地图点计数加1
@@ -533,13 +534,13 @@ void KeyFrame::ChangeParent(KeyFrame *pKF) {
   pKF->AddChild(this);
 }
 
-//获取当前关键帧的子关键帧
+// 获取当前关键帧的子关键帧
 set<KeyFrame *> KeyFrame::GetChilds() {
   unique_lock<mutex> lockCon(mMutexConnections);
   return mspChildrens;
 }
 
-//获取当前关键帧的父关键帧
+// 获取当前关键帧的父关键帧
 KeyFrame *KeyFrame::GetParent() {
   unique_lock<mutex> lockCon(mMutexConnections);
   return mpParent;
@@ -677,11 +678,11 @@ void KeyFrame::SetBadFlag() {
               int w = pKF->GetWeight(vpConnected[i]);
               // 寻找并更新权值最大的那个共视关系
               if (w > max) {
-                pC = pKF; //子关键帧
+                pC = pKF; // 子关键帧
                 pP = vpConnected
-                    [i]; //目前和子关键帧具有最大权值的关键帧（将来的父关键帧）
-                max = w; //这个最大的权值
-                bContinue = true; //说明子节点找到了可以作为其新父关键帧的帧
+                    [i]; // 目前和子关键帧具有最大权值的关键帧（将来的父关键帧）
+                max = w; // 这个最大的权值
+                bContinue = true; // 说明子节点找到了可以作为其新父关键帧的帧
               }
             }
           }

@@ -13,7 +13,7 @@
  * This file is part of ORB-SLAM2.
  *
  * Copyright (C) 2014-2016 Raúl Mur-Artal <raulmur at unizar dot es> (University
- * of Zaragoza) For more information see <https://github.com/raulmur/ORB_SLAM2>
+ * of Zaragoza) For more information see <https://github.com/raulmur/ ORB_SLAM2>
  *
  * ORB-SLAM2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
+ * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/ >.
  */
 
 #ifndef MAPDRAWER_H
@@ -51,7 +51,7 @@ public:
    */
   MapDrawer(Map *pMap, const string &strSettingPath);
 
-  //地图句柄
+  // 地图句柄
   Map *mpMap;
 
   /** @brief 绘制地图点 */
@@ -89,24 +89,24 @@ public:
   void GetCurrentOpenGLCameraMatrix(pangolin::OpenGlMatrix &M);
 
 private:
-  //绘制这些部件的参数
-  ///关键帧-大小
+  // 绘制这些部件的参数
+  /// 关键帧-大小
   float mKeyFrameSize;
-  ///关键帧-线宽
+  /// 关键帧-线宽
   float mKeyFrameLineWidth;
-  ///共视图的线宽
+  /// 共视图的线宽
   float mGraphLineWidth;
-  ///地图点的大小
+  /// 地图点的大小
   float mPointSize;
-  ///绘制的相机的大小
+  /// 绘制的相机的大小
   float mCameraSize;
-  ///绘制相机的线宽
+  /// 绘制相机的线宽
   float mCameraLineWidth;
 
-  ///相机位置
+  /// 相机位置
   cv::Mat mCameraPose;
 
-  ///线程互斥量
+  /// 线程互斥量
   std::mutex mMutexCamera;
 };
 

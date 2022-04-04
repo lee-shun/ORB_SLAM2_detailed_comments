@@ -13,7 +13,7 @@
  * This file is part of ORB-SLAM2.
  *
  * Copyright (C) 2014-2016 Raúl Mur-Artal <raulmur at unizar dot es> (University
- * of Zaragoza) For more information see <https://github.com/raulmur/ORB_SLAM2>
+ * of Zaragoza) For more information see <https://github.com/raulmur/ ORB_SLAM2>
  *
  * ORB-SLAM2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
+ * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/ >.
  */
 
 #ifndef SIM3SOLVER_H
@@ -211,8 +211,9 @@ protected:
       mvP2im2; // 闭环关键帧中的地图点在闭环关键帧图像上的投影坐标
 
   // RANSAC probability
-  double mRansacProb; // 在计算RANSAC的理论迭代次数时使用到的概率,详细解释还是看函数
-                      // SetRansacParameters() 中的注释吧
+  double
+      mRansacProb; // 在计算RANSAC的理论迭代次数时使用到的概率,详细解释还是看函数
+                   // SetRansacParameters() 中的注释吧
 
   // RANSAC min inliers
   int mRansacMinInliers; // RANSAC 结束的理想条件:

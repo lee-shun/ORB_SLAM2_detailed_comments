@@ -2,7 +2,7 @@
  * This file is part of ORB-SLAM2.
  *
  * Copyright (C) 2014-2016 Raúl Mur-Artal <raulmur at unizar dot es> (University
- * of Zaragoza) For more information see <https://github.com/raulmur/ORB_SLAM2>
+ * of Zaragoza) For more information see <https://github.com/raulmur/ ORB_SLAM2>
  *
  * ORB-SLAM2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
+ * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/ >.
  */
 
 #include "MapPoint.h"
@@ -35,15 +35,15 @@ mutex MapPoint::mGlobalMutex;
  * @param[in] pRefKF        关键帧
  * @param[in] pMap          地图
  */
-MapPoint::MapPoint(const cv::Mat &Pos, //地图点的世界坐标
-                   KeyFrame *pRefKF,   //生成地图点的关键帧
+MapPoint::MapPoint(const cv::Mat &Pos, // 地图点的世界坐标
+                   KeyFrame *pRefKF,   // 生成地图点的关键帧
                    Map *pMap)
-    :                            //地图点所存在的地图
-      mnFirstKFid(pRefKF->mnId), //第一次观测/生成它的关键帧 id
-      mnFirstFrame(pRefKF->mnFrameId), //创建该地图点的帧ID(因为关键帧也是帧啊)
-      nObs(0),                         //被观测次数
-      mnTrackReferenceForFrame(0), //放置被重复添加到局部地图点的标记
-      mnLastFrameSeen(0), //是否决定判断在某个帧视野中的变量
+    :                            // 地图点所存在的地图
+      mnFirstKFid(pRefKF->mnId), //第一次观测/ 生成它的关键帧 id
+      mnFirstFrame(pRefKF->mnFrameId), // 创建该地图点的帧ID(因为关键帧也是帧啊)
+      nObs(0),                         // 被观测次数
+      mnTrackReferenceForFrame(0), // 放置被重复添加到局部地图点的标记
+      mnLastFrameSeen(0), // 是否决定判断在某个帧视野中的变量
       mnBALocalForKF(0),  //
       mnFuseCandidateForKF(0), //
       mnLoopPointForKF(0),     //
@@ -51,17 +51,17 @@ MapPoint::MapPoint(const cv::Mat &Pos, //地图点的世界坐标
       mnCorrectedReference(0), //
       mnBAGlobalForKF(0),      //
       mpRefKF(pRefKF),         //
-      mnVisible(1),            //在帧中的可视次数
-      mnFound(1),   //被找到的次数 和上面的相比要求能够匹配上
-      mbBad(false), //坏点标记
-      mpReplaced(static_cast<MapPoint *>(NULL)), //替换掉当前地图点的点
+      mnVisible(1),            // 在帧中的可视次数
+      mnFound(1), // 被找到的次数 和上面的相比要求能够匹配上
+      mbBad(false),                              // 坏点标记
+      mpReplaced(static_cast<MapPoint *>(NULL)), // 替换掉当前地图点的点
       mfMinDistance(
-          0), //当前地图点在某帧下,可信赖的被找到时其到关键帧光心距离的下界
-      mfMaxDistance(0), //上界
-      mpMap(pMap)       //从属地图
+          0), // 当前地图点在某帧下,可信赖的被找到时其到关键帧光心距离的下界
+      mfMaxDistance(0), // 上界
+      mpMap(pMap)       // 从属地图
 {
   Pos.copyTo(mWorldPos);
-  //平均观测方向初始化为0
+  // 平均观测方向初始化为0
   mNormalVector = cv::Mat::zeros(3, 1, CV_32F);
 
   // MapPoints can be created from Tracking and Local Mapping. This mutex avoid
@@ -93,9 +93,9 @@ MapPoint::MapPoint(const cv::Mat &Pos, Map *pMap, Frame *pFrame,
       mWorldPos - Ow; // 世界坐标系下相机到3D点的向量 (当前关键帧的观测方向)
   mNormalVector = mNormalVector / cv::norm(mNormalVector); // 单位化
 
-  //这个算重了吧
+  // 这个算重了吧
   cv::Mat PC = Pos - Ow;
-  const float dist = cv::norm(PC); //到相机的距离
+  const float dist = cv::norm(PC); // 到相机的距离
   const int level = pFrame->mvKeysUn[idxF].octave;
   const float levelScaleFactor = pFrame->mvScaleFactors[level];
   const int nLevels = pFrame->mnScaleLevels;
@@ -106,10 +106,10 @@ MapPoint::MapPoint(const cv::Mat &Pos, Map *pMap, Frame *pFrame,
      不同, 所以在这里生成地图点的时候,也要再对其进行确认
      虽然我们拿不到每个图层之间确定的尺度信息,但是我们有缩放比例这个相对的信息哇
   */
-  mfMaxDistance = dist * levelScaleFactor; //当前图层的"深度"
+  mfMaxDistance = dist * levelScaleFactor; // 当前图层的"深度"
   mfMinDistance =
       mfMaxDistance /
-      pFrame->mvScaleFactors[nLevels - 1]; //该特征点上一个图层的"深度""
+      pFrame->mvScaleFactors[nLevels - 1]; // 该特征点上一个图层的"深度""
 
   // 见 mDescriptor 在MapPoint.h中的注释 ==> 其实就是获取这个地图点的描述子
   pFrame->mDescriptors.row(idxF).copyTo(mDescriptor);
@@ -121,25 +121,25 @@ MapPoint::MapPoint(const cv::Mat &Pos, Map *pMap, Frame *pFrame,
   mnId = nNextId++;
 }
 
-//设置地图点在世界坐标系下的坐标
+// 设置地图点在世界坐标系下的坐标
 void MapPoint::SetWorldPos(const cv::Mat &Pos) {
   // TODO 为什么这里多了个线程锁
   unique_lock<mutex> lock2(mGlobalMutex);
   unique_lock<mutex> lock(mMutexPos);
   Pos.copyTo(mWorldPos);
 }
-//获取地图点在世界坐标系下的坐标
+// 获取地图点在世界坐标系下的坐标
 cv::Mat MapPoint::GetWorldPos() {
   unique_lock<mutex> lock(mMutexPos);
   return mWorldPos.clone();
 }
 
-//世界坐标系下地图点被多个相机观测的平均观测方向
+// 世界坐标系下地图点被多个相机观测的平均观测方向
 cv::Mat MapPoint::GetNormal() {
   unique_lock<mutex> lock(mMutexPos);
   return mNormalVector.clone();
 }
-//获取地图点的参考关键帧
+// 获取地图点的参考关键帧
 KeyFrame *MapPoint::GetReferenceKeyFrame() {
   unique_lock<mutex> lock(mMutexFeatures);
   return mpRefKF;
@@ -253,7 +253,7 @@ void MapPoint::Replace(MapPoint *pMP) {
   if (pMP->mnId == this->mnId)
     return;
 
-  //要替换当前地图点,有两个工作:
+  // 要替换当前地图点,有两个工作:
   // 1. 将当前地图点的观测数据等其他数据都"叠加"到新的地图点上
   // 2. 将观测到当前地图点的关键帧的信息进行更新
 
@@ -264,19 +264,19 @@ void MapPoint::Replace(MapPoint *pMP) {
     unique_lock<mutex> lock1(mMutexFeatures);
     unique_lock<mutex> lock2(mMutexPos);
     obs = mObservations;
-    //清除当前地图点的原有观测
+    // 清除当前地图点的原有观测
     mObservations.clear();
-    //当前的地图点被删除了
+    // 当前的地图点被删除了
     mbBad = true;
-    //暂存当前地图点的可视次数和被找到的次数
+    // 暂存当前地图点的可视次数和被找到的次数
     nvisible = mnVisible;
     nfound = mnFound;
-    //指明当前地图点已经被指定的地图点替换了
+    // 指明当前地图点已经被指定的地图点替换了
     mpReplaced = pMP;
   }
 
   // 所有能观测到原地图点的关键帧都要复制到替换的地图点上
-  //- 将观测到当前地图的的关键帧的信息进行更新
+  // - 将观测到当前地图的的关键帧的信息进行更新
   for (map<KeyFrame *, size_t>::iterator mit = obs.begin(), mend = obs.end();
        mit != mend; mit++) {
     // Replace measurement in keyframe
@@ -292,18 +292,18 @@ void MapPoint::Replace(MapPoint *pMP) {
       // 产生冲突，即pKF中有两个特征点a,b（这两个特征点的描述子是近似相同的），这两个特征点对应两个
       // MapPoint 为this,pMP
       // 然而在fuse的过程中pMP的观测更多，需要替换this，因此保留b与pMP的联系，去掉a与this的联系
-      //说白了,既然是让对方的那个地图点来代替当前的地图点,就是说明对方更好,所以删除这个关键帧对当前帧的观测
+      // 说白了,既然是让对方的那个地图点来代替当前的地图点,就是说明对方更好,所以删除这个关键帧对当前帧的观测
       pKF->EraseMapPointMatch(mit->second);
     }
   }
 
-  //- 将当前地图点的观测数据等其他数据都"叠加"到新的地图点上
+  // - 将当前地图点的观测数据等其他数据都"叠加"到新的地图点上
   pMP->IncreaseFound(nfound);
   pMP->IncreaseVisible(nvisible);
-  //描述子更新
+  // 描述子更新
   pMP->ComputeDistinctiveDescriptors();
 
-  //告知地图,删掉我
+  // 告知地图,删掉我
   mpMap->EraseMapPoint(this);
 }
 
@@ -441,7 +441,7 @@ cv::Mat MapPoint::GetDescriptor() {
   return mDescriptor.clone();
 }
 
-//获取当前地图点在某个关键帧的观测中，对应的特征点的ID
+// 获取当前地图点在某个关键帧的观测中，对应的特征点的ID
 int MapPoint::GetIndexInKeyFrame(KeyFrame *pKF) {
   unique_lock<mutex> lock(mMutexFeatures);
   if (mObservations.count(pKF))
@@ -466,7 +466,7 @@ int MapPoint::GetIndexInKeyFrame(KeyFrame *pKF) {
 bool MapPoint::IsInKeyFrame(KeyFrame *pKF) {
   unique_lock<mutex> lock(mMutexFeatures);
   // 存在返回true，不存在返回false
-  // std::map.count 用法见：http://www.cplusplus.com/reference/map/map/count/
+  // std::map.count 用法见：http://www.cplusplus.com/reference/map/map/ count/
   return (mObservations.count(pKF));
 }
 

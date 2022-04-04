@@ -12,10 +12,10 @@
 /**
  * This file is part of ORB-SLAM2.
  * This file is a modified version of EPnP
- * <http://cvlab.epfl.ch/EPnP/index.php>, see FreeBSD license below.
+ * <http://cvlab.epfl.ch/EPnP/ index.php>, see FreeBSD license below.
  *
  * Copyright (C) 2014-2016 Raúl Mur-Artal <raulmur at unizar dot es> (University
- * of Zaragoza) For more information see <https://github.com/raulmur/ORB_SLAM2>
+ * of Zaragoza) For more information see <https://github.com/raulmur/ ORB_SLAM2>
  *
  * ORB-SLAM2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
+ * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/ >.
  */
 
 /**
@@ -63,8 +63,8 @@
 
 // 这里的pnp求解用的是EPnP的算法。
 // 参考论文：EPnP:An Accurate O(n) Solution to the PnP problem
-// https://en.wikipedia.org/wiki/Perspective-n-Point
-// http://docs.ros.org/fuerte/api/re_vision/html/classepnp.html
+// https://en.wikipedia.org/wiki/ Perspective-n-Point
+// http://docs.ros.org/fuerte/api/re_vision/html/ classepnp.html
 // 如果不理解，可以看看中文的："摄像机位姿的高精度快速求解"
 // "摄像头位姿的加权线性算法"
 
@@ -121,44 +121,45 @@ namespace ORB_SLAM2 {
 PnPsolver::PnPsolver(const Frame &F,
                      const vector<MapPoint *> &vpMapPointMatches)
     : pws(0), us(0), alphas(0),
-      pcs(0), //这里的四个变量都是指针啊,直接这样子写的原因可以参考函数
-              //set_maximum_number_of_correspondences()
+      pcs(0), // 这里的四个变量都是指针啊,直接这样子写的原因可以参考函数
+              // set_maximum_number_of_correspondences()
       maximum_number_of_correspondences(0), number_of_correspondences(0),
       mnInliersi(0), mnIterations(0), mnBestInliers(0), N(0) {
   // 根据点数初始化容器的大小
-  mvpMapPointMatches = vpMapPointMatches;  //匹配关系
+  mvpMapPointMatches = vpMapPointMatches;  // 匹配关系
   mvP2D.reserve(F.mvpMapPoints.size());    // 2D特征点
-  mvSigma2.reserve(F.mvpMapPoints.size()); //特征点金字塔层级
-  mvP3Dw.reserve(F.mvpMapPoints.size());   //世界坐标系下的3D点
+  mvSigma2.reserve(F.mvpMapPoints.size()); // 特征点金字塔层级
+  mvP3Dw.reserve(F.mvpMapPoints.size());   // 世界坐标系下的3D点
   mvKeyPointIndices.reserve(
       F.mvpMapPoints
-          .size()); //记录被使用特征点在原始特征点容器中的索引，因为有些3D点不一定存在，所以索引是不连续的
+          .size()); // 记录被使用特征点在原始特征点容器中的索引，因为有些3D点不一定存在，所以索引是不连续的
   mvAllIndices.reserve(
-      F.mvpMapPoints.size()); //记录被使用特征点的索引，是连续的
+      F.mvpMapPoints.size()); // 记录被使用特征点的索引，是连续的
 
   // 生成地图点、对应2D特征点，记录一些索引坐标
   int idx = 0;
   // 遍历给出的每一个地图点
   for (size_t i = 0, iend = vpMapPointMatches.size(); i < iend; i++) {
-    MapPoint *pMP = vpMapPointMatches[i]; //依次获取每个地图点
+    MapPoint *pMP = vpMapPointMatches[i]; // 依次获取每个地图点
 
     if (pMP) {
       if (!pMP->isBad()) {
         const cv::KeyPoint &kp =
-            F.mvKeysUn[i]; //得到2维特征点, 将KeyPoint类型变为Point2f
+            F.mvKeysUn[i]; // 得到2维特征点, 将KeyPoint类型变为Point2f
 
-        mvP2D.push_back(kp.pt); //存放2维特征点
+        mvP2D.push_back(kp.pt); // 存放2维特征点
         mvSigma2.push_back(
-            F.mvLevelSigma2[kp.octave]); //记录特征点是在哪一层提取出来的
+            F.mvLevelSigma2[kp.octave]); // 记录特征点是在哪一层提取出来的
 
-        cv::Mat Pos = pMP->GetWorldPos(); //世界坐标系下的3D点
+        cv::Mat Pos = pMP->GetWorldPos(); // 世界坐标系下的3D点
         mvP3Dw.push_back(
             cv::Point3f(Pos.at<float>(0), Pos.at<float>(1), Pos.at<float>(2)));
 
-        mvKeyPointIndices.push_back(i); //记录被使用特征点在原始特征点容器中的索引,
-                                        //mvKeyPointIndices是跳跃的
+        mvKeyPointIndices.push_back(
+            i); // 记录被使用特征点在原始特征点容器中的索引,
+                // mvKeyPointIndices是跳跃的
         mvAllIndices.push_back(
-            idx); //记录被使用特征点的索引, mvAllIndices是连续的
+            idx); // 记录被使用特征点的索引, mvAllIndices是连续的
 
         idx++;
       }
@@ -239,7 +240,7 @@ void PnPsolver::SetRansacParameters(double probability, int minInliers,
   // -- 这个部分和Sim3Solver中的操作是一样的
   int nIterations;
 
-  if (mRansacMinInliers == N) //根据期望的残差大小来计算RANSAC需要迭代的次数
+  if (mRansacMinInliers == N) // 根据期望的残差大小来计算RANSAC需要迭代的次数
     nIterations = 1;
   else
     nIterations = ceil(log(1 - mRansacProb) / log(1 - pow(mRansacEpsilon, 3)));
@@ -270,7 +271,7 @@ cv::Mat PnPsolver::find(vector<bool> &vbInliers, int &nInliers) {
  */
 cv::Mat PnPsolver::iterate(int nIterations, bool &bNoMore,
                            vector<bool> &vbInliers, int &nInliers) {
-  bNoMore = false; //已经达到最大迭代次数的标志
+  bNoMore = false; // 已经达到最大迭代次数的标志
   vbInliers.clear();
   nInliers = 0; // 当前次迭代时的内点数
 
@@ -570,8 +571,8 @@ void PnPsolver::choose_control_points(void) {
 
   // Take C1, C2, and C3 from PCA on the reference points:
   // Step 2：计算其它三个控制点，C1, C2, C3通过特征值分解得到
-  // ref: https://www.zhihu.com/question/38417101
-  // ref: https://yjk94.wordpress.com/2016/11/11/pca-to-layman/
+  // ref: https://www.zhihu.com/question/ 38417101
+  // ref: https://yjk94.wordpress.com/2016/11/11/ pca-to-layman/
 
   // 将所有的3D参考点写成矩阵，(number_of_correspondences * 3)的矩阵
   CvMat *PW0 = cvCreateMat(number_of_correspondences, 3, CV_64F);
@@ -729,7 +730,7 @@ void PnPsolver::compute_ccs(const double *betas, const double *ut) {
 /**
  * @brief 根据相机坐标系下控制点坐标ccs 和控制点系数
  * alphas（通过世界坐标系下3D点计算得到），得到相机坐标系下3D点坐标 pcs
- * 过程可以参考 https://blog.csdn.net/jessecw79/article/details/82945918
+ * 过程可以参考 https://blog.csdn.net/jessecw79/article/details/ 82945918
  */
 void PnPsolver::compute_pcs(void) {
   // 遍历所有的空间点
@@ -795,8 +796,8 @@ double PnPsolver::compute_pose(double R[3][3], double t[3]) {
   // Step 4.3 分情况计算N=2,3,4时能够求解得到的相机位姿R,t并且得到平均重投影误差
   double Betas[4][4], // 本质上就四个beta1~4,但是这里有四种情况(第一维度表示)
       rep_errors[4];  // 重投影误差
-  double Rs[4][3][3], //每一种情况迭代优化后得到的旋转矩阵
-      ts[4][3];       //每一种情况迭代优化后得到的平移向量
+  double Rs[4][3][3], // 每一种情况迭代优化后得到的旋转矩阵
+      ts[4][3];       // 每一种情况迭代优化后得到的平移向量
 
   // 不管什么情况，都假设论文中N=4，并求解部分betas（如果全求解出来会有冲突）
   // 通过优化得到剩下的 betas
@@ -1038,9 +1039,10 @@ void PnPsolver::find_betas_approx_1(const CvMat *L_6x10, const CvMat *Rho,
 
   // 提取L_6x10矩阵中每行的第0,1,3,6个元素，得到L_6x4
   for (int i = 0; i < 6; i++) {
-    cvmSet(&L_6x4, i, 0,
-           cvmGet(L_6x10, i,
-                  0)); //将L_6x10的第i行的第0个元素设置为L_6x4的第i行的第0个元素
+    cvmSet(
+        &L_6x4, i, 0,
+        cvmGet(L_6x10, i,
+               0)); // 将L_6x10的第i行的第0个元素设置为L_6x4的第i行的第0个元素
     cvmSet(&L_6x4, i, 1, cvmGet(L_6x10, i, 1));
     cvmSet(&L_6x4, i, 2, cvmGet(L_6x10, i, 3));
     cvmSet(&L_6x4, i, 3, cvmGet(L_6x10, i, 6));
@@ -1202,16 +1204,16 @@ void PnPsolver::compute_L_6x10(const double *ut, double *l_6x10) {
   for (int i = 0; i < 6; i++) {
     double *row = l_6x10 + 10 * i;
     // 计算每一行中的每一个元素,总共是10个元素      // 对应的\beta列向量
-    row[0] = dot(dv[0][i], dv[0][i]);        //*b11
-    row[1] = 2.0f * dot(dv[0][i], dv[1][i]); //*b12
-    row[2] = dot(dv[1][i], dv[1][i]);        //*b22
-    row[3] = 2.0f * dot(dv[0][i], dv[2][i]); //*b13
-    row[4] = 2.0f * dot(dv[1][i], dv[2][i]); //*b23
-    row[5] = dot(dv[2][i], dv[2][i]);        //*b33
-    row[6] = 2.0f * dot(dv[0][i], dv[3][i]); //*b14
-    row[7] = 2.0f * dot(dv[1][i], dv[3][i]); //*b24
-    row[8] = 2.0f * dot(dv[2][i], dv[3][i]); //*b34
-    row[9] = dot(dv[3][i], dv[3][i]);        //*b44
+    row[0] = dot(dv[0][i], dv[0][i]);        // *b11
+    row[1] = 2.0f * dot(dv[0][i], dv[1][i]); // *b12
+    row[2] = dot(dv[1][i], dv[1][i]);        // *b22
+    row[3] = 2.0f * dot(dv[0][i], dv[2][i]); // *b13
+    row[4] = 2.0f * dot(dv[1][i], dv[2][i]); // *b23
+    row[5] = dot(dv[2][i], dv[2][i]);        // *b33
+    row[6] = 2.0f * dot(dv[0][i], dv[3][i]); // *b14
+    row[7] = 2.0f * dot(dv[1][i], dv[3][i]); // *b24
+    row[8] = 2.0f * dot(dv[2][i], dv[3][i]); // *b34
+    row[9] = dot(dv[3][i], dv[3][i]);        // *b44
   }
 }
 
@@ -1452,8 +1454,8 @@ void PnPsolver::qr_solve(CvMat *A, CvMat *b, CvMat *X) {
       ppAik += nc; // 指向下一列
     }
 
-    //? 判断靠谱不?
-    //由于系数矩阵是雅克比,并且代价函数中的L元素都是二次项的形式,所以原则上都应该是大于0的
+    // ? 判断靠谱不?
+    // 由于系数矩阵是雅克比,并且代价函数中的L元素都是二次项的形式,所以原则上都应该是大于0的
     if (eta == 0) {
       A1[k] = A2[k] = 0.0;
       cerr << "God damnit, A is singular, this shouldn't happen." << endl;
@@ -1515,7 +1517,7 @@ void PnPsolver::qr_solve(CvMat *A, CvMat *b, CvMat *X) {
       tau += *ppAij * pb[i];
       ppAij += nc;
     }
-    //? 但是后面我就看不懂了
+    // ? 但是后面我就看不懂了
     tau /= A1[j];
     ppAij = ppAjj;
     for (int i = j; i < nr; i++) {

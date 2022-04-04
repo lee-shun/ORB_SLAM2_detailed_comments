@@ -13,7 +13,7 @@
  * This file is part of ORB-SLAM2.
  *
  * Copyright (C) 2014-2016 Raúl Mur-Artal <raulmur at unizar dot es> (University
- * of Zaragoza) For more information see <https://github.com/raulmur/ORB_SLAM2>
+ * of Zaragoza) For more information see <https://github.com/raulmur/ ORB_SLAM2>
  *
  * ORB-SLAM2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
+ * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/ >.
  */
 
 #include "Optimizer.h"
@@ -660,7 +660,7 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool *pbStopFlag,
          vit != vend; vit++) {
       MapPoint *pMP = *vit;
       if (pMP) {
-        if (!pMP->isBad()) //保证地图点有效
+        if (!pMP->isBad()) // 保证地图点有效
           // 把参与局部BA的每一个地图点的 mnBALocalForKF设置为当前关键帧的mnId
           // mnBALocalForKF 是为了防止重复添加
           if (pMP->mnBALocalForKF != pKF->mnId) {
@@ -1192,9 +1192,9 @@ void Optimizer::OptimizeEssentialGraph(
     LoopClosing::KeyFrameAndPose::const_iterator iti =
         NonCorrectedSim3.find(pKF);
     if (iti != NonCorrectedSim3.end())
-      Swi = (iti->second).inverse(); //优先使用未经过Sim3传播调整的位姿
+      Swi = (iti->second).inverse(); // 优先使用未经过Sim3传播调整的位姿
     else
-      Swi = vScw[nIDi].inverse(); //没找到才考虑已经经过Sim3传播调整的位姿
+      Swi = vScw[nIDi].inverse(); // 没找到才考虑已经经过Sim3传播调整的位姿
 
     KeyFrame *pParentKF = pKF->GetParent();
 
@@ -1208,7 +1208,7 @@ void Optimizer::OptimizeEssentialGraph(
       LoopClosing::KeyFrameAndPose::const_iterator itj =
           NonCorrectedSim3.find(pParentKF);
 
-      //优先使用未经过Sim3传播调整的位姿
+      // 优先使用未经过Sim3传播调整的位姿
       if (itj != NonCorrectedSim3.end())
         Sjw = itj->second;
       else
@@ -1242,7 +1242,7 @@ void Optimizer::OptimizeEssentialGraph(
         g2o::Sim3 Slw;
         LoopClosing::KeyFrameAndPose::const_iterator itl =
             NonCorrectedSim3.find(pLKF);
-        //优先使用未经过Sim3传播调整的位姿
+        // 优先使用未经过Sim3传播调整的位姿
         if (itl != NonCorrectedSim3.end())
           Slw = itl->second;
         else
@@ -1328,7 +1328,7 @@ void Optimizer::OptimizeEssentialGraph(
     double s = CorrectedSiw.scale();
 
     // 转换成尺度为1的变换矩阵的形式
-    eigt *= (1. / s); //[R t/s;0 1]
+    eigt *= (1. / s); //[R t/ s;0 1]
     cv::Mat Tiw = Converter::toCvSE3(eigR, eigt);
 
     // 将更新的位姿写入到关键帧中
@@ -1449,7 +1449,7 @@ int Optimizer::OptimizeSim3(KeyFrame *pKF1, KeyFrame *pKF2,
   vector<g2o::EdgeSim3ProjectXYZ *> vpEdges12; // pKF2对应的地图点到pKF1的投影边
   vector<g2o::EdgeInverseSim3ProjectXYZ *>
       vpEdges21;              // pKF1对应的地图点到pKF2的投影边
-  vector<size_t> vnIndexEdge; //边的索引
+  vector<size_t> vnIndexEdge; // 边的索引
 
   vnIndexEdge.reserve(2 * N);
   vpEdges12.reserve(2 * N);

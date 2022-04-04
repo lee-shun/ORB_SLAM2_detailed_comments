@@ -12,10 +12,10 @@
 /**
  * This file is part of ORB-SLAM2.
  * This file is a modified version of EPnP
- * <http://cvlab.epfl.ch/EPnP/index.php>, see FreeBSD license below.
+ * <http://cvlab.epfl.ch/EPnP/ index.php>, see FreeBSD license below.
  *
  * Copyright (C) 2014-2016 Raúl Mur-Artal <raulmur at unizar dot es> (University
- * of Zaragoza) For more information see <https://github.com/raulmur/ORB_SLAM2>
+ * of Zaragoza) For more information see <https://github.com/raulmur/ ORB_SLAM2>
  *
  * ORB-SLAM2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
+ * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/ >.
  */
 
 /**
@@ -221,7 +221,7 @@ private:
   /**
    * @brief 根据相机坐标系下控制点坐标ccs 和控制点系数
    * alphas（通过世界坐标系下3D点计算得到），得到相机坐标系下3D点坐标 pcs
-   * 过程可以参考 https://blog.csdn.net/jessecw79/article/details/82945918
+   * 过程可以参考 https://blog.csdn.net/jessecw79/article/details/ 82945918
    */
   void compute_pcs(void);
   /** @brief 保持所有点在相机坐标系下的深度为正,调整符号  */
@@ -407,8 +407,9 @@ private:
          // 的大小,表示给出帧中和地图点匹配的特征点的个数,也就是匹配的对数(相当于采样的总体)
 
   // Indices for random selection [0 .. N-1]
-  vector<size_t> mvAllIndices; // 记录特征点在当前求解器中的向量中存储的索引,是连续的
-                               // //存储了供RANSAC过程使用的点的下标
+  vector<size_t>
+      mvAllIndices; // 记录特征点在当前求解器中的向量中存储的索引,是连续的
+                    // // 存储了供RANSAC过程使用的点的下标
 
   // RANSAC probability
   double

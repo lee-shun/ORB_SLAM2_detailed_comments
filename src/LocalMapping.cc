@@ -13,7 +13,7 @@
  * This file is part of ORB-SLAM2.
  *
  * Copyright (C) 2014-2016 Raúl Mur-Artal <raulmur at unizar dot es> (University
- * of Zaragoza) For more information see <https://github.com/raulmur/ORB_SLAM2>
+ * of Zaragoza) For more information see <https://github.com/raulmur/ ORB_SLAM2>
  *
  * ORB-SLAM2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
+ * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/ >.
  */
 
 #include "LocalMapping.h"
@@ -440,7 +440,7 @@ void LocalMapping::CreateNewMapPoints() {
       // cosParallaxRays<0.9998)表明视差角正常,0.9998 对应1° cosParallaxRays <
       // cosParallaxStereo 表明匹配点对夹角大于双目本身观察三维点夹角
       // 匹配点对夹角大，用三角法恢复3D点
-      // 参考：https://github.com/raulmur/ORB_SLAM2/issues/345
+      // 参考：https://github.com/raulmur/ORB_SLAM2/issues/ 345
       if (cosParallaxRays < cosParallaxStereo && cosParallaxRays > 0 &&
           (bStereo1 || bStereo2 || cosParallaxRays < 0.9998)) {
         // Linear Triangulation Method
@@ -818,15 +818,15 @@ void LocalMapping::SetAcceptKeyFrames(bool flag) {
 bool LocalMapping::SetNotStop(bool flag) {
   unique_lock<mutex> lock(mMutexStop);
 
-  //已经处于!flag的状态了
+  // 已经处于!flag的状态了
   // 就是我希望线程先不要停止,但是经过检查这个时候线程已经停止了...
   if (flag && mbStopped)
-    //设置失败
+    // 设置失败
     return false;
 
-  //设置为要设置的状态
+  // 设置为要设置的状态
   mbNotStop = flag;
-  //设置成功
+  // 设置成功
   return true;
 }
 
@@ -989,7 +989,7 @@ void LocalMapping::SetFinish() {
   unique_lock<mutex> lock(mMutexFinish);
   mbFinished = true; // 线程已经被结束
   unique_lock<mutex> lock2(mMutexStop);
-  mbStopped = true; //既然已经都结束了,那么当前线程也已经停止工作了
+  mbStopped = true; // 既然已经都结束了,那么当前线程也已经停止工作了
 }
 
 // 当前线程的run函数是否已经终止

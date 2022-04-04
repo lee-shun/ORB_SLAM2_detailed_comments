@@ -13,7 +13,7 @@
  * This file is part of ORB-SLAM2.
  *
  * Copyright (C) 2014-2016 Raúl Mur-Artal <raulmur at unizar dot es> (University
- * of Zaragoza) For more information see <https://github.com/raulmur/ORB_SLAM2>
+ * of Zaragoza) For more information see <https://github.com/raulmur/ ORB_SLAM2>
  *
  * ORB-SLAM2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
+ * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/ >.
  */
 
 #include "KeyFrameDatabase.h"
@@ -391,7 +391,7 @@ vector<KeyFrame *> KeyFrameDatabase::DetectRelocalizationCandidates(Frame *F) {
   // Return all those keyframes with a score higher than 0.75*bestScore
   // Step
   // 5：得到所有组中总得分大于阈值2的，组内得分最高的关键帧，作为候选关键帧组
-  //阈值2：最高得分的0.75倍
+  // 阈值2：最高得分的0.75倍
   float minScoreToRetain = 0.75f * bestAccScore;
   set<KeyFrame *> spAlreadyAddedKF;
   vector<KeyFrame *> vpRelocCandidates;

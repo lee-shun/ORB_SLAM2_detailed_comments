@@ -13,7 +13,7 @@
  * This file is part of ORB-SLAM2.
  *
  * Copyright (C) 2014-2016 Raúl Mur-Artal <raulmur at unizar dot es> (University
- * of Zaragoza) For more information see <https://github.com/raulmur/ORB_SLAM2>
+ * of Zaragoza) For more information see <https://github.com/raulmur/ ORB_SLAM2>
  *
  * ORB-SLAM2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
+ * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/ >.
  */
 
 #include "MapDrawer.h"
@@ -37,9 +37,9 @@
 
 namespace ORB_SLAM2 {
 
-//构造函数
+// 构造函数
 MapDrawer::MapDrawer(Map *pMap, const string &strSettingPath) : mpMap(pMap) {
-  //从配置文件中读取设置的
+  // 从配置文件中读取设置的
   cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
 
   mKeyFrameSize = fSettings["Viewer.KeyFrameSize"];
@@ -51,24 +51,24 @@ MapDrawer::MapDrawer(Map *pMap, const string &strSettingPath) : mpMap(pMap) {
 }
 
 void MapDrawer::DrawMapPoints() {
-  //取出所有的地图点
+  // 取出所有的地图点
   const vector<MapPoint *> &vpMPs = mpMap->GetAllMapPoints();
-  //取出mvpReferenceMapPoints，也即局部地图d点
+  // 取出mvpReferenceMapPoints，也即局部地图d点
   const vector<MapPoint *> &vpRefMPs = mpMap->GetReferenceMapPoints();
 
-  //将vpRefMPs从vector容器类型转化为set容器类型，便于使用set::count快速统计 -
-  //我觉得称之为"重新构造"可能更加合适一些 补充,
-  //set::count用于返回集合中为某个值的元素的个数
+  // 将vpRefMPs从vector容器类型转化为set容器类型，便于使用set::count快速统计 -
+  // 我觉得称之为"重新构造"可能更加合适一些 补充,
+  // set::count用于返回集合中为某个值的元素的个数
   set<MapPoint *> spRefMPs(vpRefMPs.begin(), vpRefMPs.end());
 
   if (vpMPs.empty())
     return;
 
   // for AllMapPoints
-  //显示所有的地图点（不包括局部地图点），大小为2个像素，黑色
+  // 显示所有的地图点（不包括局部地图点），大小为2个像素，黑色
   glPointSize(mPointSize);
   glBegin(GL_POINTS);
-  glColor3f(0.0, 0.0, 0.0); //黑色
+  glColor3f(0.0, 0.0, 0.0); // 黑色
 
   for (size_t i = 0, iend = vpMPs.size(); i < iend; i++) {
     // 不包括ReferenceMapPoints（局部地图点）
@@ -80,7 +80,7 @@ void MapDrawer::DrawMapPoints() {
   glEnd();
 
   // for ReferenceMapPoints
-  //显示局部地图点，大小为2个像素，红色
+  // 显示局部地图点，大小为2个像素，红色
   glPointSize(mPointSize);
   glBegin(GL_POINTS);
   glColor3f(1.0, 0.0, 0.0);
@@ -95,9 +95,9 @@ void MapDrawer::DrawMapPoints() {
   glEnd();
 }
 
-//关于gl相关的函数，可直接google, 并加上msdn关键词
+// 关于gl相关的函数，可直接google, 并加上msdn关键词
 void MapDrawer::DrawKeyFrames(const bool bDrawKF, const bool bDrawGraph) {
-  //历史关键帧图标：宽度占总宽度比例为0.05
+  // 历史关键帧图标：宽度占总宽度比例为0.05
   const float &w = mKeyFrameSize;
   const float h = w * 0.75;
   const float z = w * 0.6;
@@ -106,7 +106,7 @@ void MapDrawer::DrawKeyFrames(const bool bDrawKF, const bool bDrawGraph) {
   const vector<KeyFrame *> vpKFs = mpMap->GetAllKeyFrames();
 
   // step 2：显示所有关键帧图标
-  //通过显示界面选择是否显示历史关键帧图标
+  // 通过显示界面选择是否显示历史关键帧图标
   if (bDrawKF) {
     for (size_t i = 0; i < vpKFs.size(); i++) {
       KeyFrame *pKF = vpKFs[i];
@@ -115,16 +115,16 @@ void MapDrawer::DrawKeyFrames(const bool bDrawKF, const bool bDrawGraph) {
 
       glPushMatrix();
 
-      //（由于使用了glPushMatrix函数，因此当前帧矩阵为世界坐标系下的单位矩阵）
-      //因为OpenGL中的矩阵为列优先存储，因此实际为Tcw，即相机在世界坐标下的位姿
+      // （由于使用了glPushMatrix函数，因此当前帧矩阵为世界坐标系下的单位矩阵）
+      // 因为OpenGL中的矩阵为列优先存储，因此实际为Tcw，即相机在世界坐标下的位姿
       // NOTICE 竟然还可以这样写,牛逼牛逼
       glMultMatrixf(Twc.ptr<GLfloat>(0));
 
-      //设置绘制图形时线的宽度
+      // 设置绘制图形时线的宽度
       glLineWidth(mKeyFrameLineWidth);
-      //设置当前颜色为蓝色(关键帧图标显示为蓝色)
+      // 设置当前颜色为蓝色(关键帧图标显示为蓝色)
       glColor3f(0.0f, 0.0f, 1.0f);
-      //用线将下面的顶点两两相连
+      // 用线将下面的顶点两两相连
       glBegin(GL_LINES);
       glVertex3f(0, 0, 0);
       glVertex3f(w, h, z);
@@ -159,27 +159,27 @@ void MapDrawer::DrawKeyFrames(const bool bDrawKF, const bool bDrawGraph) {
    * 生成树则进一步进行了优化,保存了所有节点,但是值保存具有最多共视地图点的关键帧的边
    *
    */
-  //通过显示界面选择是否显示关键帧连接关系
+  // 通过显示界面选择是否显示关键帧连接关系
   if (bDrawGraph) {
-    //设置绘制图形时线的宽度
+    // 设置绘制图形时线的宽度
     glLineWidth(mGraphLineWidth);
-    //设置共视图连接线为绿色，透明度为0.6f
+    // 设置共视图连接线为绿色，透明度为0.6f
     glColor4f(0.0f, 1.0f, 0.0f, 0.6f);
     glBegin(
-        GL_LINES); //绘制线条的时候,默认是按照添加顺序,每两个点之间绘制一条直线
+        GL_LINES); // 绘制线条的时候,默认是按照添加顺序,每两个点之间绘制一条直线
 
     for (size_t i = 0; i < vpKFs.size(); i++) {
       // Covisibility Graph (共视图)
       // step 3.1 共视程度比较高的共视关键帧用线连接
-      //遍历每一个关键帧，得到它们共视程度比较高的关键帧
+      // 遍历每一个关键帧，得到它们共视程度比较高的关键帧
       const vector<KeyFrame *> vCovKFs = vpKFs[i]->GetCovisiblesByWeight(100);
-      //遍历每一个关键帧，得到它在世界坐标系下的相机坐标
+      // 遍历每一个关键帧，得到它在世界坐标系下的相机坐标
       cv::Mat Ow = vpKFs[i]->GetCameraCenter();
       if (!vCovKFs.empty()) {
         for (vector<KeyFrame *>::const_iterator vit = vCovKFs.begin(),
                                                 vend = vCovKFs.end();
              vit != vend; vit++) {
-          //单向绘制
+          // 单向绘制
           if ((*vit)->mnId < vpKFs[i]->mnId)
             continue;
           cv::Mat Ow2 = (*vit)->GetCameraCenter();
@@ -218,31 +218,31 @@ void MapDrawer::DrawKeyFrames(const bool bDrawKF, const bool bDrawGraph) {
   }
 }
 
-//关于gl相关的函数，可直接google, 并加上msdn关键词
+// 关于gl相关的函数，可直接google, 并加上msdn关键词
 void MapDrawer::DrawCurrentCamera(pangolin::OpenGlMatrix &Twc) {
-  //相机模型大小：宽度占总宽度比例为0.08
+  // 相机模型大小：宽度占总宽度比例为0.08
   const float &w = mCameraSize;
   const float h = w * 0.75;
   const float z = w * 0.6;
 
-  //百度搜索：glPushMatrix 百度百科
+  // 百度搜索：glPushMatrix 百度百科
   glPushMatrix();
 
-  //将4*4的矩阵Twc.m右乘一个当前矩阵
-  //（由于使用了glPushMatrix函数，因此当前帧矩阵为世界坐标系下的单位矩阵）
-  //因为OpenGL中的矩阵为列优先存储，因此实际为Tcw，即相机在世界坐标下的位姿
-  //一个是整型,一个是浮点数类型
+  // 将4*4的矩阵Twc.m右乘一个当前矩阵
+  // （由于使用了glPushMatrix函数，因此当前帧矩阵为世界坐标系下的单位矩阵）
+  // 因为OpenGL中的矩阵为列优先存储，因此实际为Tcw，即相机在世界坐标下的位姿
+  // 一个是整型,一个是浮点数类型
 #ifdef HAVE_GLES
   glMultMatrixf(Twc.m);
 #else
   glMultMatrixd(Twc.m);
 #endif
 
-  //设置绘制图形时线的宽度
+  // 设置绘制图形时线的宽度
   glLineWidth(mCameraLineWidth);
-  //设置当前颜色为绿色(相机图标显示为绿色)
+  // 设置当前颜色为绿色(相机图标显示为绿色)
   glColor3f(0.0f, 1.0f, 0.0f);
-  //用线将下面的顶点两两相连
+  // 用线将下面的顶点两两相连
   glBegin(GL_LINES);
   glVertex3f(0, 0, 0);
   glVertex3f(w, h, z);
@@ -269,7 +269,7 @@ void MapDrawer::DrawCurrentCamera(pangolin::OpenGlMatrix &Twc) {
   glPopMatrix();
 }
 
-//设置当前帧相机的位姿, 设置这个函数是因为要处理多线程的操作
+// 设置当前帧相机的位姿, 设置这个函数是因为要处理多线程的操作
 void MapDrawer::SetCurrentCameraPose(const cv::Mat &Tcw) {
   unique_lock<mutex> lock(mMutexCamera);
   mCameraPose = Tcw.clone();

@@ -13,7 +13,7 @@
  * This file is part of ORB-SLAM2.
  *
  * Copyright (C) 2014-2016 Raúl Mur-Artal <raulmur at unizar dot es> (University
- * of Zaragoza) For more information see <https://github.com/raulmur/ORB_SLAM2>
+ * of Zaragoza) For more information see <https://github.com/raulmur/ ORB_SLAM2>
  *
  * ORB-SLAM2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
+ * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/ >.
  */
 
 #ifndef TRACKING_H
@@ -159,60 +159,60 @@ public:
 
 public:
   // Tracking states
-  ///跟踪状态类型
+  /// 跟踪状态类型
   enum eTrackingState {
     SYSTEM_NOT_READY =
-        -1, ///<系统没有准备好的状态,一般就是在启动后加载配置文件和词典文件时候的状态
-    NO_IMAGES_YET = 0,   ///<当前无图像
-    NOT_INITIALIZED = 1, ///<有图像但是没有完成初始化
-    OK = 2,              ///<正常时候的工作状态
-    LOST = 3             ///<系统已经跟丢了的状态
+        -1, /// <系统没有准备好的状态,一般就是在启动后加载配置文件和词典文件时候的状态
+    NO_IMAGES_YET = 0,   /// <当前无图像
+    NOT_INITIALIZED = 1, /// <有图像但是没有完成初始化
+    OK = 2,              /// <正常时候的工作状态
+    LOST = 3             /// <系统已经跟丢了的状态
   };
 
-  ///跟踪状态
+  /// 跟踪状态
   eTrackingState mState;
-  ///上一帧的跟踪状态.这个变量在绘制当前帧的时候会被使用到
+  /// 上一帧的跟踪状态.这个变量在绘制当前帧的时候会被使用到
   eTrackingState mLastProcessedState;
 
   // Input sensor:MONOCULAR, STEREO, RGBD
-  ///传感器类型
+  /// 传感器类型
   int mSensor;
 
   // Current Frame
-  ///追踪线程中有一个当前帧
+  /// 追踪线程中有一个当前帧
   Frame mCurrentFrame;
-  ///> 还有当前帧的灰度图像 //? 提问,那么在双目输入和在RGBD输入的时候呢?
-  ///>                        在双目输入和在RGBD输入时，为左侧图像的灰度图
+  ///> 还有当前帧的灰度图像 // ? 提问,那么在双目输入和在RGBD输入的时候呢?
+  /// >                        在双目输入和在RGBD输入时，为左侧图像的灰度图
   cv::Mat mImGray;
 
   // Initialization Variables (Monocular)
   // 初始化时前两帧相关变量
-  ///之前的匹配
+  /// 之前的匹配
   std::vector<int> mvIniLastMatches;
-  ///初始化阶段中,当前帧中的特征点和参考帧中的特征点的匹配关系
+  /// 初始化阶段中,当前帧中的特征点和参考帧中的特征点的匹配关系
   std::vector<int> mvIniMatches; // 跟踪初始化时前两帧之间的匹配
-  ///在初始化的过程中,保存参考帧中的特征点
+  /// 在初始化的过程中,保存参考帧中的特征点
   std::vector<cv::Point2f> mvbPrevMatched;
-  ///初始化过程中匹配后进行三角化得到的空间点
+  /// 初始化过程中匹配后进行三角化得到的空间点
   std::vector<cv::Point3f> mvIniP3D;
-  ///初始化过程中的参考帧
+  /// 初始化过程中的参考帧
   Frame mInitialFrame;
 
   // Lists used to recover the full camera trajectory at the end of the
   // execution. Basically we store the reference keyframe for each frame and its
   // relative transformation
-  ///所有的参考关键帧的位姿;看上面注释的意思,这里存储的也是相对位姿
+  /// 所有的参考关键帧的位姿;看上面注释的意思,这里存储的也是相对位姿
   list<cv::Mat> mlRelativeFramePoses;
-  ///参考关键帧
+  /// 参考关键帧
   list<KeyFrame *> mlpReferences;
-  ///所有帧的时间戳  //? 还是关键帧的时间戳?
+  ///所有帧的时间戳  // ? 还是关键帧的时间戳?
   list<double> mlFrameTimes;
-  ///是否跟丢的标志
+  /// 是否跟丢的标志
   list<bool> mlbLost;
 
   // True if local mapping is deactivated and we are performing only
   // localization
-  ///标记当前系统是处于SLAM状态还是纯定位状态
+  /// 标记当前系统是处于SLAM状态还是纯定位状态
   bool mbOnlyTracking;
 
   /**
@@ -341,13 +341,13 @@ protected:
   // enough matches with temporal points. In that case we are doing visual
   // odometry. The system will try to do relocalization to recover "zero-drift"
   // localization to the map.
-  ///当进行纯定位时才会有的一个变量,为false表示该帧匹配了很多的地图点,跟踪是正常的;如果少于10个则为true,表示快要完蛋了
+  /// 当进行纯定位时才会有的一个变量,为false表示该帧匹配了很多的地图点,跟踪是正常的;如果少于10个则为true,表示快要完蛋了
   bool mbVO;
 
   // Other Thread Pointers
-  ///局部建图器句柄
+  /// 局部建图器句柄
   LocalMapping *mpLocalMapper;
-  ///回环检测器句柄
+  /// 回环检测器句柄
   LoopClosing *mpLoopClosing;
 
   // ORB
@@ -357,51 +357,51 @@ protected:
   // 如果是单目，在初始化的时候使用mpIniORBextractor而不是mpORBextractorLeft，
   // mpIniORBextractor属性中提取的特征点个数是mpORBextractorLeft的两倍
 
-  ///作者自己编写和改良的ORB特征点提取器
+  /// 作者自己编写和改良的ORB特征点提取器
   ORBextractor *mpORBextractorLeft, *mpORBextractorRight;
-  ///在初始化的时候使用的特征点提取器,其提取到的特征点个数会更多
+  /// 在初始化的时候使用的特征点提取器,其提取到的特征点个数会更多
   ORBextractor *mpIniORBextractor;
 
   // BoW 词袋模型相关
-  /// ORB特征字典
+  ///  ORB特征字典
   ORBVocabulary *mpORBVocabulary;
-  ///当前系统运行的时候,关键帧所产生的数据库
+  /// 当前系统运行的时候,关键帧所产生的数据库
   KeyFrameDatabase *mpKeyFrameDB;
 
   // Initalization (only for monocular)
-  /// 单目初始器
+  ///  单目初始器
   Initializer *mpInitializer;
 
   // Local Map 局部地图相关
-  ///参考关键帧
+  /// 参考关键帧
   KeyFrame *mpReferenceKF; // 当前关键帧就是参考帧
-  ///局部关键帧集合
+  /// 局部关键帧集合
   std::vector<KeyFrame *> mvpLocalKeyFrames;
-  ///局部地图点的集合
+  /// 局部地图点的集合
   std::vector<MapPoint *> mvpLocalMapPoints;
 
   // System
-  ///指向系统实例的指针
+  /// 指向系统实例的指针
   System *mpSystem;
 
   // Drawers  可视化查看器相关
-  ///查看器对象句柄
+  /// 查看器对象句柄
   Viewer *mpViewer;
-  ///帧绘制器句柄
+  /// 帧绘制器句柄
   FrameDrawer *mpFrameDrawer;
-  ///地图绘制器句柄
+  /// 地图绘制器句柄
   MapDrawer *mpMapDrawer;
 
   // Map
-  ///(全局)地图句柄
+  /// (全局)地图句柄
   Map *mpMap;
 
   // Calibration matrix   相机的参数矩阵相关
-  ///相机的内参数矩阵
+  /// 相机的内参数矩阵
   cv::Mat mK;
-  ///相机的去畸变参数
+  /// 相机的去畸变参数
   cv::Mat mDistCoef;
-  ///相机的基线长度 * 相机的焦距
+  /// 相机的基线长度 * 相机的焦距
   float mbf;
 
   // New KeyFrame rules (according to fps)
@@ -413,17 +413,17 @@ protected:
   // Points seen as close by the stereo/RGBD sensor are considered reliable
   // and inserted from just one frame. Far points requiere a match in two
   // keyframes.
-  ///用于区分远点和近点的阈值.
-  ///近点认为可信度比较高;远点则要求在两个关键帧中得到匹配
+  /// 用于区分远点和近点的阈值.
+  /// 近点认为可信度比较高;远点则要求在两个关键帧中得到匹配
   float mThDepth;
 
   // For RGB-D inputs only. For some datasets (e.g. TUM) the depthmap values are
   // scaled.
-  ///深度缩放因子,链接深度值和具体深度值的参数.只对RGBD输入有效
+  /// 深度缩放因子,链接深度值和具体深度值的参数.只对RGBD输入有效
   float mDepthMapFactor;
 
   // Current matches in frame
-  ///当前帧中的进行匹配的内点,将会被不同的函数反复使用
+  /// 当前帧中的进行匹配的内点,将会被不同的函数反复使用
   int mnMatchesInliers;
 
   // Last Frame, KeyFrame and Relocalisation Info
@@ -440,10 +440,10 @@ protected:
   cv::Mat mVelocity;
 
   // Color order (true RGB, false BGR, ignored if grayscale)
-  /// RGB图像的颜色通道顺序
+  ///  RGB图像的颜色通道顺序
   bool mbRGB;
 
-  ///临时的地图点,用于提高双目和RGBD摄像头的帧间效果,用完之后就扔了
+  /// 临时的地图点,用于提高双目和RGBD摄像头的帧间效果,用完之后就扔了
   list<MapPoint *> mlpTemporalPoints;
 }; // class Tracking
 

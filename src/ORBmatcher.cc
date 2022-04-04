@@ -13,7 +13,7 @@
  * This file is part of ORB-SLAM2.
  *
  * Copyright (C) 2014-2016 Raúl Mur-Artal <raulmur at unizar dot es> (University
- * of Zaragoza) For more information see <https://github.com/raulmur/ORB_SLAM2>
+ * of Zaragoza) For more information see <https://github.com/raulmur/ ORB_SLAM2>
  *
  * ORB-SLAM2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
+ * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/ >.
  */
 
 #include "ORBmatcher.h"
@@ -130,15 +130,15 @@ int ORBmatcher::SearchByProjection(Frame &F,
         if (F.mvpMapPoints[idx]->Observations() > 0)
           continue;
 
-      //如果是双目数据
+      // 如果是双目数据
       if (F.mvuRight[idx] > 0) {
-        //计算在X轴上的投影误差
+        // 计算在X轴上的投影误差
         const float er = fabs(pMP->mTrackProjXR - F.mvuRight[idx]);
-        //超过阈值,说明这个点不行,丢掉.
-        //这里的阈值定义是以给定的搜索范围r为参考,然后考虑到越近的点(nPredictedLevel越大),
-        //相机运动时对其产生的影响也就越大, 因此需要扩大其搜索空间.
-        //当给定缩放倍率为1.2的时候, mvScaleFactors 中的数据是:
-        //1 1.2 1.2^2 1.2^3 ...
+        // 超过阈值,说明这个点不行,丢掉.
+        // 这里的阈值定义是以给定的搜索范围r为参考,然后考虑到越近的点(nPredictedLevel越大),
+        // 相机运动时对其产生的影响也就越大, 因此需要扩大其搜索空间.
+        // 当给定缩放倍率为1.2的时候, mvScaleFactors 中的数据是:
+        // 1 1.2 1.2^2 1.2^3 ...
         if (er > r * F.mvScaleFactors[nPredictedLevel])
           continue;
       }
@@ -170,7 +170,7 @@ int ORBmatcher::SearchByProjection(Frame &F,
       if (bestLevel == bestLevel2 && bestDist > mfNNratio * bestDist2)
         continue;
 
-      //保存结果: 为Frame中的特征点增加对应的MapPoint
+      // 保存结果: 为Frame中的特征点增加对应的MapPoint
       F.mvpMapPoints[bestIdx] = pMP;
       nmatches++;
     }
@@ -424,7 +424,7 @@ int ORBmatcher::SearchByProjection(KeyFrame *pKF, cv::Mat Scw,
 
   // Decompose Scw
   // Step 1 分解Sim变换矩阵
-  //? 为什么要剥离尺度信息？
+  // ? 为什么要剥离尺度信息？
   cv::Mat sRcw = Scw.rowRange(0, 3).colRange(0, 3);
   const float scw = sqrt(sRcw.row(0).dot(sRcw.row(0))); // 计算得到尺度s
   cv::Mat Rcw = sRcw / scw; // 保证旋转矩阵行列式为1
@@ -577,8 +577,8 @@ int ORBmatcher::SearchForInitialization(Frame &F1, Frame &F2,
     // 每个bin里预分配500个，因为使用的是vector不够的话可以自动扩展容量
     rotHist[i].reserve(500);
 
-  //! 原作者代码是 const float factor = 1.0f/HISTO_LENGTH;
-  //! 是错误的，更改为下面代码
+  //! 原作者代码是 const float factor = 1.0f/ HISTO_LENGTH;
+  // ! 是错误的，更改为下面代码
   const float factor = HISTO_LENGTH / 360.0f;
 
   // 匹配点对距离，注意是按照F2特征点数目分配空间
@@ -607,9 +607,9 @@ int ORBmatcher::SearchForInitialization(Frame &F1, Frame &F2,
     // 取出参考帧F1中当前遍历特征点对应的描述子
     cv::Mat d1 = F1.mDescriptors.row(i1);
 
-    int bestDist = INT_MAX;  //最佳描述子匹配距离，越小越好
-    int bestDist2 = INT_MAX; //次佳描述子匹配距离
-    int bestIdx2 = -1;       //最佳候选特征点在F2中的index
+    int bestDist = INT_MAX;  // 最佳描述子匹配距离，越小越好
+    int bestDist2 = INT_MAX; // 次佳描述子匹配距离
+    int bestIdx2 = -1;       // 最佳候选特征点在F2中的index
 
     // Step 3 遍历搜索搜索窗口中的所有潜在的匹配候选点，找到最优的和次优的
     for (vector<size_t>::iterator vit = vIndices2.begin();
@@ -737,8 +737,8 @@ int ORBmatcher::SearchByBoW(KeyFrame *pKF1, KeyFrame *pKF2,
   for (int i = 0; i < HISTO_LENGTH; i++)
     rotHist[i].reserve(500);
 
-  //! 原作者代码是 const float factor = 1.0f/HISTO_LENGTH;
-  //! 是错误的，更改为下面代码
+  //! 原作者代码是 const float factor = 1.0f/ HISTO_LENGTH;
+  // ! 是错误的，更改为下面代码
   const float factor = HISTO_LENGTH / 360.0f;
 
   int nmatches = 0;
@@ -891,8 +891,8 @@ int ORBmatcher::SearchForTriangulation(
   for (int i = 0; i < HISTO_LENGTH; i++)
     rotHist[i].reserve(500);
 
-  //! 原作者代码是 const float factor = 1.0f/HISTO_LENGTH;
-  //! 是错误的，更改为下面代码
+  //! 原作者代码是 const float factor = 1.0f/ HISTO_LENGTH;
+  // ! 是错误的，更改为下面代码
   const float factor = HISTO_LENGTH / 360.0f;
 
   // We perform the matching over ORB that belong to the same vocabulary node
@@ -971,7 +971,7 @@ int ORBmatcher::SearchForTriangulation(
           // 通过特征点索引idx2在pKF2中取出对应的特征点
           const cv::KeyPoint &kp2 = pKF2->mvKeysUn[idx2];
 
-          //? 为什么双目就不需要判断像素点到极点的距离的判断？
+          // ? 为什么双目就不需要判断像素点到极点的距离的判断？
           // 因为双目模式下可以左右互匹配恢复三维点
           if (!bStereo1 && !bStereo2) {
             const float distex = ex - kp2.pt.x;
@@ -981,7 +981,7 @@ int ORBmatcher::SearchForTriangulation(
             // 作者根据kp2金字塔尺度因子(scale^n，scale=1.2，n为层数)定义阈值th
             // 金字塔层数从0到7，对应距离
             // sqrt(100*pKF2->mvScaleFactors[kp2.octave]) 是10-20个像素
-            //? 对这个阈值的有效性持怀疑态度
+            // ? 对这个阈值的有效性持怀疑态度
             if (distex * distex + distey * distey <
                 100 * pKF2->mvScaleFactors[kp2.octave])
               continue;
@@ -1183,7 +1183,8 @@ int ORBmatcher::Fuse(KeyFrame *pKF, const vector<MapPoint *> &vpMapPoints,
         const float er = ur - kpr;
         const float e2 = ex * ex + ey * ey + er * er;
 
-        //自由度为3, 误差小于1个像素,这种事情95%发生的概率对应卡方检验阈值为7.82
+        // 自由度为3,
+        // 误差小于1个像素,这种事情95%发生的概率对应卡方检验阈值为7.82
         if (e2 * pKF->mvInvLevelSigma2[kpLevel] > 7.8)
           continue;
       } else {
@@ -1666,19 +1667,19 @@ int ORBmatcher::SearchByProjection(Frame &CurrentFrame, const Frame &LastFrame,
   for (int i = 0; i < HISTO_LENGTH; i++)
     rotHist[i].reserve(500);
 
-  //! 原作者代码是 const float factor = 1.0f/HISTO_LENGTH;
-  //! 是错误的，更改为下面代码
+  //! 原作者代码是 const float factor = 1.0f/ HISTO_LENGTH;
+  // ! 是错误的，更改为下面代码
   const float factor = HISTO_LENGTH / 360.0f;
 
   // Step 2 计算当前帧和前一帧的平移向量
-  //当前帧的相机位姿
+  // 当前帧的相机位姿
   const cv::Mat Rcw = CurrentFrame.mTcw.rowRange(0, 3).colRange(0, 3);
   const cv::Mat tcw = CurrentFrame.mTcw.rowRange(0, 3).col(3);
 
-  //当前相机坐标系到世界坐标系的平移向量
+  // 当前相机坐标系到世界坐标系的平移向量
   const cv::Mat twc = -Rcw.t() * tcw;
 
-  //上一帧的相机位姿
+  // 上一帧的相机位姿
   const cv::Mat Rlw = LastFrame.mTcw.rowRange(0, 3).colRange(0, 3);
   const cv::Mat tlw = LastFrame.mTcw.rowRange(0, 3).col(3); // tlw(l)
 
@@ -1893,7 +1894,7 @@ int ORBmatcher::SearchByProjection(Frame &CurrentFrame, KeyFrame *pKF,
         if (dist3D < minDistance || dist3D > maxDistance)
           continue;
 
-        //预测尺度
+        // 预测尺度
         int nPredictedLevel = pMP->PredictScale(dist3D, &CurrentFrame);
         // Search in a window
         // 搜索半径和尺度相关
@@ -2014,7 +2015,7 @@ void ORBmatcher::ComputeThreeMaxima(vector<int> *histo, const int L, int &ind1,
 
 // Bit set count operation from
 // Hamming distance：两个二进制串之间的汉明距离，指的是其不同位数的个数
-// http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
+// http://graphics.stanford.edu/~seander/ bithacks.html#CountBitsSetParallel
 int ORBmatcher::DescriptorDistance(const cv::Mat &a, const cv::Mat &b) {
   const int *pa = a.ptr<int32_t>();
   const int *pb = b.ptr<int32_t>();

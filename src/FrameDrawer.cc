@@ -13,7 +13,7 @@
  * This file is part of ORB-SLAM2.
  *
  * Copyright (C) 2014-2016 Raúl Mur-Artal <raulmur at unizar dot es> (University
- * of Zaragoza) For more information see <https://github.com/raulmur/ORB_SLAM2>
+ * of Zaragoza) For more information see <https://github.com/raulmur/ ORB_SLAM2>
  *
  * ORB-SLAM2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
+ * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/ >.
  */
 
 #include "FrameDrawer.h"
@@ -38,7 +38,7 @@
 #include <mutex>
 
 namespace ORB_SLAM2 {
-//构造函数
+// 构造函数
 FrameDrawer::FrameDrawer(Map *pMap) : mpMap(pMap) {
   mState = Tracking::SYSTEM_NOT_READY;
   // 初始化图像显示画布
@@ -69,19 +69,19 @@ cv::Mat FrameDrawer::DrawFrame() {
     // NOTICE 这里使用copyTo进行深拷贝是因为后面会把单通道灰度图像转为3通道图像
     mIm.copyTo(im);
 
-    //没有初始化的时候
+    // 没有初始化的时候
     if (mState == Tracking::NOT_INITIALIZED) {
-      //获取当前帧\参考帧的特征点,并且得到他们的匹配关系
+      // 获取当前帧\参考帧的特征点,并且得到他们的匹配关系
       vCurrentKeys = mvCurrentKeys;
       vIniKeys = mvIniKeys;
       vMatches = mvIniMatches;
     } else if (mState == Tracking::OK) {
-      //当系统处于运动追踪状态时
+      // 当系统处于运动追踪状态时
       vCurrentKeys = mvCurrentKeys;
       vbVO = mvbVO;
       vbMap = mvbMap;
     } else if (mState == Tracking::LOST) {
-      //跟丢的时候就之获得当前帧的特征点就可以了
+      // 跟丢的时候就之获得当前帧的特征点就可以了
       vCurrentKeys = mvCurrentKeys;
     }
   } // destroy scoped mutex -> release mutex
@@ -95,7 +95,7 @@ cv::Mat FrameDrawer::DrawFrame() {
   if (state == Tracking::NOT_INITIALIZED) // INITIALIZING
   {
     for (unsigned int i = 0; i < vMatches.size(); i++) {
-      //绘制当前帧特征点到下一帧特征点的连线,其实就是匹配关系
+      // 绘制当前帧特征点到下一帧特征点的连线,其实就是匹配关系
       // NOTICE 就是当初看到的初始化过程中图像中显示的绿线
       if (vMatches[i] >= 0) {
         cv::line(im, vIniKeys[i].pt, vCurrentKeys[vMatches[i]].pt,
@@ -104,7 +104,7 @@ cv::Mat FrameDrawer::DrawFrame() {
     }
   } else if (state == Tracking::OK) // TRACKING
   {
-    //当前帧追踪到的特征点计数
+    // 当前帧追踪到的特征点计数
     mnTracked = 0;
     mnTrackedVO = 0;
 
@@ -112,9 +112,9 @@ cv::Mat FrameDrawer::DrawFrame() {
     const float r = 5;
     const int n = vCurrentKeys.size();
     for (int i = 0; i < n; i++) {
-      //如果这个点在视觉里程计中有(应该是追踪成功了的意思吧),在局部地图中也有
+      // 如果这个点在视觉里程计中有(应该是追踪成功了的意思吧),在局部地图中也有
       if (vbVO[i] || vbMap[i]) {
-        //在特征点附近正方形选择四个点
+        // 在特征点附近正方形选择四个点
         cv::Point2f pt1, pt2;
         pt1.x = vCurrentKeys[i].pt.x - r;
         pt1.y = vCurrentKeys[i].pt.y - r;
@@ -140,18 +140,18 @@ cv::Mat FrameDrawer::DrawFrame() {
           mnTrackedVO++;
         }
       }
-    } //遍历所有的特征点
+    } // 遍历所有的特征点
   }
 
-  //然后写入状态栏的信息
+  // 然后写入状态栏的信息
   cv::Mat imWithInfo;
   DrawTextInfo(im, state, imWithInfo);
 
-  //返回生成的图像
+  // 返回生成的图像
   return imWithInfo;
 }
 
-//绘制状态栏上的文本信息
+// 绘制状态栏上的文本信息
 void FrameDrawer::DrawTextInfo(cv::Mat &im, int nState, cv::Mat &imText) {
   stringstream s;
   if (nState == Tracking::NO_IMAGES_YET)
@@ -166,7 +166,7 @@ void FrameDrawer::DrawTextInfo(cv::Mat &im, int nState, cv::Mat &imText) {
     int nKFs = mpMap->KeyFramesInMap();
     int nMPs = mpMap->MapPointsInMap();
     s << "KFs: " << nKFs << ", MPs: " << nMPs << ", Matches: " << mnTracked;
-    //在视觉里程计中匹配到的
+    // 在视觉里程计中匹配到的
     if (mnTrackedVO > 0)
       s << ", + VO matches: " << mnTrackedVO;
   } else if (nState == Tracking::LOST) {
@@ -176,28 +176,28 @@ void FrameDrawer::DrawTextInfo(cv::Mat &im, int nState, cv::Mat &imText) {
   }
 
   int baseline = 0;
-  //计算字符串文字所占用的图像区域的大小
+  // 计算字符串文字所占用的图像区域的大小
   cv::Size textSize = cv::getTextSize(
-      s.str(),                //字符串
-      cv::FONT_HERSHEY_PLAIN, //字体
-      1,                      //字体缩放
-      1,                      //粗细
-      &baseline); //基线,相对于最低端的文本点的,y坐标  //? 不是太明白
-  //扩展图像
+      s.str(),                // 字符串
+      cv::FONT_HERSHEY_PLAIN, // 字体
+      1,                      // 字体缩放
+      1,                      // 粗细
+      &baseline); //基线,相对于最低端的文本点的,y坐标  // ? 不是太明白
+  // 扩展图像
   imText = cv::Mat(im.rows + textSize.height + 10, im.cols, im.type());
   im.copyTo(imText.rowRange(0, im.rows).colRange(0, im.cols));
-  //扩充区域填充黑色背景
+  // 扩充区域填充黑色背景
   imText.rowRange(im.rows, imText.rows) =
       cv::Mat::zeros(textSize.height + 10, im.cols, im.type());
-  //并且绘制文字
-  cv::putText(imText,                        //目标图像
-              s.str(),                       //要输出的文字
-              cv::Point(5, imText.rows - 5), //输出文字的起始位置
-              cv::FONT_HERSHEY_PLAIN,        //字体
-              1,                             //缩放
-              cv::Scalar(255, 255, 255),     //颜色,白色
-              1,                             //线宽
-              8);                            //线型
+  // 并且绘制文字
+  cv::putText(imText,                        // 目标图像
+              s.str(),                       // 要输出的文字
+              cv::Point(5, imText.rows - 5), // 输出文字的起始位置
+              cv::FONT_HERSHEY_PLAIN,        // 字体
+              1,                             // 缩放
+              cv::Scalar(255, 255, 255),     // 颜色,白色
+              1,                             // 线宽
+              8);                            // 线型
 }
 
 /**
@@ -207,9 +207,9 @@ void FrameDrawer::DrawTextInfo(cv::Mat &im, int nState, cv::Mat &imText) {
  */
 void FrameDrawer::Update(Tracking *pTracker) {
   unique_lock<mutex> lock(mMutex);
-  //拷贝跟踪线程的图像
+  // 拷贝跟踪线程的图像
   pTracker->mImGray.copyTo(mIm);
-  //拷贝跟踪线程的特征点
+  // 拷贝跟踪线程的特征点
   mvCurrentKeys = pTracker->mCurrentFrame.mvKeys;
   N = mvCurrentKeys.size();
   mvbVO = vector<bool>(N, false);
@@ -217,30 +217,30 @@ void FrameDrawer::Update(Tracking *pTracker) {
 
   mbOnlyTracking = pTracker->mbOnlyTracking;
 
-  //如果上一帧的时候,追踪器没有进行初始化
+  // 如果上一帧的时候,追踪器没有进行初始化
   if (pTracker->mLastProcessedState == Tracking::NOT_INITIALIZED) {
-    //那么就要获取初始化帧的特征点和匹配信息
+    // 那么就要获取初始化帧的特征点和匹配信息
     mvIniKeys = pTracker->mInitialFrame.mvKeys;
     mvIniMatches = pTracker->mvIniMatches;
   }
-  //如果上一帧是在正常跟踪
+  // 如果上一帧是在正常跟踪
   else if (pTracker->mLastProcessedState == Tracking::OK) {
-    //获取当前帧地图点的信息
+    // 获取当前帧地图点的信息
     for (int i = 0; i < N; i++) {
       MapPoint *pMP = pTracker->mCurrentFrame.mvpMapPoints[i];
       if (pMP) {
         if (!pTracker->mCurrentFrame.mvbOutlier[i]) {
-          //该mappoints可以被多帧观测到，则为有效的地图点
+          // 该mappoints可以被多帧观测到，则为有效的地图点
           if (pMP->Observations() > 0)
             mvbMap[i] = true;
           else
-            //否则表示这个特征点是在当前帧中第一次提取得到的点
+            // 否则表示这个特征点是在当前帧中第一次提取得到的点
             mvbVO[i] = true;
         }
       }
     }
   }
-  //更新追踪线程的跟踪状态
+  // 更新追踪线程的跟踪状态
   mState = static_cast<int>(pTracker->mLastProcessedState);
 }
 

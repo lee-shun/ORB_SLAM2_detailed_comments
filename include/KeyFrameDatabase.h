@@ -13,7 +13,7 @@
  * This file is part of ORB-SLAM2.
  *
  * Copyright (C) 2014-2016 Raúl Mur-Artal <raulmur at unizar dot es> (University
- * of Zaragoza) For more information see <https://github.com/raulmur/ORB_SLAM2>
+ * of Zaragoza) For more information see <https://github.com/raulmur/ ORB_SLAM2>
  *
  * ORB-SLAM2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
+ * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/ >.
  */
 
 #ifndef KEYFRAMEDATABASE_H
@@ -102,7 +102,7 @@ protected:
   // 倒排索引，mvInvertedFile[i]表示包含了第i个word id的所有关键帧
   std::vector<list<KeyFrame *>> mvInvertedFile;
 
-  /// Mutex, 多用途的
+  ///  Mutex, 多用途的
   std::mutex mMutex;
 };
 

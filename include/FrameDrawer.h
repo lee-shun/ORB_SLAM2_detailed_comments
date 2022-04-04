@@ -13,7 +13,7 @@
  * This file is part of ORB-SLAM2.
  *
  * Copyright (C) 2014-2016 Raúl Mur-Artal <raulmur at unizar dot es> (University
- * of Zaragoza) For more information see <https://github.com/raulmur/ORB_SLAM2>
+ * of Zaragoza) For more information see <https://github.com/raulmur/ ORB_SLAM2>
  *
  * ORB-SLAM2 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
+ * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/ >.
  */
 
 #ifndef FRAMEDRAWER_H
@@ -83,30 +83,30 @@ protected:
   void DrawTextInfo(cv::Mat &im, int nState, cv::Mat &imText);
 
   // Info of the frame to be drawn
-  ///当前绘制的图像
+  /// 当前绘制的图像
   cv::Mat mIm;
-  ///当前帧中特征点的数目
+  /// 当前帧中特征点的数目
   int N;
-  ///当前帧中的特征点
+  /// 当前帧中的特征点
   vector<cv::KeyPoint> mvCurrentKeys;
-  ///当前帧中的特征点是否在地图中的标记
-  ///当前帧的特征点在地图中是否出现;后者是表示地图中没有出现,但是在当前帧中是第一次被观测得到的点
+  /// 当前帧中的特征点是否在地图中的标记
+  /// 当前帧的特征点在地图中是否出现;后者是表示地图中没有出现,但是在当前帧中是第一次被观测得到的点
   vector<bool> mvbMap, mvbVO;
-  ///当前是否是只有追踪线程在工作;或者说,当前是处于定位模式还是处于SLAM模式
+  /// 当前是否是只有追踪线程在工作;或者说,当前是处于定位模式还是处于SLAM模式
   bool mbOnlyTracking;
-  ///当前帧中追踪到的特征点计数
+  /// 当前帧中追踪到的特征点计数
   int mnTracked, mnTrackedVO;
-  ///参考帧中的特征点
+  /// 参考帧中的特征点
   vector<cv::KeyPoint> mvIniKeys;
-  ///当前帧特征点和参考帧特征点的匹配关系
+  /// 当前帧特征点和参考帧特征点的匹配关系
   vector<int> mvIniMatches;
-  ///当前SLAM系统的工作状态
+  /// 当前SLAM系统的工作状态
   int mState;
 
-  ///地图指针
+  /// 地图指针
   Map *mpMap;
 
-  //线程锁
+  // 线程锁
   std::mutex mMutex;
 };
 
