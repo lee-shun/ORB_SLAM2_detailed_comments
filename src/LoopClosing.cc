@@ -189,32 +189,32 @@ bool LoopClosing::DetectLoop() {
   // Each candidate expands a covisibility group (keyframes connected to the
   // loop candidate in the covisibility graph) A group is consistent with a
   // previous group if they share at least a keyframe We must detect a
-  // consistent loop in several consecutive keyframes to accept it Step
-  // 5：在候选帧中检测具有连续性的候选帧
-  // 1、每个候选帧将与自己相连的关键帧构成一个“子候选组spCandidateGroup”，
-  // vpCandidateKFs-->spCandidateGroup
-  // 2、检测“子候选组”中每一个关键帧是否存在于“连续组”，如果存在
-  // nCurrentConsistency++，则将该“子候选组”放入“当前连续组vCurrentConsistentGroups”
-  // 3、如果nCurrentConsistency大于等于3，那么该”子候选组“代表的候选帧过关，进入mvpEnoughConsistentCandidates
+  // consistent loop in several consecutive keyframes to accept it Step 5：在候
+  // 选帧中检测具有连续性的候选帧 1、每个候选帧将与自己相连的关键帧构成一个“子候
+  // 选组spCandidateGroup”，vpCandidateKFs-->spCandidateGroup 2、检测“子候选组”
+  // 中每一个关键帧是否存在于“连续组”，如果存在 nCurrentConsistency++，则将该“子
+  // 候选组”放入“当前连续组vCurrentConsistentGroups”3、如果nCurrentConsistency大
+  // 于等于3，那么该”子候选组“代表的候选帧过关，进入
+  // mvpEnoughConsistentCandidates
 
-  // 相关的概念说明:（为方便理解，见视频里的图示）
-  // 组(group): 对于某个关键帧, 其和其具有共视关系的关键帧组成了一个"组";
-  // 子候选组(CandidateGroup): 对于某个候选的回环关键帧,
-  // 其和其具有共视关系的关键帧组成的一个"组"; 连续(Consistent):
-  // 不同的组之间如果共同拥有一个及以上的关键帧,那么称这两个组之间具有连续关系
-  // 连续性(Consistency):称之为连续长度可能更合适,表示累计的连续的链的长度:A--B
-  // 为1, A--B--C--D 为3等;具体反映在数据类型 ConsistentGroup.second上
-  // 连续组(Consistent group): mvConsistentGroups存储了上次执行回环检测时,
-  // 新的被检测出来的具有连续性的多个组的集合.由于组之间的连续关系是个网状结构,因此可能存在
-  //                          一个组因为和不同的连续组链都具有连续关系,而被添加两次的情况(当然连续性度量是不相同的)
-  // 连续组链:自造的称呼,类似于菊花链A--B--C--D这样形成了一条连续组链.对于这个例子中,由于可能E,F都和D有连续关系,因此连续组链会产生分叉;为了简化计算,连续组中将只会保存
-  //         最后形成连续关系的连续组们(见下面的连续组的更新)
-  // 子连续组: 上面的连续组中的一个组
-  // 连续组的初始值:
-  // 在遍历某个候选帧的过程中,如果该子候选组没有能够和任何一个上次的子连续组产生连续关系,那么就将添加自己组为连续组,并且连续性为0(相当于新开了一个连续链)
-  // 连续组的更新:
-  // 当前次回环检测过程中,所有被检测到和之前的连续组链有连续的关系的组,都将在对应的连续组链后面+1,这些子候选组(可能有重复,见上)都将会成为新的连续组;
-  //              换而言之连续组mvConsistentGroups中只保存连续组链中末尾的组
+  // 相关的概念说明:（为方便理解，见视频里的图示）组(group): 对于某个关键帧, 其
+  // 和其具有共视关系的关键帧组成了一个"组"; 子候选组(CandidateGroup): 对于某个
+  // 候选的回环关键帧, 其和其具有共视关系的关键帧组成的一个"组"; 连续
+  // (Consistent): 不同的组之间如果共同拥有一个及以上的关键帧,那么称这两个组之间
+  // 具有连续关系连续性(Consistency):称之为连续长度可能更合适,表示累计的连续的链
+  // 的长度:A--B 为1, A--B--C--D 为3等;具体反映在数据类型 ConsistentGroup.second
+  // 上连续组(Consistent group): mvConsistentGroups存储了上次执行回环检测时, 新
+  // 的被检测出来的具有连续性的多个组的集合.由于组之间的连续关系是个网状结构,因
+  // 此可能存在一个组因为和不同的连续组链都具有连续关系,而被添加两次的情况(当然
+  // 连续性度量是不相同的) 连续组链:自造的称呼,类似于菊花链A--B--C--D这样形成了
+  // 一条连续组链.对于这个例子中,由于可能E,F都和D有连续关系,因此连续组链会产生分
+  // 叉;为了简化计算,连续组中将只会保存最后形成连续关系的连续组们(见下面的连续组
+  // 的更新) 子连续组: 上面的连续组中的一个组连续组的初始值: 在遍历某个候选帧的
+  // 过程中,如果该子候选组没有能够和任何一个上次的子连续组产生连续关系,那么就将
+  // 添加自己组为连续组,并且连续性为0(相当于新开了一个连续链) 连续组的更新: 当前
+  // 次回环检测过程中,所有被检测到和之前的连续组链有连续的关系的组,都将在对应的
+  // 连续组链后面+1,这些子候选组(可能有重复,见上)都将会成为新的连续组; 换而言之
+  // 连续组mvConsistentGroups中只保存连续组链中末尾的组
 
   // 最终筛选后得到的闭环帧
   mvpEnoughConsistentCandidates.clear();

@@ -22,10 +22,9 @@
 
 // 包含了一些自建库
 #include "System.h"
-#include "Converter.h" // TODO 目前还不是很明白这个是做什么的
-// 包含共有库
-#include <iomanip> // 主要是对cin,cout之类的一些操纵运算子
-#include <pangolin/pangolin.h> // 可视化界面
+#include "Converter.h"
+#include <iomanip>
+#include <pangolin/pangolin.h>
 #include <thread>              // 多线程
 #include <unistd.h>
 namespace ORB_SLAM2 {
@@ -104,7 +103,7 @@ System::System(const string &strVocFile,      // 词典文件路径
 
   // STEP: 2 创建线程
   // 在本主进程中初始化追踪线程
-  // Initialize the Tracking thread
+  // Initialize the Tracking thread, 追踪在主线程中运行
   // (it will live in the main thread of execution, the one that called this
   // constructor)
   mpTracker =
@@ -166,6 +165,7 @@ System::System(const string &strVocFile,      // 词典文件路径
 }
 
 // 双目输入时的追踪器接口
+// 当一帧图像进入的时候每一次要调用一次这个接口~
 cv::Mat System::TrackStereo(const cv::Mat &imLeft,   // 左侧图像
                             const cv::Mat &imRight,  // 右侧图像
                             const double &timestamp) // 时间戳
@@ -199,6 +199,7 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft,   // 左侧图像
       // 同时清除定位标记
       mbActivateLocalizationMode = false; // 防止重复执行
     }                                     // 如果激活定位模式
+
     if (mbDeactivateLocalizationMode) {
       // 如果取消定位模式
       // 告知追踪器，现在地图构建部分也要开始工作了
@@ -223,8 +224,8 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft,   // 左侧图像
     } // 是否有复位请求
   }   // 检查是否有复位的操作
 
-  // 用矩阵Tcw来保存估计的相机
-  // 位姿，运动追踪器的GrabImageStereo函数才是真正进行运动估计的函数
+  // NOTE: 用矩阵Tcw来保存估计的相机
+  // NOTE: 位姿，运动追踪器的GrabImageStereo函数才是真正进行运动估计的函数
   cv::Mat Tcw = mpTracker->GrabImageStereo(imLeft, imRight, timestamp);
 
   // 给运动追踪状态上锁

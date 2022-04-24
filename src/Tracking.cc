@@ -1092,9 +1092,8 @@ bool Tracking::TrackReferenceKeyFrame() {
 
   // Step 3:将上一帧的位姿态作为当前帧位姿的初始值
   mCurrentFrame.mvpMapPoints = vpMapPointMatches;
-  mCurrentFrame.SetPose(
-      mLastFrame
-          .mTcw); // 用上一次的Tcw设置初值，在PoseOptimization可以收敛快一些
+  // 用上一次的Tcw设置初值，在PoseOptimization可以收敛快一些
+  mCurrentFrame.SetPose(mLastFrame.mTcw);
 
   // Step 4:通过优化3D-2D的重投影误差来获得位姿
   Optimizer::PoseOptimization(&mCurrentFrame);
@@ -1602,7 +1601,7 @@ void Tracking::CreateNewKeyFrame() {
   }
 
   // Step 4：插入关键帧
-  // 关键帧插入到列表 mlNewKeyFrames中，等待local mapping线程临幸
+  // 关键帧插入到列表 mlNewKeyFrames中，等待local mapping线程临幸(hhhhh)
   mpLocalMapper->InsertKeyFrame(pKF);
 
   // 插入好了，允许局部建图停止

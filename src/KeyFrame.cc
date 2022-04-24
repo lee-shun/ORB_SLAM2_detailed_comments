@@ -381,7 +381,7 @@ MapPoint *KeyFrame::GetMapPoint(const size_t &idx) {
 }
 
 /*
- * 更新关键帧之间的连接图
+ * 更新关键帧之间的连接图, 共视图
  *
  * 1.
  * 首先获得该关键帧的所有MapPoint点，统计观测到这些3d点的每个关键帧与其它所有关键帧之间的共视程度
