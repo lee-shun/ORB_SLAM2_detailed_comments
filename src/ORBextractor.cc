@@ -70,9 +70,9 @@ using namespace std;
 
 namespace ORB_SLAM2 {
 // 理解下面代码的过程中需要用到一些知识：
-//高斯图像金字塔，参考[https://blog.csdn.net/xbcreal/article/details/ 52629465]
+// 高斯图像金字塔，参考[https://blog.csdn.net/xbcreal/article/details/ 52629465]
 //
-//另外有一篇对这个部分进行简介的帖子，具有很大的参考价值：[https://blog.csdn.net/saber_altolia/article/details/
+// 另外有一篇对这个部分进行简介的帖子，具有很大的参考价值：[https://blog.csdn.net/saber_altolia/article/details/
 // 52623513]
 //
 
@@ -1255,8 +1255,10 @@ ORBextractor::ORBextractor(
       scaleFactor(_scaleFactor),
       nlevels(_nlevels),
       iniThFAST(_iniThFAST),
-      minThFAST(_minThFAST)  // 设置这些参数
-{
+      minThFAST(_minThFAST) {
+  /**
+   * STEP(lee-shun): 建立图像金字塔
+   * */
   // 存储每层图像缩放系数的vector调整为符合图层数目的大小
   mvScaleFactor.resize(nlevels);
   // 存储这个sigma^2，其实就是每层图像相对初始图像缩放因子的平方
@@ -1264,7 +1266,7 @@ ORBextractor::ORBextractor(
   // 对于初始图像，这两个参数都是1
   mvScaleFactor[0] = 1.0f;
   mvLevelSigma2[0] = 1.0f;
-  // 然后逐层计算图像金字塔中图像相当于初始图像的缩放系数
+  // 然后逐层计算图像金字塔中图像相对于初始图像的缩放系数
   for (int i = 1; i < nlevels; i++) {
     // 其实就是这样累乘计算得出来的
     mvScaleFactor[i] = mvScaleFactor[i - 1] * scaleFactor;
@@ -1307,14 +1309,30 @@ ORBextractor::ORBextractor(
   // 由于前面的特征点个数取整操作，可能会导致剩余一些特征点个数没有被分配，所以这里就将这个余出来的特征点分配到最高的图层中
   mnFeaturesPerLevel[nlevels - 1] = std::max(nfeatures - sumFeatures, 0);
 
+  /**
+   * STEP(lee-shun): 处理pattern
+   * */
   // 成员变量pattern的长度，也就是点的个数，这里的512表示512个点（上面的数组中是存储的坐标所以是256*2*2）
   const int npoints = 512;
   // 获取用于计算BRIEF描述子的随机采样点点集头指针
   // 注意到pattern0数据类型为Points*,bit_pattern_31_是int[]型，所以这里需要进行强制类型转换
   const Point *pattern0 = (const Point *)bit_pattern_31_;
   // 使用std::back_inserter的目的是可以快覆盖掉这个容器pattern之前的数据
+  // NOTE(lee-shun): back_inserter用于在末尾插入元素呀!?
   // 其实这里的操作就是，将在全局变量区域的、int格式的随机采样点以cv::point格式复制到当前类对象中的成员变量中
   std::copy(pattern0, pattern0 + npoints, std::back_inserter(pattern));
+
+  /**
+   * STEP(lee-shun): 计算主方向中要使用的umax
+   * */
+  // (0,0) ---------> u
+  // |
+  // |
+  // |
+  // |
+  // |
+  // v
+  // v
 
   // This is for orientation
   // 下面的内容是和特征点的旋转计算有关的
@@ -1326,12 +1344,12 @@ ORBextractor::ORBextractor(
   // cvFloor返回不大于参数的最大整数值，cvCeil返回不小于参数的最小整数值，cvRound则是四舍五入
   int v,   // 循环辅助变量
       v0,  // 辅助变量
-      vmax = cvFloor(
-          HALF_PATCH_SIZE * sqrt(2.f) / 2 +
-          1);  // 计算圆的最大行号，+1应该是把中间行也给考虑进去了
-               // NOTICE
-               // 注意这里的最大行号指的是计算的时候的最大行号，此行的和圆的角点在45°圆心角的一边上，之所以这样选择
-               // 是因为圆周上的对称特性
+      vmax = cvFloor(HALF_PATCH_SIZE * sqrt(2.f) / 2 + 1);
+  // 计算圆的最大行号，+1应该是把中间行也给考虑进去了
+  // NOTICE
+  // 注意这里的最大行号指的是计算的时候的最大行号，此行的和圆的角点在45°圆心角的一边上，之所以这样选择
+  // 是因为圆周上的对称特性
+  // NOTE(lee-shun): 1/8圆的最大行号
 
   // 这里的二分之根2就是对应那个45°圆心角
 
