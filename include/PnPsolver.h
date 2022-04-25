@@ -72,7 +72,7 @@ namespace ORB_SLAM2 {
 
 /** @brief 相机位姿求解器 */
 class PnPsolver {
-public:
+ public:
   /**
    * @brief 构造函数
    * @param[in] F                   当前要求解位姿的帧
@@ -116,7 +116,7 @@ public:
   cv::Mat iterate(int nIterations, bool &bNoMore, vector<bool> &vbInliers,
                   int &nInliers);
 
-private:
+ private:
   /**
    * @brief 通过之前求解的位姿来进行3D-2D投影，统计内点数目
    *
@@ -348,95 +348,95 @@ private:
    */
   void mat_to_quat(const double R[3][3], double q[4]);
 
-  double uc, vc, fu, fv; // 相机内参
+  double uc, vc, fu, fv;  // 相机内参
 
-  double *pws, // 3D点在世界坐标系下在坐标
-               //   组织形式: x1 y1 z1 | x2 y2 z2 | ...
-      *us,     // 图像坐标系下的2D点坐标
-               //   组织形式: u1 v1 | u2 v2 | ...
-      *alphas, // 真实3D点用4个虚拟控制点表达时的系数
-               //   组织形式: a11 a12 a13 a14 | a21 a22 a23 a24 | ...
-               //   每个匹配点都有自己的a1~a4
-      *pcs;    // 3D点在当前帧相机坐标系下的坐标
-  int maximum_number_of_correspondences; // 每次RANSAC计算的过程中使用的匹配点对数的最大值,其实应该和最小集的大小是完全相同的
-  int number_of_correspondences; // 当前次迭代中,已经采样的匹配点的个数，默认值为4
+  double *pws,  // 3D点在世界坐标系下在坐标
+                //   组织形式: x1 y1 z1 | x2 y2 z2 | ...
+      *us,      // 图像坐标系下的2D点坐标
+                //   组织形式: u1 v1 | u2 v2 | ...
+      *alphas,  // 真实3D点用4个虚拟控制点表达时的系数
+                //   组织形式: a11 a12 a13 a14 | a21 a22 a23 a24 | ...
+                //   每个匹配点都有自己的a1~a4
+      *pcs;     // 3D点在当前帧相机坐标系下的坐标
+  int maximum_number_of_correspondences;  // 每次RANSAC计算的过程中使用的匹配点对数的最大值,其实应该和最小集的大小是完全相同的
+  int number_of_correspondences;  // 当前次迭代中,已经采样的匹配点的个数，默认值为4
 
   double cws
       [4]
-      [3], // 存储控制点在世界坐标系下的坐标，第一维表示是哪个控制点，第二维表示是哪个坐标(x,y,z)
-      ccs[4][3]; // 存储控制点在相机坐标系下的坐标, 含义同上
+      [3],  // 存储控制点在世界坐标系下的坐标，第一维表示是哪个控制点，第二维表示是哪个坐标(x,y,z)
+      ccs[4][3];  // 存储控制点在相机坐标系下的坐标, 含义同上
   double
-      cws_determinant; // 没有被使用到的变量,但是看变量名字,应该是用于存储某个矩阵的行列式值的
+      cws_determinant;  // 没有被使用到的变量,但是看变量名字,应该是用于存储某个矩阵的行列式值的
 
-  vector<MapPoint *> mvpMapPointMatches; // 存储构造的时候给出的地图点
+  vector<MapPoint *> mvpMapPointMatches;  // 存储构造的时候给出的地图点
 
   // 2D Points
   vector<cv::Point2f>
-      mvP2D; // 存储当前帧的2D点,由特征点转换而来,只保存了坐标信息
+      mvP2D;  // 存储当前帧的2D点,由特征点转换而来,只保存了坐标信息
   vector<float>
-      mvSigma2; // 和2D特征点向量下标对应的尺度和不确定性信息(从该特征点所在的金字塔图层有关)
+      mvSigma2;  // 和2D特征点向量下标对应的尺度和不确定性信息(从该特征点所在的金字塔图层有关)
 
   // 3D Points
   vector<cv::Point3f>
-      mvP3Dw; // 存储给出的地图点中有效的地图点(在世界坐标系下的坐标)
+      mvP3Dw;  // 存储给出的地图点中有效的地图点(在世界坐标系下的坐标)
 
   // Index in Frame
   vector<size_t>
-      mvKeyPointIndices; // 记录构造时给出的地图点对应在帧中的特征点的id,这个是"跳跃的"
+      mvKeyPointIndices;  // 记录构造时给出的地图点对应在帧中的特征点的id,这个是"跳跃的"
 
   // Current Estimation
-  double mRi[3][3]; // 在某次RANSAC迭代过程中计算得到的旋转矩阵
-  double mti[3];    // 在某次RANSAC迭代过程中计算得到的平移向量
-  cv::Mat mTcwi;    // 在程序中并没有被使用到的变量
-  vector<bool> mvbInliersi; // 记录每次迭代时的inlier点
-  int mnInliersi;           // 记录每次迭代时的inlier点的数目
+  double mRi[3][3];  // 在某次RANSAC迭代过程中计算得到的旋转矩阵
+  double mti[3];  // 在某次RANSAC迭代过程中计算得到的平移向量
+  cv::Mat mTcwi;  // 在程序中并没有被使用到的变量
+  vector<bool> mvbInliersi;  // 记录每次迭代时的inlier点
+  int mnInliersi;            // 记录每次迭代时的inlier点的数目
 
   // Current Ransac State
-  int mnIterations;            // 历史上已经进行的RANSAC迭代次数
-  vector<bool> mvbBestInliers; // 历史上最好一次迭代时的内点标记
-  int mnBestInliers;           // 历史上的迭代中最多的内点数
-  cv::Mat mBestTcw; // 历史上最佳的一次迭代所计算出来的相机位姿
+  int mnIterations;             // 历史上已经进行的RANSAC迭代次数
+  vector<bool> mvbBestInliers;  // 历史上最好一次迭代时的内点标记
+  int mnBestInliers;            // 历史上的迭代中最多的内点数
+  cv::Mat mBestTcw;  // 历史上最佳的一次迭代所计算出来的相机位姿
 
   // Refined
-  cv::Mat mRefinedTcw;            // 求精之后得到的相机位姿
-  vector<bool> mvbRefinedInliers; // 求精之后的内点标记
-  int mnRefinedInliers;           // 求精之后的内点数
+  cv::Mat mRefinedTcw;             // 求精之后得到的相机位姿
+  vector<bool> mvbRefinedInliers;  // 求精之后的内点标记
+  int mnRefinedInliers;            // 求精之后的内点数
 
   // Number of Correspondences
-  int N; // 就是 mvP2D
-         // 的大小,表示给出帧中和地图点匹配的特征点的个数,也就是匹配的对数(相当于采样的总体)
+  int N;  // 就是 mvP2D
+          // 的大小,表示给出帧中和地图点匹配的特征点的个数,也就是匹配的对数(相当于采样的总体)
 
   // Indices for random selection [0 .. N-1]
   vector<size_t>
-      mvAllIndices; // 记录特征点在当前求解器中的向量中存储的索引,是连续的
-                    // // 存储了供RANSAC过程使用的点的下标
+      mvAllIndices;  // 记录特征点在当前求解器中的向量中存储的索引,是连续的
+                     // // 存储了供RANSAC过程使用的点的下标
 
   // RANSAC probability
   double
-      mRansacProb; // 计算RANSAC迭代次数的理论值的时候用到的概率,和Sim3Slover中的一样
+      mRansacProb;  // 计算RANSAC迭代次数的理论值的时候用到的概率,和Sim3Slover中的一样
 
   // RANSAC min inliers
-  int mRansacMinInliers; // 正常退出RANSAC的时候需要达到的最最少的内点个数f
+  int mRansacMinInliers;  // 正常退出RANSAC的时候需要达到的最最少的内点个数f
 
   // RANSAC max iterations
-  int mRansacMaxIts; // RANSAC的最大迭代次数
+  int mRansacMaxIts;  // RANSAC的最大迭代次数
 
   // RANSAC expected inliers/total ratio
-  float mRansacEpsilon; // RANSAC中,最小内点数占全部点个数的比例
+  float mRansacEpsilon;  // RANSAC中,最小内点数占全部点个数的比例
 
   // RANSAC Threshold inlier/outlier. Max error e = dist(P1,T_12*P2)^2
-  float mRansacTh; // 在程序中并没有使用到的变量
+  float mRansacTh;  // 在程序中并没有使用到的变量
 
   // RANSAC Minimun Set used at each iteration
-  int mRansacMinSet; // 为每次RANSAC需要的特征点数，默认为4组3D-2D对应点.
-                     // 参与到最少内点数的确定过程中
+  int mRansacMinSet;  // 为每次RANSAC需要的特征点数，默认为4组3D-2D对应点.
+                      // 参与到最少内点数的确定过程中
 
   // Max square error associated with scale level. Max error =
   // th*th*sigma(level)*sigma(level)
   vector<float>
-      mvMaxError; // 存储不同图层上的特征点在进行内点验证的时候,使用的不同的距离阈值
+      mvMaxError;  // 存储不同图层上的特征点在进行内点验证的时候,使用的不同的距离阈值
 };
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2
 
-#endif // PNPSOLVER_H
+#endif  // PNPSOLVER_H

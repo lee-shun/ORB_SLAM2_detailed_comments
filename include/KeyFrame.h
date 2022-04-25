@@ -56,7 +56,7 @@ class KeyFrameDatabase;
  *
  */
 class KeyFrame {
-public:
+ public:
   /**
    * @brief 构造函数
    * @param[in] F         父类普通帧的对象
@@ -73,13 +73,13 @@ public:
    * @param[in] Tcw 位姿
    */
   void SetPose(const cv::Mat &Tcw);
-  cv::Mat GetPose();         /// < 获取位姿
-  cv::Mat GetPoseInverse();  /// < 获取位姿的逆
-  cv::Mat GetCameraCenter(); /// < 获取(左目)相机的中心
+  cv::Mat GetPose();          /// < 获取位姿
+  cv::Mat GetPoseInverse();   /// < 获取位姿的逆
+  cv::Mat GetCameraCenter();  /// < 获取(左目)相机的中心
   cv::Mat
-  GetStereoCenter(); /// < 获取双目相机的中心,这个只有在可视化的时候才会用到
-  cv::Mat GetRotation();    /// < 获取姿态
-  cv::Mat GetTranslation(); /// < 获取位置
+  GetStereoCenter();  /// < 获取双目相机的中心,这个只有在可视化的时候才会用到
+  cv::Mat GetRotation();     /// < 获取姿态
+  cv::Mat GetTranslation();  /// < 获取位置
 
   /**
    * @brief Bag of Words Representation
@@ -296,7 +296,7 @@ public:
 
   // The following variables are accesed from only 1 thread or never change (no
   // mutex needed).
-public:
+ public:
   ///  nNextID名字改为nLastID更合适，表示上一个KeyFrame的ID号
   static long unsigned int nNextId;
   ///  在nNextID的基础上加1就得到了mnID，为当前KeyFrame的ID号
@@ -316,9 +316,9 @@ public:
   const float mfGridElementHeightInv;
 
   // Variables used by the tracking
-  long unsigned int mnTrackReferenceForFrame; // 记录它
+  long unsigned int mnTrackReferenceForFrame;  // 记录它
   long unsigned int
-      mnFuseTargetForKF; /// < 标记在局部建图线程中,和哪个关键帧进行融合的操作
+      mnFuseTargetForKF;  /// < 标记在局部建图线程中,和哪个关键帧进行融合的操作
 
   // Variables used by the local mapping
   // local
@@ -363,8 +363,8 @@ public:
   // 和Frame类中的定义相同
   const std::vector<cv::KeyPoint> mvKeys;
   const std::vector<cv::KeyPoint> mvKeysUn;
-  const std::vector<float> mvuRight; // negative value for monocular points
-  const std::vector<float> mvDepth;  // negative value for monocular points
+  const std::vector<float> mvuRight;  // negative value for monocular points
+  const std::vector<float> mvDepth;   // negative value for monocular points
   const cv::Mat mDescriptors;
 
   // BoW
@@ -387,8 +387,8 @@ public:
   const float mfScaleFactor;
   const float mfLogScaleFactor;
   const std::vector<float>
-      mvScaleFactors; // 尺度因子，scale^n，scale=1.2，n为层数
-  const std::vector<float> mvLevelSigma2; // 尺度因子的平方
+      mvScaleFactors;  // 尺度因子，scale^n，scale=1.2，n为层数
+  const std::vector<float> mvLevelSigma2;  // 尺度因子的平方
   const std::vector<float> mvInvLevelSigma2;
 
   ///  Image bounds and calibration
@@ -400,13 +400,14 @@ public:
 
   // The following variables need to be accessed trough a mutex to be thread
   // safe. ---- 但是大哥..protected也不是这样设计使用的啊
-protected:
+ protected:
   // SE3 Pose and camera center
-  cv::Mat Tcw; // 当前相机的位姿，世界坐标系到相机坐标系
-  cv::Mat Twc; // 当前相机位姿的逆
-  cv::Mat Ow; // 相机光心(左目)在世界坐标系下的坐标,这里和普通帧中的定义是一样的
+  cv::Mat Tcw;  // 当前相机的位姿，世界坐标系到相机坐标系
+  cv::Mat Twc;  // 当前相机位姿的逆
+  cv::Mat
+      Ow;  // 相机光心(左目)在世界坐标系下的坐标,这里和普通帧中的定义是一样的
 
-  cv::Mat Cw; /// < Stereo middel point. Only for visualization
+  cv::Mat Cw;  /// < Stereo middel point. Only for visualization
 
   ///  MapPoints associated to keypoints
   std::vector<MapPoint *> mvpMapPoints;
@@ -430,20 +431,20 @@ protected:
 
   // ===================== Spanning Tree and Loop Edges ========================
   // std::set是集合，相比vector，进行插入数据这样的操作时会自动排序
-  bool mbFirstConnection; // 是否是第一次生成树
-  KeyFrame *mpParent; // 当前关键帧的父关键帧 （共视程度最高的）
-  std::set<KeyFrame *> mspChildrens; // 存储当前关键帧的子关键帧
-  std::set<KeyFrame *> mspLoopEdges; // 和当前关键帧形成回环关系的关键帧
+  bool mbFirstConnection;  // 是否是第一次生成树
+  KeyFrame *mpParent;  // 当前关键帧的父关键帧 （共视程度最高的）
+  std::set<KeyFrame *> mspChildrens;  // 存储当前关键帧的子关键帧
+  std::set<KeyFrame *> mspLoopEdges;  // 和当前关键帧形成回环关系的关键帧
 
   // Bad flags
   bool
-      mbNotErase; /// <
-                  /// 当前关键帧已经和其他的关键帧形成了回环关系，因此在各种优化的过程中不应该被删除
-  bool mbToBeErased; /// <
-  bool mbBad;        /// <
+      mbNotErase;  /// <
+                   /// 当前关键帧已经和其他的关键帧形成了回环关系，因此在各种优化的过程中不应该被删除
+  bool mbToBeErased;  /// <
+  bool mbBad;         /// <
 
-  float mHalfBaseline; /// < 对于双目相机来说,双目相机基线长度的一半. Only for
-                       /// < visualization
+  float mHalfBaseline;  /// < 对于双目相机来说,双目相机基线长度的一半. Only for
+                        /// < visualization
 
   Map *mpMap;
 
@@ -455,6 +456,6 @@ protected:
   std::mutex mMutexFeatures;
 };
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2
 
-#endif // KEYFRAME_H
+#endif  // KEYFRAME_H

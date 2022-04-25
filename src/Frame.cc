@@ -57,29 +57,35 @@ Frame::Frame(const Frame &frame)
     : mpORBvocabulary(frame.mpORBvocabulary),
       mpORBextractorLeft(frame.mpORBextractorLeft),
       mpORBextractorRight(frame.mpORBextractorRight),
-      mTimeStamp(frame.mTimeStamp), mK(frame.mK.clone()), // 深拷贝
-      mDistCoef(frame.mDistCoef.clone()),                 // 深拷贝
-      mbf(frame.mbf), mb(frame.mb), mThDepth(frame.mThDepth), N(frame.N),
+      mTimeStamp(frame.mTimeStamp),
+      mK(frame.mK.clone()),                // 深拷贝
+      mDistCoef(frame.mDistCoef.clone()),  // 深拷贝
+      mbf(frame.mbf),
+      mb(frame.mb),
+      mThDepth(frame.mThDepth),
+      N(frame.N),
       mvKeys(
           frame
-              .mvKeys), // 经过实验，确定这种通过同类型对象初始化的操作是具有深拷贝的效果的
-      mvKeysRight(frame.mvKeysRight),                     // 深拷贝
-      mvKeysUn(frame.mvKeysUn),                           // 深拷贝
-      mvuRight(frame.mvuRight),                           // 深拷贝
-      mvDepth(frame.mvDepth),                             // 深拷贝
-      mBowVec(frame.mBowVec),                             // 深拷贝
-      mFeatVec(frame.mFeatVec),                           // 深拷贝
-      mDescriptors(frame.mDescriptors.clone()),           // cv::Mat深拷贝
-      mDescriptorsRight(frame.mDescriptorsRight.clone()), // cv::Mat深拷贝
-      mvpMapPoints(frame.mvpMapPoints),                   // 深拷贝
-      mvbOutlier(frame.mvbOutlier),                       // 深拷贝
-      mnId(frame.mnId), mpReferenceKF(frame.mpReferenceKF),
-      mnScaleLevels(frame.mnScaleLevels), mfScaleFactor(frame.mfScaleFactor),
+              .mvKeys),  // 经过实验，确定这种通过同类型对象初始化的操作是具有深拷贝的效果的
+      mvKeysRight(frame.mvKeysRight),                      // 深拷贝
+      mvKeysUn(frame.mvKeysUn),                            // 深拷贝
+      mvuRight(frame.mvuRight),                            // 深拷贝
+      mvDepth(frame.mvDepth),                              // 深拷贝
+      mBowVec(frame.mBowVec),                              // 深拷贝
+      mFeatVec(frame.mFeatVec),                            // 深拷贝
+      mDescriptors(frame.mDescriptors.clone()),            // cv::Mat深拷贝
+      mDescriptorsRight(frame.mDescriptorsRight.clone()),  // cv::Mat深拷贝
+      mvpMapPoints(frame.mvpMapPoints),                    // 深拷贝
+      mvbOutlier(frame.mvbOutlier),                        // 深拷贝
+      mnId(frame.mnId),
+      mpReferenceKF(frame.mpReferenceKF),
+      mnScaleLevels(frame.mnScaleLevels),
+      mfScaleFactor(frame.mfScaleFactor),
       mfLogScaleFactor(frame.mfLogScaleFactor),
-      mvScaleFactors(frame.mvScaleFactors),       // 深拷贝
-      mvInvScaleFactors(frame.mvInvScaleFactors), // 深拷贝
-      mvLevelSigma2(frame.mvLevelSigma2),         // 深拷贝
-      mvInvLevelSigma2(frame.mvInvLevelSigma2)    // 深拷贝
+      mvScaleFactors(frame.mvScaleFactors),        // 深拷贝
+      mvInvScaleFactors(frame.mvInvScaleFactors),  // 深拷贝
+      mvLevelSigma2(frame.mvLevelSigma2),          // 深拷贝
+      mvInvLevelSigma2(frame.mvInvLevelSigma2)     // 深拷贝
 {
   // 逐个复制，其实这里也是深拷贝
   for (int i = 0; i < FRAME_GRID_COLS; i++)
@@ -113,9 +119,14 @@ Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight,
              const double &timeStamp, ORBextractor *extractorLeft,
              ORBextractor *extractorRight, ORBVocabulary *voc, cv::Mat &K,
              cv::Mat &distCoef, const float &bf, const float &thDepth)
-    : mpORBvocabulary(voc), mpORBextractorLeft(extractorLeft),
-      mpORBextractorRight(extractorRight), mTimeStamp(timeStamp), mK(K.clone()),
-      mDistCoef(distCoef.clone()), mbf(bf), mThDepth(thDepth),
+    : mpORBvocabulary(voc),
+      mpORBextractorLeft(extractorLeft),
+      mpORBextractorRight(extractorRight),
+      mTimeStamp(timeStamp),
+      mK(K.clone()),
+      mDistCoef(distCoef.clone()),
+      mbf(bf),
+      mThDepth(thDepth),
       mpReferenceKF(static_cast<KeyFrame *>(NULL)) {
   // Step 1 帧的ID 自增
   mnId = nNextId++;
@@ -139,10 +150,10 @@ Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight,
   // ORB extraction
   // Step 3 对左目右目图像提取ORB特征点, 第一个参数0-左图，
   // 1-右图。为加速计算，同时开了两个线程计算
-  thread threadLeft(&Frame::ExtractORB, // 该线程的主函数
-                    this,               // 当前帧对象的对象指针
-                    0,                  // 表示是左图图像
-                    imLeft);            // 图像数据
+  thread threadLeft(&Frame::ExtractORB,  // 该线程的主函数
+                    this,                // 当前帧对象的对象指针
+                    0,                   // 表示是左图图像
+                    imLeft);             // 图像数据
   // 对右目图像提取ORB特征，参数含义同上
   thread threadRight(&Frame::ExtractORB, this, 1, imRight);
   // 等待两张图像特征点提取过程完成
@@ -153,8 +164,7 @@ Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight,
   N = mvKeys.size();
 
   // 如果左图像中没有成功提取到特征点那么就返回，也意味这这一帧的图像无法使用
-  if (mvKeys.empty())
-    return;
+  if (mvKeys.empty()) return;
 
   // Step 4 用OpenCV的矫正函数、内参对提取到的特征点进行矫正
   // 实际上由于双目输入的图像已经预先经过矫正,所以实际上并没有对特征点进行任何处理操作
@@ -222,10 +232,14 @@ Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth,
              const double &timeStamp, ORBextractor *extractor,
              ORBVocabulary *voc, cv::Mat &K, cv::Mat &distCoef, const float &bf,
              const float &thDepth)
-    : mpORBvocabulary(voc), mpORBextractorLeft(extractor),
+    : mpORBvocabulary(voc),
+      mpORBextractorLeft(extractor),
       mpORBextractorRight(static_cast<ORBextractor *>(NULL)),
-      mTimeStamp(timeStamp), mK(K.clone()), mDistCoef(distCoef.clone()),
-      mbf(bf), mThDepth(thDepth) {
+      mTimeStamp(timeStamp),
+      mK(K.clone()),
+      mDistCoef(distCoef.clone()),
+      mbf(bf),
+      mThDepth(thDepth) {
   // Step 1 帧的ID 自增
   mnId = nNextId++;
 
@@ -256,8 +270,7 @@ Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth,
   N = mvKeys.size();
 
   // 如果这一帧没有能够提取出特征点，那么就直接返回了
-  if (mvKeys.empty())
-    return;
+  if (mvKeys.empty()) return;
 
   // Step 4 用OpenCV的矫正函数、内参对提取到的特征点进行矫正
   UndistortKeyPoints();
@@ -321,10 +334,14 @@ Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth,
 Frame::Frame(const cv::Mat &imGray, const double &timeStamp,
              ORBextractor *extractor, ORBVocabulary *voc, cv::Mat &K,
              cv::Mat &distCoef, const float &bf, const float &thDepth)
-    : mpORBvocabulary(voc), mpORBextractorLeft(extractor),
+    : mpORBvocabulary(voc),
+      mpORBextractorLeft(extractor),
       mpORBextractorRight(static_cast<ORBextractor *>(NULL)),
-      mTimeStamp(timeStamp), mK(K.clone()), mDistCoef(distCoef.clone()),
-      mbf(bf), mThDepth(thDepth) {
+      mTimeStamp(timeStamp),
+      mK(K.clone()),
+      mDistCoef(distCoef.clone()),
+      mbf(bf),
+      mThDepth(thDepth) {
   // Frame ID
   // Step 1 帧的ID 自增
   mnId = nNextId++;
@@ -354,8 +371,7 @@ Frame::Frame(const cv::Mat &imGray, const double &timeStamp,
   N = mvKeys.size();
 
   // 如果没有能够成功提取出特征点，那么就直接返回了
-  if (mvKeys.empty())
-    return;
+  if (mvKeys.empty()) return;
 
   // Step 4 用OpenCV的矫正函数、内参对提取到的特征点进行矫正
   UndistortKeyPoints();
@@ -447,10 +463,10 @@ void Frame::ExtractORB(int flag, const cv::Mat &im) {
   if (flag == 0)
     // 左图的话就套使用左图指定的特征点提取器，并将提取结果保存到对应的变量中
     // 这里使用了仿函数来完成，重载了括号运算符 ORBextractor::operator()
-    (*mpORBextractorLeft)(im,        // 待提取特征点的图像
-                          cv::Mat(), // 掩摸图像, 实际没有用到
-                          mvKeys, // 输出变量，用于保存提取后的特征点
-                          mDescriptors); // 输出变量，用于保存特征点的描述子
+    (*mpORBextractorLeft)(im,         // 待提取特征点的图像
+                          cv::Mat(),  // 掩摸图像, 实际没有用到
+                          mvKeys,  // 输出变量，用于保存提取后的特征点
+                          mDescriptors);  // 输出变量，用于保存特征点的描述子
   else
     // 右图的话就需要使用右图指定的特征点提取器，并将提取结果保存到对应的变量中
     (*mpORBextractorRight)(im, cv::Mat(), mvKeysRight, mDescriptorsRight);
@@ -526,8 +542,7 @@ bool Frame::isInFrustum(MapPoint *pMP, float viewingCosLimit) {
   // Check positive depth
   // Step 2
   // 关卡一：将这个地图点变换到当前帧的相机坐标系下，如果深度值为正才能继续下一步。
-  if (PcZ < 0.0f)
-    return false;
+  if (PcZ < 0.0f) return false;
 
   // Project in image and check it is not outside
   // Step 3
@@ -537,10 +552,8 @@ bool Frame::isInFrustum(MapPoint *pMP, float viewingCosLimit) {
   const float v = fy * PcY * invz + cy;
 
   // 判断是否在图像边界中，只要不在那么就说明无法在当前帧下进行重投影
-  if (u < mnMinX || u > mnMaxX)
-    return false;
-  if (v < mnMinY || v > mnMaxY)
-    return false;
+  if (u < mnMinX || u > mnMaxX) return false;
+  if (v < mnMinY || v > mnMaxY) return false;
 
   // Check distance is in the scale invariance region of the MapPoint
   // Step 4
@@ -556,8 +569,7 @@ bool Frame::isInFrustum(MapPoint *pMP, float viewingCosLimit) {
   const float dist = cv::norm(PO);
 
   // 如果不在有效范围内，认为投影不可靠
-  if (dist < minDistance || dist > maxDistance)
-    return false;
+  if (dist < minDistance || dist > maxDistance) return false;
 
   // Check viewing angle
   // Step 5
@@ -568,13 +580,12 @@ bool Frame::isInFrustum(MapPoint *pMP, float viewingCosLimit) {
   const float viewCos = PO.dot(Pn) / dist;
 
   // 夹角要在60°范围内，否则认为观测方向太偏了，重投影不可靠，返回false
-  if (viewCos < viewingCosLimit)
-    return false;
+  if (viewCos < viewingCosLimit) return false;
 
   // Predict scale in the image
   // Step 6 根据地图点到光心的距离来预测一个尺度（仿照特征点金字塔层级）
-  const int nPredictedLevel = pMP->PredictScale(dist, // 这个点到光心的距离
-                                                this); // 给出这个帧
+  const int nPredictedLevel = pMP->PredictScale(dist,  // 这个点到光心的距离
+                                                this);  // 给出这个帧
   // Step 7 记录计算得到的一些参数
   // Data used by the tracking
   // 通过置位标记 MapPoint::mbTrackInView 来表示这个地图点要被投影
@@ -629,28 +640,24 @@ vector<size_t> Frame::GetFeaturesInArea(const float &x, const float &y,
       max(0, (int)floor((x - mnMinX - r) * mfGridElementWidthInv));
 
   // 如果最终求得的圆的左边界所在的网格列超过了设定了上限，那么就说明计算出错，找不到符合要求的特征点，返回空vector
-  if (nMinCellX >= FRAME_GRID_COLS)
-    return vIndices;
+  if (nMinCellX >= FRAME_GRID_COLS) return vIndices;
 
   // 计算圆所在的右边界网格列索引
   const int nMaxCellX =
       min((int)FRAME_GRID_COLS - 1,
           (int)ceil((x - mnMinX + r) * mfGridElementWidthInv));
   // 如果计算出的圆右边界所在的网格不合法，说明该特征点不好，直接返回空vector
-  if (nMaxCellX < 0)
-    return vIndices;
+  if (nMaxCellX < 0) return vIndices;
 
   // 后面的操作也都是类似的，计算出这个圆上下边界所在的网格行的id
   const int nMinCellY =
       max(0, (int)floor((y - mnMinY - r) * mfGridElementHeightInv));
-  if (nMinCellY >= FRAME_GRID_ROWS)
-    return vIndices;
+  if (nMinCellY >= FRAME_GRID_ROWS) return vIndices;
 
   const int nMaxCellY =
       min((int)FRAME_GRID_ROWS - 1,
           (int)ceil((y - mnMinY + r) * mfGridElementHeightInv));
-  if (nMaxCellY < 0)
-    return vIndices;
+  if (nMaxCellY < 0) return vIndices;
 
   // 检查需要搜索的图像金字塔层数范围是否符合要求
   // ? 疑似bug。(minLevel>0) 后面条件 (maxLevel>=0)肯定成立
@@ -664,8 +671,7 @@ vector<size_t> Frame::GetFeaturesInArea(const float &x, const float &y,
       // 获取这个网格内的所有特征点在 Frame::mvKeysUn 中的索引
       const vector<size_t> vCell = mGrid[ix][iy];
       // 如果这个网格中没有特征点，那么跳过这个网格继续下一个
-      if (vCell.empty())
-        continue;
+      if (vCell.empty()) continue;
 
       // 如果这个网格中有特征点，那么遍历这个图像网格中所有的特征点
       for (size_t j = 0, jend = vCell.size(); j < jend; j++) {
@@ -675,11 +681,9 @@ vector<size_t> Frame::GetFeaturesInArea(const float &x, const float &y,
         if (bCheckLevels) {
           // cv::KeyPoint::octave中表示的是从金字塔的哪一层提取的数据
           // 保证特征点是在金字塔层级minLevel和maxLevel之间，不是的话跳过
-          if (kpUn.octave < minLevel)
-            continue;
-          if (maxLevel >= 0) // ? 为何特意又强调？感觉多此一举
-            if (kpUn.octave > maxLevel)
-              continue;
+          if (kpUn.octave < minLevel) continue;
+          if (maxLevel >= 0)  // ? 为何特意又强调？感觉多此一举
+            if (kpUn.octave > maxLevel) continue;
         }
 
         // 通过检查，计算候选特征点到圆中心的距离，查看是否是在这个圆形区域之内
@@ -687,8 +691,7 @@ vector<size_t> Frame::GetFeaturesInArea(const float &x, const float &y,
         const float disty = kpUn.pt.y - y;
 
         // 如果x方向和y方向的距离都在指定的半径之内，存储其index为候选特征点
-        if (fabs(distx) < r && fabs(disty) < r)
-          vIndices.push_back(vCell[j]);
+        if (fabs(distx) < r && fabs(disty) < r) vIndices.push_back(vCell[j]);
       }
     }
   }
@@ -730,17 +733,16 @@ bool Frame::PosInGrid(const cv::KeyPoint &kp, int &posX, int &posY) {
  *
  */
 void Frame::ComputeBoW() {
-
   // 判断是否以前已经计算过了，计算过了就跳过
   if (mBowVec.empty()) {
     // 将描述子mDescriptors转换为DBOW要求的输入格式
     vector<cv::Mat> vCurrentDesc = Converter::toDescriptorVector(mDescriptors);
     // 将特征点的描述子转换成词袋向量mBowVec以及特征向量mFeatVec
     mpORBvocabulary->transform(
-        vCurrentDesc, // 当前的描述子vector
-        mBowVec, // 输出，词袋向量，记录的是单词的id及其对应权重TF-IDF值
-        mFeatVec, // 输出，记录node id及其对应的图像 feature对应的索引
-        4); // 4表示从叶节点向前数的层数
+        vCurrentDesc,  // 当前的描述子vector
+        mBowVec,  // 输出，词袋向量，记录的是单词的id及其对应权重TF-IDF值
+        mFeatVec,  // 输出，记录node id及其对应的图像 feature对应的索引
+        4);  // 4表示从叶节点向前数的层数
   }
 }
 
@@ -773,12 +775,12 @@ void Frame::UndistortKeyPoints() {
   // 其中cn为更改后的通道数，rows=0表示这个行将保持原来的参数不变
   // 为了能够直接调用opencv的函数来去畸变，需要先将矩阵调整为2通道（对应坐标x,y）
   mat = mat.reshape(2);
-  cv::undistortPoints(mat, // 输入的特征点坐标
-                      mat, // 输出的校正后的特征点坐标覆盖原矩阵
-                      mK,  // 相机的内参数矩阵
-                      mDistCoef, // 相机畸变参数矩阵
-                      cv::Mat(), // 一个空矩阵，对应为函数原型中的R
-                      mK); // 新内参数矩阵，对应为函数原型中的P
+  cv::undistortPoints(mat,  // 输入的特征点坐标
+                      mat,  // 输出的校正后的特征点坐标覆盖原矩阵
+                      mK,         // 相机的内参数矩阵
+                      mDistCoef,  // 相机畸变参数矩阵
+                      cv::Mat(),  // 一个空矩阵，对应为函数原型中的R
+                      mK);  // 新内参数矩阵，对应为函数原型中的P
 
   // 调整回只有一个通道，回归我们正常的处理方式
   mat = mat.reshape(1);
@@ -808,13 +810,13 @@ void Frame::ComputeImageBounds(const cv::Mat &imLeft) {
   if (mDistCoef.at<float>(0) != 0.0) {
     // 保存矫正前的图像四个边界点坐标： (0,0) (cols,0) (0,rows) (cols,rows)
     cv::Mat mat(4, 2, CV_32F);
-    mat.at<float>(0, 0) = 0.0; // 左上
+    mat.at<float>(0, 0) = 0.0;  // 左上
     mat.at<float>(0, 1) = 0.0;
-    mat.at<float>(1, 0) = imLeft.cols; // 右上
+    mat.at<float>(1, 0) = imLeft.cols;  // 右上
     mat.at<float>(1, 1) = 0.0;
-    mat.at<float>(2, 0) = 0.0; // 左下
+    mat.at<float>(2, 0) = 0.0;  // 左下
     mat.at<float>(2, 1) = imLeft.rows;
-    mat.at<float>(3, 0) = imLeft.cols; // 右下
+    mat.at<float>(3, 0) = imLeft.cols;  // 右下
     mat.at<float>(3, 1) = imLeft.rows;
 
     // Undistort corners
@@ -824,14 +826,14 @@ void Frame::ComputeImageBounds(const cv::Mat &imLeft) {
     mat = mat.reshape(1);
 
     // 校正后的四个边界点已经不能够围成一个严格的矩形，因此在这个四边形的外侧加边框作为坐标的边界
-    mnMinX =
-        min(mat.at<float>(0, 0), mat.at<float>(2, 0)); // 左上和左下横坐标最小的
-    mnMaxX =
-        max(mat.at<float>(1, 0), mat.at<float>(3, 0)); // 右上和右下横坐标最大的
-    mnMinY =
-        min(mat.at<float>(0, 1), mat.at<float>(1, 1)); // 左上和右上纵坐标最小的
-    mnMaxY =
-        max(mat.at<float>(2, 1), mat.at<float>(3, 1)); // 左下和右下纵坐标最小的
+    mnMinX = min(mat.at<float>(0, 0),
+                 mat.at<float>(2, 0));  // 左上和左下横坐标最小的
+    mnMaxX = max(mat.at<float>(1, 0),
+                 mat.at<float>(3, 0));  // 右上和右下横坐标最大的
+    mnMinY = min(mat.at<float>(0, 1),
+                 mat.at<float>(1, 1));  // 左上和右上纵坐标最小的
+    mnMaxY = max(mat.at<float>(2, 1),
+                 mat.at<float>(3, 1));  // 左下和右下纵坐标最小的
   } else {
     // 如果畸变参数为0，就直接获得图像边界
     mnMinX = 0.0f;
@@ -889,8 +891,7 @@ void Frame::ComputeStereoMatches() {
   // 第1行有5个特征点,他们的列号（即x坐标）分别是1,2,5,8,11 vRowIndices[1] =
   // [2，6，7，9, 13, 17, 20]  第2行有7个特征点.etc
   vector<vector<size_t>> vRowIndices(nRows, vector<size_t>());
-  for (int i = 0; i < nRows; i++)
-    vRowIndices[i].reserve(200);
+  for (int i = 0; i < nRows; i++) vRowIndices[i].reserve(200);
 
   // 右图特征点数量，N表示数量 r表示右图，且不能被修改
   const int Nr = mvKeysRight.size();
@@ -898,7 +899,6 @@ void Frame::ComputeStereoMatches() {
   // Step 1. 行特征点统计。
   // 考虑用图像金字塔尺度作为偏移，左图中对应右图的一个特征点可能存在于多行，而非唯一的一行
   for (int iR = 0; iR < Nr; iR++) {
-
     // 获取特征点ir的y坐标，即行号
     const cv::KeyPoint &kp = mvKeysRight[iR];
     const float &kpY = kp.pt.y;
@@ -911,8 +911,7 @@ void Frame::ComputeStereoMatches() {
     const int minr = floor(kpY - r);
 
     // 将特征点ir保证在可能的行号中
-    for (int yi = minr; yi <= maxr; yi++)
-      vRowIndices[yi].push_back(iR);
+    for (int yi = minr; yi <= maxr; yi++) vRowIndices[yi].push_back(iR);
   }
 
   // 下面是 粗匹配 + 精匹配的过程
@@ -922,8 +921,8 @@ void Frame::ComputeStereoMatches() {
   // baseline * length_focal / maxZ
 
   const float minZ = mb;
-  const float minD = 0;          // 最小视差为0，对应无穷远
-  const float maxD = mbf / minZ; // 最大视差对应的距离是相机的基线
+  const float minD = 0;           // 最小视差为0，对应无穷远
+  const float maxD = mbf / minZ;  // 最大视差对应的距离是相机的基线
 
   // 保存sad块匹配相似度和左图特征点索引
   vector<pair<int, int>> vDistIdx;
@@ -931,7 +930,6 @@ void Frame::ComputeStereoMatches() {
 
   // 为左图每一个特征点il，在右图搜索最相似的特征点ir
   for (int iL = 0; iL < N; iL++) {
-
     const cv::KeyPoint &kpL = mvKeys[iL];
     const int &levelL = kpL.octave;
     const float &vL = kpL.pt.y;
@@ -939,16 +937,14 @@ void Frame::ComputeStereoMatches() {
 
     // 获取左图特征点il所在行，以及在右图对应行中可能的匹配点
     const vector<size_t> &vCandidates = vRowIndices[vL];
-    if (vCandidates.empty())
-      continue;
+    if (vCandidates.empty()) continue;
 
     // 计算理论上的最佳搜索范围
     const float minU = uL - maxD;
     const float maxU = uL - minD;
 
     // 最大搜索范围小于0，说明无匹配点
-    if (maxU < 0)
-      continue;
+    if (maxU < 0) continue;
 
     // 初始化最佳相似度，用最大相似度，以及最佳匹配点索引
     int bestDist = ORBmatcher::TH_HIGH;
@@ -958,20 +954,17 @@ void Frame::ComputeStereoMatches() {
     // Step 2.
     // 粗配准。左图特征点il与右图中的可能的匹配点进行逐个比较,得到最相似匹配点的描述子距离和索引
     for (size_t iC = 0; iC < vCandidates.size(); iC++) {
-
       const size_t iR = vCandidates[iC];
       const cv::KeyPoint &kpR = mvKeysRight[iR];
 
       // 左图特征点il与待匹配点ic的空间尺度差超过2，放弃
-      if (kpR.octave < levelL - 1 || kpR.octave > levelL + 1)
-        continue;
+      if (kpR.octave < levelL - 1 || kpR.octave > levelL + 1) continue;
 
       // 使用列坐标(x)进行匹配，和stereomatch一样
       const float &uR = kpR.pt.x;
 
       // 超出理论搜索范围[minU, maxU]，可能是误匹配，放弃
       if (uR >= minU && uR <= maxU) {
-
         // 计算匹配点il和待匹配点ic的相似度dist
         const cv::Mat &dR = mDescriptorsRight.row(iR);
         const int dist = ORBmatcher::DescriptorDistance(dL, dR);
@@ -1039,7 +1032,6 @@ void Frame::ComputeStereoMatches() {
 
       // 在搜索范围内从左到右滑动，并计算图像块相似度
       for (int incR = -L; incR <= +L; incR++) {
-
         // 提取右图中，以特征点(scaleduL,scaledvL)为中心, 半径为w的图像快patch
         cv::Mat IR =
             mpORBextractorRight->mvImagePyramid[kpL.octave]
@@ -1064,8 +1056,7 @@ void Frame::ComputeStereoMatches() {
       }
 
       // 搜索窗口越界判断
-      if (bestincR == -L || bestincR == L)
-        continue;
+      if (bestincR == -L || bestincR == L) continue;
 
       // Step 4. 亚像素插值,
       // 使用最佳匹配点及其左右相邻点构成抛物线来得到最小sad的亚像素坐标
@@ -1087,8 +1078,7 @@ void Frame::ComputeStereoMatches() {
           (dist1 - dist3) / (2.0f * (dist1 + dist3 - 2.0f * dist2));
 
       // 亚像素精度的修正量应该是在[-1,1]之间，否则就是误匹配
-      if (deltaR < -1 || deltaR > 1)
-        continue;
+      if (deltaR < -1 || deltaR > 1) continue;
 
       // 根据亚像素精度偏移量delta调整最佳匹配索引
       float bestuR = mvScaleFactors[kpL.octave] *
@@ -1130,7 +1120,7 @@ void Frame::ComputeStereoMatches() {
 }
 
 // 计算RGBD图像的立体深度信息
-void Frame::ComputeStereoFromRGBD(const cv::Mat &imDepth) // 参数是深度图像
+void Frame::ComputeStereoFromRGBD(const cv::Mat &imDepth)  // 参数是深度图像
 {
   /** 主要步骤如下:.对于彩色图像中的每一个特征点:<ul>  */
   // mvDepth直接由depth图像读取`
@@ -1167,9 +1157,9 @@ void Frame::ComputeStereoFromRGBD(const cv::Mat &imDepth) // 参数是深度图�
       // TODO
       // 话说为什么要计算这个嘞，计算出来之后有什么用?可能是为了保持计算一致
       mvuRight[i] = kpU.pt.x - mbf / d;
-    } // 如果获取到的深度点合法
-  }   // 开始遍历彩色图像中的所有特征点
-      /** </ul> */
+    }  // 如果获取到的深度点合法
+  }    // 开始遍历彩色图像中的所有特征点
+       /** </ul> */
 }
 
 // 当某个特征点的深度信息或者双目信息有效时,将它反投影到三维世界坐标系中
@@ -1213,4 +1203,4 @@ cv::Mat Frame::UnprojectStereo(const int &i) {
   /** </ul> */
 }
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2

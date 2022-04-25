@@ -43,7 +43,7 @@ namespace ORB_SLAM2 {
 // 构造函数
 KeyFrameDatabase::KeyFrameDatabase(const ORBVocabulary &voc) : mpVoc(&voc) {
   // 数据库的主要内容了
-  mvInvertedFile.resize(voc.size()); // number of words
+  mvInvertedFile.resize(voc.size());  // number of words
 }
 
 /**
@@ -92,8 +92,9 @@ void KeyFrameDatabase::erase(KeyFrame *pKF) {
 
 // 清空关键帧数据库
 void KeyFrameDatabase::clear() {
-  mvInvertedFile.clear(); // mvInvertedFile[i]表示包含了第i个word id的所有关键帧
-  mvInvertedFile.resize(mpVoc->size()); // mpVoc：预先训练好的词典
+  mvInvertedFile
+      .clear();  // mvInvertedFile[i]表示包含了第i个word id的所有关键帧
+  mvInvertedFile.resize(mpVoc->size());  // mpVoc：预先训练好的词典
 }
 
 /**
@@ -146,14 +147,13 @@ vector<KeyFrame *> KeyFrameDatabase::DetectLoopCandidates(KeyFrame *pKF,
             lKFsSharingWords.push_back(pKFi);
           }
         }
-        pKFi->mnLoopWords++; // 记录pKFi与pKF具有相同word的个数
+        pKFi->mnLoopWords++;  // 记录pKFi与pKF具有相同word的个数
       }
     }
   }
 
   // 如果没有关键帧和这个关键帧具有相同的单词,那么就返回空
-  if (lKFsSharingWords.empty())
-    return vector<KeyFrame *>();
+  if (lKFsSharingWords.empty()) return vector<KeyFrame *>();
 
   list<pair<float, KeyFrame *>> lScoreAndMatch;
 
@@ -183,20 +183,18 @@ vector<KeyFrame *> KeyFrameDatabase::DetectLoopCandidates(KeyFrame *pKF,
 
     // pKF只和具有共同单词较多（大于minCommonWords）的关键帧进行比较
     if (pKFi->mnLoopWords > minCommonWords) {
-      nscores++; // 这个变量后面没有用到
+      nscores++;  // 这个变量后面没有用到
 
       // 用mBowVec来计算两者的相似度得分
       float si = mpVoc->score(pKF->mBowVec, pKFi->mBowVec);
 
       pKFi->mLoopScore = si;
-      if (si >= minScore)
-        lScoreAndMatch.push_back(make_pair(si, pKFi));
+      if (si >= minScore) lScoreAndMatch.push_back(make_pair(si, pKFi));
     }
   }
 
   // 如果没有超过指定相似度阈值的，那么也就直接跳过去
-  if (lScoreAndMatch.empty())
-    return vector<KeyFrame *>();
+  if (lScoreAndMatch.empty()) return vector<KeyFrame *>();
 
   list<pair<float, KeyFrame *>> lAccScoreAndMatch;
   float bestAccScore = minScore;
@@ -211,9 +209,9 @@ vector<KeyFrame *> KeyFrameDatabase::DetectLoopCandidates(KeyFrame *pKF,
     KeyFrame *pKFi = it->second;
     vector<KeyFrame *> vpNeighs = pKFi->GetBestCovisibilityKeyFrames(10);
 
-    float bestScore = it->first; // 该组最高分数
-    float accScore = it->first;  // 该组累计得分
-    KeyFrame *pBestKF = pKFi;    // 该组最高分数对应的关键帧
+    float bestScore = it->first;  // 该组最高分数
+    float accScore = it->first;   // 该组累计得分
+    KeyFrame *pBestKF = pKFi;     // 该组最高分数对应的关键帧
     // 遍历共视关键帧，累计得分
     for (vector<KeyFrame *>::iterator vit = vpNeighs.begin(),
                                       vend = vpNeighs.end();
@@ -233,8 +231,7 @@ vector<KeyFrame *> KeyFrameDatabase::DetectLoopCandidates(KeyFrame *pKF,
 
     lAccScoreAndMatch.push_back(make_pair(accScore, pBestKF));
     // 记录所有组中组得分最高的组，用于确定相对阈值
-    if (accScore > bestAccScore)
-      bestAccScore = accScore;
+    if (accScore > bestAccScore) bestAccScore = accScore;
   }
 
   // Return all those keyframes with a score higher than 0.75*bestScore
@@ -302,8 +299,7 @@ vector<KeyFrame *> KeyFrameDatabase::DetectRelocalizationCandidates(Frame *F) {
     }
   }
   // 如果和当前帧具有公共单词的关键帧数目为0，无法进行重定位，返回空
-  if (lKFsSharingWords.empty())
-    return vector<KeyFrame *>();
+  if (lKFsSharingWords.empty()) return vector<KeyFrame *>();
 
   // Only compare against those keyframes that share enough words
   // Step
@@ -333,7 +329,7 @@ vector<KeyFrame *> KeyFrameDatabase::DetectRelocalizationCandidates(Frame *F) {
 
     // 当前帧F只和具有共同单词较多（大于minCommonWords）的关键帧进行比较
     if (pKFi->mnRelocWords > minCommonWords) {
-      nscores++; // 这个变量后面没有用到
+      nscores++;  // 这个变量后面没有用到
       // 用mBowVec来计算两者的相似度得分
       float si = mpVoc->score(F->mBowVec, pKFi->mBowVec);
       pKFi->mRelocScore = si;
@@ -341,8 +337,7 @@ vector<KeyFrame *> KeyFrameDatabase::DetectRelocalizationCandidates(Frame *F) {
     }
   }
 
-  if (lScoreAndMatch.empty())
-    return vector<KeyFrame *>();
+  if (lScoreAndMatch.empty()) return vector<KeyFrame *>();
 
   list<pair<float, KeyFrame *>> lAccScoreAndMatch;
   float bestAccScore = 0;
@@ -369,8 +364,7 @@ vector<KeyFrame *> KeyFrameDatabase::DetectRelocalizationCandidates(Frame *F) {
                                       vend = vpNeighs.end();
          vit != vend; vit++) {
       KeyFrame *pKF2 = *vit;
-      if (pKF2->mnRelocQuery != F->mnId)
-        continue;
+      if (pKF2->mnRelocQuery != F->mnId) continue;
       // 只有pKF2也在重定位候选帧中，才能贡献分数
       accScore += pKF2->mRelocScore;
 
@@ -384,8 +378,7 @@ vector<KeyFrame *> KeyFrameDatabase::DetectRelocalizationCandidates(Frame *F) {
     lAccScoreAndMatch.push_back(make_pair(accScore, pBestKF));
 
     // 记录所有组中最高的得分
-    if (accScore > bestAccScore)
-      bestAccScore = accScore;
+    if (accScore > bestAccScore) bestAccScore = accScore;
   }
 
   // Return all those keyframes with a score higher than 0.75*bestScore
@@ -414,4 +407,4 @@ vector<KeyFrame *> KeyFrameDatabase::DetectRelocalizationCandidates(Frame *F) {
   return vpRelocCandidates;
 }
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2

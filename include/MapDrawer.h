@@ -42,7 +42,7 @@
 namespace ORB_SLAM2 {
 
 class MapDrawer {
-public:
+ public:
   /**
    * @brief 构造函数
    *
@@ -88,7 +88,7 @@ public:
    */
   void GetCurrentOpenGLCameraMatrix(pangolin::OpenGlMatrix &M);
 
-private:
+ private:
   // 绘制这些部件的参数
   /// 关键帧-大小
   float mKeyFrameSize;
@@ -110,6 +110,6 @@ private:
   std::mutex mMutexCamera;
 };
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2
 
-#endif // MAPDRAWER_H
+#endif  // MAPDRAWER_H

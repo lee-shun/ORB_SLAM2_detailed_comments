@@ -52,24 +52,24 @@ class KeyFrameDatabase;
 
 ///  回环检测线程
 class LoopClosing {
-public:
+ public:
   ///  自定义数据类型,
   ///  ConsistentGroup.first对应每个“连续组”中的关键帧，ConsistentGroup.second为每个“连续组”的序号
   typedef pair<set<KeyFrame *>, int> ConsistentGroup;
   ///  存储关键帧对象和位姿的键值对,这里是map的完整构造函数
   typedef map<
-      KeyFrame *,            // 键
-      g2o::Sim3,             // 值
-      std::less<KeyFrame *>, // 排序算法
+      KeyFrame *,             // 键
+      g2o::Sim3,              // 值
+      std::less<KeyFrame *>,  // 排序算法
       Eigen::aligned_allocator<std::pair<
           const KeyFrame *,
           g2o::
-              Sim3>> // 指定分配器,和内存空间开辟有关.
-                     // 为了能够使用Eigen库中的SSE和AVX指令集加速,需要将传统STL容器中的数据进行对齐处理
+              Sim3>>  // 指定分配器,和内存空间开辟有关.
+                      // 为了能够使用Eigen库中的SSE和AVX指令集加速,需要将传统STL容器中的数据进行对齐处理
       >
       KeyFrameAndPose;
 
-public:
+ public:
   /**
    * @brief 构造函数
    * @param[in] pMap          地图指针
@@ -126,7 +126,7 @@ public:
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-protected:
+ protected:
   /** @brief 查看列表中是否有等待被插入的关键帧
    *  @return true 如果有
    *  @return false 没有  */
@@ -263,6 +263,6 @@ protected:
   bool mnFullBAIdx;
 };
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2
 
-#endif // LOOPCLOSING_H
+#endif  // LOOPCLOSING_H

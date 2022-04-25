@@ -25,21 +25,21 @@
 #include "Converter.h"
 #include <iomanip>
 #include <pangolin/pangolin.h>
-#include <thread>              // 多线程
+#include <thread>  // 多线程
 #include <unistd.h>
 namespace ORB_SLAM2 {
 
 // 系统的构造函数，将会启动其他的线程
-System::System(const string &strVocFile,      // 词典文件路径
-               const string &strSettingsFile, // 配置文件路径
-               const eSensor sensor,          // 传感器类型
+System::System(const string &strVocFile,       // 词典文件路径
+               const string &strSettingsFile,  // 配置文件路径
+               const eSensor sensor,           // 传感器类型
                const bool bUseViewer)
-    :                                        // 是否使用可视化界面
-      mSensor(sensor),                       // 初始化传感器类型
-      mpViewer(static_cast<Viewer *>(NULL)), // 空。。。对象指针？  TODO
-      mbReset(false),                        // 无复位标志
-      mbActivateLocalizationMode(false),     // 没有这个模式转换标志
-      mbDeactivateLocalizationMode(false)    // 没有这个模式转换标志
+    :                                         // 是否使用可视化界面
+      mSensor(sensor),                        // 初始化传感器类型
+      mpViewer(static_cast<Viewer *>(NULL)),  // 空。。。对象指针？  TODO
+      mbReset(false),                         // 无复位标志
+      mbActivateLocalizationMode(false),      // 没有这个模式转换标志
+      mbDeactivateLocalizationMode(false)     // 没有这个模式转换标志
 {
   // Output welcome message
   cout << endl
@@ -64,8 +64,8 @@ System::System(const string &strVocFile,      // 词典文件路径
 
   // Check settings file
   cv::FileStorage fsSettings(
-      strSettingsFile.c_str(), // 将配置文件名转换成为字符串
-      cv::FileStorage::READ);  // 只读
+      strSettingsFile.c_str(),  // 将配置文件名转换成为字符串
+      cv::FileStorage::READ);   // 只读
   // 如果打开失败，就输出调试信息
   if (!fsSettings.isOpened()) {
     cerr << "Failed to open settings file at: " << strSettingsFile << endl;
@@ -107,44 +107,44 @@ System::System(const string &strVocFile,      // 词典文件路径
   // (it will live in the main thread of execution, the one that called this
   // constructor)
   mpTracker =
-      new Tracking(this, // 现在还不是很明白为什么这里还需要一个this指针  TODO
-                   mpVocabulary,       // 字典
-                   mpFrameDrawer,      // 帧绘制器
-                   mpMapDrawer,        // 地图绘制器
-                   mpMap,              // 地图
-                   mpKeyFrameDatabase, // 关键帧地图
-                   strSettingsFile,    // 设置文件路径
-                   mSensor);           // 传感器类型iomanip
+      new Tracking(this,  // 现在还不是很明白为什么这里还需要一个this指针  TODO
+                   mpVocabulary,        // 字典
+                   mpFrameDrawer,       // 帧绘制器
+                   mpMapDrawer,         // 地图绘制器
+                   mpMap,               // 地图
+                   mpKeyFrameDatabase,  // 关键帧地图
+                   strSettingsFile,     // 设置文件路径
+                   mSensor);            // 传感器类型iomanip
 
   // 初始化局部建图线程并运行
   // Initialize the Local Mapping thread and launch
   mpLocalMapper = new LocalMapping(
-      mpMap,                 // 指定使iomanip
-      mSensor == MONOCULAR); // TODO 为什么这个要设置成为MONOCULAR？？？
+      mpMap,                  // 指定使iomanip
+      mSensor == MONOCULAR);  // TODO 为什么这个要设置成为MONOCULAR？？？
   // 运行这个局部建图线程
   mptLocalMapping =
-      new thread(&ORB_SLAM2::LocalMapping::Run, // 这个线程会调用的函数
-                 mpLocalMapper);                // 这个调用函数的参数
+      new thread(&ORB_SLAM2::LocalMapping::Run,  // 这个线程会调用的函数
+                 mpLocalMapper);                 // 这个调用函数的参数
 
   // Initialize the Loop Closing thread and launchiomanip
   mpLoopCloser =
-      new LoopClosing(mpMap,                 // 地图
-                      mpKeyFrameDatabase,    // 关键帧数据库
-                      mpVocabulary,          // ORB字典
-                      mSensor != MONOCULAR); // 当前的传感器是否是单目
+      new LoopClosing(mpMap,                  // 地图
+                      mpKeyFrameDatabase,     // 关键帧数据库
+                      mpVocabulary,           // ORB字典
+                      mSensor != MONOCULAR);  // 当前的传感器是否是单目
   // 创建回环检测线程
-  mptLoopClosing = new thread(&ORB_SLAM2::LoopClosing::Run, // 线程的主函数
-                              mpLoopCloser); // 该函数的参数
+  mptLoopClosing = new thread(&ORB_SLAM2::LoopClosing::Run,  // 线程的主函数
+                              mpLoopCloser);  // 该函数的参数
 
   // Initialize the Viewer thread and launch
   if (bUseViewer) {
     // 如果指定了，程序的运行过程中需要运行可视化部分
     // 新建viewer
-    mpViewer = new Viewer(this,             // 又是这个
-                          mpFrameDrawer,    // 帧绘制器
-                          mpMapDrawer,      // 地图绘制器
-                          mpTracker,        // 追踪器
-                          strSettingsFile); // 配置文件的访问路径
+    mpViewer = new Viewer(this,              // 又是这个
+                          mpFrameDrawer,     // 帧绘制器
+                          mpMapDrawer,       // 地图绘制器
+                          mpTracker,         // 追踪器
+                          strSettingsFile);  // 配置文件的访问路径
     // 新建viewer线程
     mptViewer = new thread(&Viewer::Run, mpViewer);
     // 给运动追踪器设置其查看器
@@ -166,9 +166,9 @@ System::System(const string &strVocFile,      // 词典文件路径
 
 // 双目输入时的追踪器接口
 // 当一帧图像进入的时候每一次要调用一次这个接口~
-cv::Mat System::TrackStereo(const cv::Mat &imLeft,   // 左侧图像
-                            const cv::Mat &imRight,  // 右侧图像
-                            const double &timestamp) // 时间戳
+cv::Mat System::TrackStereo(const cv::Mat &imLeft,    // 左侧图像
+                            const cv::Mat &imRight,   // 右侧图像
+                            const double &timestamp)  // 时间戳
 {
   // 检查输入数据类型是否合法
   if (mSensor != STEREO) {
@@ -195,10 +195,10 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft,   // 左侧图像
       }
       // 运行到这里的时候，局部建图部分就真正地停止了
       // 告知追踪器，现在 只有追踪工作
-      mpTracker->InformOnlyTracking(true); // 定位时，只跟踪
+      mpTracker->InformOnlyTracking(true);  // 定位时，只跟踪
       // 同时清除定位标记
-      mbActivateLocalizationMode = false; // 防止重复执行
-    }                                     // 如果激活定位模式
+      mbActivateLocalizationMode = false;  // 防止重复执行
+    }                                      // 如果激活定位模式
 
     if (mbDeactivateLocalizationMode) {
       // 如果取消定位模式
@@ -207,9 +207,9 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft,   // 左侧图像
       // 局部建图器要开始工作呢
       mpLocalMapper->Release();
       // 清楚标志
-      mbDeactivateLocalizationMode = false; // 防止重复执行
-    }                                       // 如果取消定位模式
-  }                                         // 检查是否有模式的改变
+      mbDeactivateLocalizationMode = false;  // 防止重复执行
+    }                                        // 如果取消定位模式
+  }                                          // 检查是否有模式的改变
 
   // Check reset，检查是否有复位的操作
   {
@@ -221,8 +221,8 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft,   // 左侧图像
       mpTracker->Reset();
       // 清除标志
       mbReset = false;
-    } // 是否有复位请求
-  }   // 检查是否有复位的操作
+    }  // 是否有复位请求
+  }    // 检查是否有复位的操作
 
   // NOTE: 用矩阵Tcw来保存估计的相机
   // NOTE: 位姿，运动追踪器的GrabImageStereo函数才是真正进行运动估计的函数
@@ -391,8 +391,7 @@ void System::Shutdown() {
     // 向查看器发送终止请求
     mpViewer->RequestFinish();
     // 等到，知道真正地停止
-    while (!mpViewer->isFinished())
-      usleep(5000);
+    while (!mpViewer->isFinished()) usleep(5000);
   }
 
   // Wait until all thread have effectively stopped
@@ -450,11 +449,10 @@ void System::SaveTrajectoryTUM(const string &filename) {
   for (list<cv::Mat>::iterator lit = mpTracker->mlRelativeFramePoses.begin(),
                                lend = mpTracker->mlRelativeFramePoses.end();
        lit != lend;
-       lit++, lRit++, lT++, lbL++) // TODO 为什么是在这里更新参考关键帧？
+       lit++, lRit++, lT++, lbL++)  // TODO 为什么是在这里更新参考关键帧？
   {
     // 如果该帧追踪失败，不管它，进行下一个
-    if (*lbL)
-      continue;
+    if (*lbL) continue;
 
     // 获取其对应的参考关键帧
     KeyFrame *pKF = *lRit;
@@ -469,7 +467,7 @@ void System::SaveTrajectoryTUM(const string &filename) {
       Trw = Trw * pKF->mTcp;
       // 并且更新到原关键帧的父关键帧
       pKF = pKF->GetParent();
-    } // 查看当前使用的参考关键帧是否为bad
+    }  // 查看当前使用的参考关键帧是否为bad
     // TODO 其实我也是挺好奇，为什么在这里就能够更改掉不合适的参考关键帧了呢
 
     // TODO 这里的函数GetPose()和上面的mTcp有什么不同？
@@ -491,7 +489,7 @@ void System::SaveTrajectoryTUM(const string &filename) {
     f << setprecision(6) << *lT << " " << setprecision(9) << twc.at<float>(0)
       << " " << twc.at<float>(1) << " " << twc.at<float>(2) << " " << q[0]
       << " " << q[1] << " " << q[2] << " " << q[3] << endl;
-  } //// 对于每一个mlRelativeFramePoses中的帧lit所进行的操作
+  }  //// 对于每一个mlRelativeFramePoses中的帧lit所进行的操作
 
   // 操作完毕，关闭文件并且输出调试信息
   f.close();
@@ -526,8 +524,7 @@ void System::SaveKeyFrameTrajectoryTUM(const string &filename) {
     // pKF->SetPose(pKF->GetPose()*Two);
 
     // 如果这个关键帧是bad那么就跳过
-    if (pKF->isBad())
-      continue;
+    if (pKF->isBad()) continue;
 
     // 抽取旋转部分和平移部分，前者使用四元数表示
     cv::Mat R = pKF->GetRotation().t();
@@ -622,4 +619,4 @@ vector<cv::KeyPoint> System::GetTrackedKeyPointsUn() {
   return mTrackedKeyPointsUn;
 }
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2

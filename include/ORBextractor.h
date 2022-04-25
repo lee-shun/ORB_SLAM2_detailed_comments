@@ -36,7 +36,7 @@ namespace ORB_SLAM2 {
  */
 // 分配四叉树时用到的结点类型
 class ExtractorNode {
-public:
+ public:
   /** @brief 构造函数 */
   ExtractorNode() : bNoMore(false) {}
 
@@ -56,7 +56,7 @@ public:
   /// 当前节点所对应的图像坐标边界
   cv::Point2i UL, UR, BL, BR;
   //存储提取器节点的列表（其实就是双向链表）的一个迭代器,可以参考[http://www.runoob.com/cplusplus/
-  //cpp-overloading.html]
+  // cpp-overloading.html]
   // 这个迭代器提供了访问总节点列表的方式，需要结合cpp文件进行分析
   std::list<ExtractorNode>::iterator lit;
 
@@ -70,7 +70,7 @@ public:
  *
  */
 class ORBextractor {
-public:
+ public:
   // TODO 但是在程序中好像并没有被用到
   /// 定义一个枚举类型用于表示使用HARRIS响应值还是使用FAST响应值
   enum { HARRIS_SCORE = 0, FAST_SCORE = 1 };
@@ -160,7 +160,7 @@ public:
   /// 这个是用来存储图像金字塔的变量，一个元素存储一层图像
   std::vector<cv::Mat> mvImagePyramid;
 
-protected:
+ protected:
   // 下面这些都是保护成员哟
 
   /**
@@ -176,8 +176,8 @@ protected:
    * of keypoints
    * @param[out] allKeypoints 提取得到的所有特征点
    */
-  void
-  ComputeKeyPointsOctTree(std::vector<std::vector<cv::KeyPoint>> &allKeypoints);
+  void ComputeKeyPointsOctTree(
+      std::vector<std::vector<cv::KeyPoint>> &allKeypoints);
 
   /**
    * @brief 对于某一图层，分配其特征点，通过八叉树的方式
@@ -190,41 +190,42 @@ protected:
    * @param[in] level                     要提取的图像所在的金字塔层
    * @return std::vector<cv::KeyPoint>
    */
-  std::vector<cv::KeyPoint>
-  DistributeOctTree(const std::vector<cv::KeyPoint> &vToDistributeKeys,
-                    const int &minX, const int &maxX, const int &minY,
-                    const int &maxY, const int &nFeatures, const int &level);
+  std::vector<cv::KeyPoint> DistributeOctTree(
+      const std::vector<cv::KeyPoint> &vToDistributeKeys, const int &minX,
+      const int &maxX, const int &minY, const int &maxY, const int &nFeatures,
+      const int &level);
 
   /**
    * @brief
    * 这是使用另外一种老办法提取并平均特征点的方法，但是在实际的程序中并没有用到
    * @param[out] allKeypoints 提取到的特征点
    */
-  void
-  ComputeKeyPointsOld(std::vector<std::vector<cv::KeyPoint>> &allKeypoints);
+  void ComputeKeyPointsOld(
+      std::vector<std::vector<cv::KeyPoint>> &allKeypoints);
 
   // NOTE 作者不地道啊，这里是类的成员变量，说好的变量名的m前缀呢？
 
-  std::vector<cv::Point> pattern; /// <用于计算描述子的随机采样点集合
+  std::vector<cv::Point> pattern;  /// <用于计算描述子的随机采样点集合
 
-  int nfeatures; /// <整个图像金字塔中，要提取的特征点数目
-  double scaleFactor; /// <图像金字塔层与层之间的缩放因子
-  int nlevels;        /// <图像金字塔的层数
-  int iniThFAST;      /// <初始的FAST响应值阈值
-  int minThFAST;      /// <最小的FAST响应值阈值
-
-  std::vector<int> mnFeaturesPerLevel; /// <分配到每层图像中，要提取的特征点数目
+  int nfeatures;  /// <整个图像金字塔中，要提取的特征点数目
+  double scaleFactor;  /// <图像金字塔层与层之间的缩放因子
+  int nlevels;         /// <图像金字塔的层数
+  int iniThFAST;       /// <初始的FAST响应值阈值
+  int minThFAST;       /// <最小的FAST响应值阈值
 
   std::vector<int>
-      umax; /// <计算特征点方向的时候，有个圆形的图像区域，这个vector中存储了每行u轴的边界（四分之一，其他部分通过对称获得）
+      mnFeaturesPerLevel;  /// <分配到每层图像中，要提取的特征点数目
 
-  std::vector<float> mvScaleFactor;    /// <每层图像的缩放因子
-  std::vector<float> mvInvScaleFactor; /// <以及每层缩放因子的倒数
+  std::vector<int>
+      umax;  /// <计算特征点方向的时候，有个圆形的图像区域，这个vector中存储了每行u轴的边界（四分之一，其他部分通过对称获得）
+
+  std::vector<float> mvScaleFactor;     /// <每层图像的缩放因子
+  std::vector<float> mvInvScaleFactor;  /// <以及每层缩放因子的倒数
   std::vector<float>
-      mvLevelSigma2; /// <存储每层的sigma^2,即上面每层图像相对于底层图像缩放倍数的平方
-  std::vector<float> mvInvLevelSigma2; /// < sigma平方的倒数
+      mvLevelSigma2;  /// <存储每层的sigma^2,即上面每层图像相对于底层图像缩放倍数的平方
+  std::vector<float> mvInvLevelSigma2;  /// < sigma平方的倒数
 };
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2
 
 #endif

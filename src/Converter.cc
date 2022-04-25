@@ -92,8 +92,7 @@ cv::Mat Converter::toCvMat(const Eigen::Matrix<double, 4, 4> &m) {
   cv::Mat cvMat(4, 4, CV_32F);
   // 然后逐个元素赋值
   for (int i = 0; i < 4; i++)
-    for (int j = 0; j < 4; j++)
-      cvMat.at<float>(i, j) = m(i, j);
+    for (int j = 0; j < 4; j++) cvMat.at<float>(i, j) = m(i, j);
 
   // 返回计算结果，还是用深拷贝函数
   return cvMat.clone();
@@ -105,8 +104,7 @@ cv::Mat Converter::toCvMat(const Eigen::Matrix3d &m) {
   cv::Mat cvMat(3, 3, CV_32F);
   // 然后逐个元素进行赋值
   for (int i = 0; i < 3; i++)
-    for (int j = 0; j < 3; j++)
-      cvMat.at<float>(i, j) = m(i, j);
+    for (int j = 0; j < 3; j++) cvMat.at<float>(i, j) = m(i, j);
 
   // 返回深拷贝形式的转换结果
   return cvMat.clone();
@@ -117,8 +115,7 @@ cv::Mat Converter::toCvMat(const Eigen::Matrix<double, 3, 1> &m) {
   // 首先定义保存转换结果的变量
   cv::Mat cvMat(3, 1, CV_32F);
   // 还是老办法，挨个赋值
-  for (int i = 0; i < 3; i++)
-    cvMat.at<float>(i) = m(i);
+  for (int i = 0; i < 3; i++) cvMat.at<float>(i) = m(i);
 
   // 返回转换结果
   return cvMat.clone();
@@ -196,4 +193,4 @@ std::vector<float> Converter::toQuaternion(const cv::Mat &M) {
   return v;
 }
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2

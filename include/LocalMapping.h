@@ -48,7 +48,7 @@ class Map;
 
 /** @brief 局部建图线程类 */
 class LocalMapping {
-public:
+ public:
   /**
    * @brief 构造函数
    * @param[in] pMap          局部地图的句柄？ // ?
@@ -121,7 +121,7 @@ public:
     return mlNewKeyFrames.size();
   }
 
-protected:
+ protected:
   /**
    * @brief 查看列表中是否有等待被插入的关键帧
    * @return 如果存在，返回true
@@ -201,7 +201,7 @@ protected:
   Tracking *mpTracker;
 
   // Tracking线程向LocalMapping中插入关键帧是先插入到该队列中
-  std::list<KeyFrame *> mlNewKeyFrames; /// < 等待处理的关键帧列表
+  std::list<KeyFrame *> mlNewKeyFrames;  /// < 等待处理的关键帧列表
   ///  当前正在处理的关键帧
   KeyFrame *mpCurrentKeyFrame;
 
@@ -229,6 +229,6 @@ protected:
   std::mutex mMutexAccept;
 };
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2
 
-#endif // LOCALMAPPING_H
+#endif  // LOCALMAPPING_H

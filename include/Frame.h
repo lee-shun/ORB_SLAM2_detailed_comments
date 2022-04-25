@@ -67,7 +67,7 @@ class KeyFrame;
  * @brief 帧
  */
 class Frame {
-public:
+ public:
   /**
    * @brief Construct a new Frame object without parameter.
    *
@@ -288,7 +288,7 @@ public:
    */
   cv::Mat UnprojectStereo(const int &i);
 
-public:
+ public:
   // Vocabulary used for relocalization.
   /// 用于重定位的ORB特征字典
   ORBVocabulary *mpORBvocabulary;
@@ -314,12 +314,12 @@ public:
   // 注意这里的相机内参数其实都是类的静态成员变量；此外相机的内参数矩阵和矫正参数矩阵却是普通的成员变量，
   // NOTE 这样是否有些浪费内存空间？
 
-  static float fx;    /// < x轴方向焦距
-  static float fy;    /// < y轴方向焦距
-  static float cx;    /// < x轴方向光心偏移
-  static float cy;    /// < y轴方向光心偏移
-  static float invfx; /// < x轴方向焦距的逆
-  static float invfy; /// < x轴方向焦距的逆
+  static float fx;     /// < x轴方向焦距
+  static float fy;     /// < y轴方向焦距
+  static float cx;     /// < x轴方向光心偏移
+  static float cy;     /// < y轴方向光心偏移
+  static float invfx;  /// < x轴方向焦距的逆
+  static float invfy;  /// < x轴方向焦距的逆
 
   // TODO 目测是opencv提供的图像去畸变参数矩阵的，但是其具体组成未知
   /// 去畸变参数
@@ -377,8 +377,8 @@ public:
   /// 对于双目相机,存储左目像素点在右目中的对应点的横坐标 （因为纵坐标是一样的）
 
   std::vector<float>
-      mvuRight; // m-member v-vector
-                // u-指代横坐标,因为最后这个坐标是通过各种拟合方法逼近出来的，所以使用float存储
+      mvuRight;  // m-member v-vector
+                 // u-指代横坐标,因为最后这个坐标是通过各种拟合方法逼近出来的，所以使用float存储
   /// 对应的深度
   std::vector<float> mvDepth;
 
@@ -424,14 +424,14 @@ public:
 
   // Camera pose.
   cv::Mat
-      mTcw; /// < 相机姿态
-            /// <
-            /// 世界坐标系到相机坐标坐标系的变换矩阵,是我们常规理解中的相机位姿
+      mTcw;  /// < 相机姿态
+             /// <
+             /// 世界坐标系到相机坐标坐标系的变换矩阵,是我们常规理解中的相机位姿
 
   // Current and Next Frame id.
   // 类的静态成员变量，这些变量则是在整个系统开始执行的时候被初始化的——它在全局区被初始化
-  static long unsigned int nNextId; /// < Next Frame id.
-  long unsigned int mnId;           /// < Current Frame id.
+  static long unsigned int nNextId;  /// < Next Frame id.
+  long unsigned int mnId;            /// < Current Frame id.
 
   // Reference Keyframe.
   // 普通帧与自己共视程度最高的关键帧作为参考关键帧
@@ -442,15 +442,15 @@ public:
    * @{
    */
   // Scale pyramid info.
-  int mnScaleLevels;   /// <图像金字塔的层数
-  float mfScaleFactor; /// <图像金字塔的尺度因子
+  int mnScaleLevels;    /// <图像金字塔的层数
+  float mfScaleFactor;  /// <图像金字塔的尺度因子
   float
-      mfLogScaleFactor; /// <图像金字塔的尺度因子的对数值，用于仿照特征点尺度预测地图点的尺度
+      mfLogScaleFactor;  /// <图像金字塔的尺度因子的对数值，用于仿照特征点尺度预测地图点的尺度
 
-  vector<float> mvScaleFactors;    /// <图像金字塔每一层的缩放因子
-  vector<float> mvInvScaleFactors; /// <以及上面的这个变量的倒数
-  vector<float> mvLevelSigma2; /// @todo 目前在frame.c中没有用到，无法下定论
-  vector<float> mvInvLevelSigma2; /// <上面变量的倒数
+  vector<float> mvScaleFactors;     /// <图像金字塔每一层的缩放因子
+  vector<float> mvInvScaleFactors;  /// <以及上面的这个变量的倒数
+  vector<float> mvLevelSigma2;  /// @todo 目前在frame.c中没有用到，无法下定论
+  vector<float> mvInvLevelSigma2;  /// <上面变量的倒数
 
   /** @} */
 
@@ -476,7 +476,7 @@ public:
    */
   static bool mbInitialComputations;
 
-private:
+ private:
   // Undistort keypoints given OpenCV distortion parameters.
   // Only for the RGB-D case. Stereo must be already rectified!
   // (called in the constructor).
@@ -507,14 +507,14 @@ private:
    * @{
    */
   // Rotation, translation and camera center
-  cv::Mat mRcw; /// < Rotation from world to camera
-  cv::Mat mtcw; /// < Translation from world to camera
-  cv::Mat mRwc; /// < Rotation from camera to world
-  cv::Mat mOw;  /// < mtwc,Translation from camera to world
+  cv::Mat mRcw;  /// < Rotation from world to camera
+  cv::Mat mtcw;  /// < Translation from world to camera
+  cv::Mat mRwc;  /// < Rotation from camera to world
+  cv::Mat mOw;   /// < mtwc,Translation from camera to world
 
   /** @} */
 };
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2
 
-#endif // FRAME_H
+#endif  // FRAME_H

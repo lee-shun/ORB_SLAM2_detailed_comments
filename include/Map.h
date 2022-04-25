@@ -38,7 +38,7 @@ class KeyFrame;
  *
  */
 class Map {
-public:
+ public:
   /** @brief 构造函数 */
   Map();
 
@@ -142,7 +142,7 @@ public:
   /// 为了避免地图点id冲突设计的互斥量
   std::mutex mMutexPointCreation;
 
-protected:
+ protected:
   // 存储所有的地图点
   std::set<MapPoint *> mspMapPoints;
 
@@ -163,6 +163,6 @@ protected:
   std::mutex mMutexMap;
 };
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2
 
-#endif // MAP_H
+#endif  // MAP_H

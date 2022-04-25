@@ -64,8 +64,7 @@ class System;
  *
  */
 class Tracking {
-
-public:
+ public:
   /**
    * @brief 构造函数
    *
@@ -157,16 +156,16 @@ public:
    */
   void InformOnlyTracking(const bool &flag);
 
-public:
+ public:
   // Tracking states
   /// 跟踪状态类型
   enum eTrackingState {
     SYSTEM_NOT_READY =
-        -1, /// <系统没有准备好的状态,一般就是在启动后加载配置文件和词典文件时候的状态
-    NO_IMAGES_YET = 0,   /// <当前无图像
-    NOT_INITIALIZED = 1, /// <有图像但是没有完成初始化
-    OK = 2,              /// <正常时候的工作状态
-    LOST = 3             /// <系统已经跟丢了的状态
+        -1,  /// <系统没有准备好的状态,一般就是在启动后加载配置文件和词典文件时候的状态
+    NO_IMAGES_YET = 0,    /// <当前无图像
+    NOT_INITIALIZED = 1,  /// <有图像但是没有完成初始化
+    OK = 2,               /// <正常时候的工作状态
+    LOST = 3              /// <系统已经跟丢了的状态
   };
 
   /// 跟踪状态
@@ -190,7 +189,7 @@ public:
   /// 之前的匹配
   std::vector<int> mvIniLastMatches;
   /// 初始化阶段中,当前帧中的特征点和参考帧中的特征点的匹配关系
-  std::vector<int> mvIniMatches; // 跟踪初始化时前两帧之间的匹配
+  std::vector<int> mvIniMatches;  // 跟踪初始化时前两帧之间的匹配
   /// 在初始化的过程中,保存参考帧中的特征点
   std::vector<cv::Point2f> mvbPrevMatched;
   /// 初始化过程中匹配后进行三角化得到的空间点
@@ -220,7 +219,7 @@ public:
    */
   void Reset();
 
-protected:
+ protected:
   // Main tracking function. It is independent of the input sensor.
   /** @brief 主追踪进程 */
   void Track();
@@ -374,7 +373,7 @@ protected:
 
   // Local Map 局部地图相关
   /// 参考关键帧
-  KeyFrame *mpReferenceKF; // 当前关键帧就是参考帧
+  KeyFrame *mpReferenceKF;  // 当前关键帧就是参考帧
   /// 局部关键帧集合
   std::vector<KeyFrame *> mvpLocalKeyFrames;
   /// 局部地图点的集合
@@ -445,8 +444,8 @@ protected:
 
   /// 临时的地图点,用于提高双目和RGBD摄像头的帧间效果,用完之后就扔了
   list<MapPoint *> mlpTemporalPoints;
-}; // class Tracking
+};  // class Tracking
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2
 
-#endif // TRACKING_H
+#endif  // TRACKING_H

@@ -49,7 +49,7 @@ class Frame;
 
 /** @brief 关键帧数据库 */
 class KeyFrameDatabase {
-public:
+ public:
   /**
    * @brief 构造函数
    * @param[in] voc 词袋模型的字典
@@ -93,7 +93,7 @@ public:
    */
   std::vector<KeyFrame *> DetectRelocalizationCandidates(Frame *F);
 
-protected:
+ protected:
   // Associated vocabulary
   // 预先训练好的词典
   const ORBVocabulary *mpVoc;
@@ -106,6 +106,6 @@ protected:
   std::mutex mMutex;
 };
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2
 
 #endif

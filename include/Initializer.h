@@ -44,7 +44,7 @@ namespace ORB_SLAM2 {
 class Initializer {
   typedef pair<int, int> Match;
 
-public:
+ public:
   // Fix the reference frame
   /**
    * @brief 根据参考帧构造初始化器
@@ -83,7 +83,7 @@ public:
                   cv::Mat &R21, cv::Mat &t21, vector<cv::Point3f> &vP3D,
                   vector<bool> &vbTriangulated);
 
-private:
+ private:
   /**
    * @brief
    * 计算单应矩阵，假设场景为平面情况下通过前两帧求取Homography矩阵，并得到该模型的评分
@@ -321,6 +321,6 @@ private:
   vector<vector<size_t>> mvSets;
 };
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2
 
-#endif // INITIALIZER_H
+#endif  // INITIALIZER_H

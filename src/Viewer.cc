@@ -40,15 +40,19 @@ namespace ORB_SLAM2 {
 Viewer::Viewer(System *pSystem, FrameDrawer *pFrameDrawer,
                MapDrawer *pMapDrawer, Tracking *pTracking,
                const string &strSettingPath)
-    : mpSystem(pSystem), mpFrameDrawer(pFrameDrawer), mpMapDrawer(pMapDrawer),
-      mpTracker(pTracking), mbFinishRequested(false), mbFinished(true),
-      mbStopped(false), mbStopRequested(false) {
+    : mpSystem(pSystem),
+      mpFrameDrawer(pFrameDrawer),
+      mpMapDrawer(pMapDrawer),
+      mpTracker(pTracking),
+      mbFinishRequested(false),
+      mbFinished(true),
+      mbStopped(false),
+      mbStopRequested(false) {
   // 从文件中读取相机的帧频
   cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
 
   float fps = fSettings["Camera.fps"];
-  if (fps < 1)
-    fps = 30;
+  if (fps < 1) fps = 30;
   // 计算出每一帧所持续的时间
   mT = 1e3 / fps;
 
@@ -146,7 +150,7 @@ void Viewer::Run() {
       // 当之前没有在跟踪相机时
       s_cam.SetModelViewMatrix(pangolin::ModelViewLookAt(
           mViewpointX, mViewpointY, mViewpointZ, 0, 0, 0, 0.0, -1.0,
-          0.0)); // ? 不知道这个视角设置的具体作用和
+          0.0));  // ? 不知道这个视角设置的具体作用和
       s_cam.Follow(Twc);
       bFollow = true;
     } else if (!menuFollowCamera && bFollow) {
@@ -173,8 +177,7 @@ void Viewer::Run() {
     if (menuShowKeyFrames || menuShowGraph)
       mpMapDrawer->DrawKeyFrames(menuShowKeyFrames, menuShowGraph);
     // 绘制地图点
-    if (menuShowPoints)
-      mpMapDrawer->DrawMapPoints();
+    if (menuShowPoints) mpMapDrawer->DrawMapPoints();
 
     pangolin::FinishFrame();
 
@@ -192,8 +195,7 @@ void Viewer::Run() {
       menuShowKeyFrames = true;
       menuShowPoints = true;
       menuLocalizationMode = false;
-      if (bLocalizationMode)
-        mpSystem->DeactivateLocalizationMode();
+      if (bLocalizationMode) mpSystem->DeactivateLocalizationMode();
       // 相关变量也恢复到初始状态
       bLocalizationMode = false;
       bFollow = true;
@@ -214,8 +216,7 @@ void Viewer::Run() {
     }
 
     // 满足的时候退出这个线程循环,这里应该是查看终止请求
-    if (CheckFinish())
-      break;
+    if (CheckFinish()) break;
   }
 
   // 终止查看器,主要是设置状态,执行完成退出这个函数后,查看器进程就已经被销毁了
@@ -249,8 +250,7 @@ bool Viewer::isFinished() {
 // 请求当前查看器停止更新
 void Viewer::RequestStop() {
   unique_lock<mutex> lock(mMutexStop);
-  if (!mbStopped)
-    mbStopRequested = true;
+  if (!mbStopped) mbStopRequested = true;
 }
 
 // 查看当前查看器是否已经停止更新
@@ -281,4 +281,4 @@ void Viewer::Release() {
   mbStopped = false;
 }
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2

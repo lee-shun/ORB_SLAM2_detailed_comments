@@ -47,10 +47,19 @@ namespace ORB_SLAM2 {
 // 构造函数
 LoopClosing::LoopClosing(Map *pMap, KeyFrameDatabase *pDB, ORBVocabulary *pVoc,
                          const bool bFixScale)
-    : mbResetRequested(false), mbFinishRequested(false), mbFinished(true),
-      mpMap(pMap), mpKeyFrameDB(pDB), mpORBVocabulary(pVoc), mpMatchedKF(NULL),
-      mLastLoopKFid(0), mbRunningGBA(false), mbFinishedGBA(true),
-      mbStopGBA(false), mpThreadGBA(NULL), mbFixScale(bFixScale),
+    : mbResetRequested(false),
+      mbFinishRequested(false),
+      mbFinished(true),
+      mpMap(pMap),
+      mpKeyFrameDB(pDB),
+      mpORBVocabulary(pVoc),
+      mpMatchedKF(NULL),
+      mLastLoopKFid(0),
+      mbRunningGBA(false),
+      mbFinishedGBA(true),
+      mbStopGBA(false),
+      mpThreadGBA(NULL),
+      mbFixScale(bFixScale),
       mnFullBAIdx(0) {
   // 连续性阈值
   mnCovisibilityConsistencyTh = 3;
@@ -90,8 +99,7 @@ void LoopClosing::Run() {
     ResetIfRequested();
 
     // 查看外部线程是否有终止当前线程的请求,如果有的话就跳出这个线程的主函数的主循环
-    if (CheckFinish())
-      break;
+    if (CheckFinish()) break;
 
     // usleep(5000);
     std::this_thread::sleep_for(std::chrono::milliseconds(5));
@@ -105,8 +113,7 @@ void LoopClosing::Run() {
 void LoopClosing::InsertKeyFrame(KeyFrame *pKF) {
   unique_lock<mutex> lock(mMutexLoopQueue);
   // 注意：这里第0个关键帧不能够参与到回环检测的过程中,因为第0关键帧定义了整个地图的世界坐标系
-  if (pKF->mnId != 0)
-    mlpLoopKeyFrameQueue.push_back(pKF);
+  if (pKF->mnId != 0) mlpLoopKeyFrameQueue.push_back(pKF);
 }
 
 /*
@@ -159,14 +166,12 @@ bool LoopClosing::DetectLoop() {
   float minScore = 1;
   for (size_t i = 0; i < vpConnectedKeyFrames.size(); i++) {
     KeyFrame *pKF = vpConnectedKeyFrames[i];
-    if (pKF->isBad())
-      continue;
+    if (pKF->isBad()) continue;
     const DBoW2::BowVector &BowVec = pKF->mBowVec;
     // 计算两个关键帧的相似度得分；得分越低,相似度越低
     float score = mpORBVocabulary->score(CurrentBowVec, BowVec);
     // 更新最低得分
-    if (score < minScore)
-      minScore = score;
+    if (score < minScore) minScore = score;
   }
 
   // Query the database imposing the minimum score
@@ -310,7 +315,7 @@ bool LoopClosing::DetectLoop() {
       ConsistentGroup cg = make_pair(spCandidateGroup, 0);
       vCurrentConsistentGroups.push_back(cg);
     }
-  } // 遍历得到的初级的候选关键帧
+  }  // 遍历得到的初级的候选关键帧
 
   // Update Covisibility Consistent Groups
   // 更新连续组
@@ -430,8 +435,7 @@ bool LoopClosing::ComputeSim3() {
   while (nCandidates > 0 && !bMatch) {
     // 遍历每一个候选帧
     for (int i = 0; i < nInitialCandidates; i++) {
-      if (vbDiscarded[i])
-        continue;
+      if (vbDiscarded[i]) continue;
 
       KeyFrame *pKF = mvpEnoughConsistentCandidates[i];
 
@@ -468,8 +472,7 @@ bool LoopClosing::ComputeSim3() {
                                              static_cast<MapPoint *>(NULL));
         for (size_t j = 0, jend = vbInliers.size(); j < jend; j++) {
           // 保存内点
-          if (vbInliers[j])
-            vpMapPointMatches[j] = vvpMapPointMatches[i][j];
+          if (vbInliers[j]) vpMapPointMatches[j] = vvpMapPointMatches[i][j];
         }
 
         // Step 2.2 通过上面求取的Sim3变换引导关键帧匹配，弥补Step 1中的漏匹配
@@ -577,8 +580,7 @@ bool LoopClosing::ComputeSim3() {
   // 统计当前帧与闭环关键帧的匹配地图点数目，超过40个说明成功闭环，否则失败
   int nTotalMatches = 0;
   for (size_t i = 0; i < mvpCurrentMatchedPoints.size(); i++) {
-    if (mvpCurrentMatchedPoints[i])
-      nTotalMatches++;
+    if (mvpCurrentMatchedPoints[i]) nTotalMatches++;
   }
 
   if (nTotalMatches >= 40) {
@@ -608,7 +610,6 @@ bool LoopClosing::ComputeSim3() {
  * 5. 创建线程进行全局Bundle Adjustment
  */
 void LoopClosing::CorrectLoop() {
-
   cout << "Loop detected!" << endl;
   // Step 0：结束局部地图线程、全局BA，为闭环矫正做准备
   // Step 1：根据共视关系更新当前帧与其它关键帧之间的连接
@@ -693,7 +694,7 @@ void LoopClosing::CorrectLoop() {
       KeyFrame *pKFi = *vit;
       cv::Mat Tiw = pKFi->GetPose();
       if (pKFi !=
-          mpCurrentKF) // 跳过当前关键帧，因为当前关键帧的位姿已经在前面优化过了，在这里是参考基准
+          mpCurrentKF)  // 跳过当前关键帧，因为当前关键帧的位姿已经在前面优化过了，在这里是参考基准
       {
         // 得到当前关键帧 mpCurrentKF 到其共视关键帧 pKFi 的相对变换
         cv::Mat Tic = Tiw * Twc;
@@ -740,13 +741,10 @@ void LoopClosing::CorrectLoop() {
       for (size_t iMP = 0, endMPi = vpMPsi.size(); iMP < endMPi; iMP++) {
         MapPoint *pMPi = vpMPsi[iMP];
         // 跳过无效的地图点
-        if (!pMPi)
-          continue;
-        if (pMPi->isBad())
-          continue;
+        if (!pMPi) continue;
+        if (pMPi->isBad()) continue;
         // 标记，防止重复矫正
-        if (pMPi->mnCorrectedByKF == mpCurrentKF->mnId)
-          continue;
+        if (pMPi->mnCorrectedByKF == mpCurrentKF->mnId) continue;
 
         // 矫正过程本质上也是基于当前关键帧的优化后的位姿展开的
         // Project with non-corrected pose and project back with corrected pose
@@ -903,7 +901,6 @@ void LoopClosing::CorrectLoop() {
  * @param[in] CorrectedPosesMap         矫正的当前KF对应的共视关键帧及Sim3变换
  */
 void LoopClosing::SearchAndFuse(const KeyFrameAndPose &CorrectedPosesMap) {
-
   // 定义ORB匹配器
   ORBmatcher matcher(0.8);
 
@@ -952,8 +949,7 @@ void LoopClosing::RequestReset() {
   while (1) {
     {
       unique_lock<mutex> lock2(mMutexReset);
-      if (!mbResetRequested)
-        break;
+      if (!mbResetRequested) break;
     }
     // usleep(5000);
     std::this_thread::sleep_for(std::chrono::milliseconds(5));
@@ -965,9 +961,9 @@ void LoopClosing::ResetIfRequested() {
   unique_lock<mutex> lock(mMutexReset);
   // 如果有来自于外部的线程的复位请求,那么就复位当前线程
   if (mbResetRequested) {
-    mlpLoopKeyFrameQueue.clear(); // 清空参与和进行回环检测的关键帧队列
-    mLastLoopKFid = 0; // 上一次没有和任何关键帧形成闭环关系
-    mbResetRequested = false; // 复位请求标志复位
+    mlpLoopKeyFrameQueue.clear();  // 清空参与和进行回环检测的关键帧队列
+    mLastLoopKFid = 0;  // 上一次没有和任何关键帧形成闭环关系
+    mbResetRequested = false;  // 复位请求标志复位
   }
 }
 /**
@@ -986,11 +982,11 @@ void LoopClosing::RunGlobalBundleAdjustment(unsigned long nLoopKF) {
   // 回答：能够得到全部关键帧优化后的位姿,以及优化后的地图点
 
   // Step 1 执行全局BA，优化所有的关键帧位姿和地图中地图点
-  Optimizer::GlobalBundleAdjustemnt(mpMap,      // 地图点对象
-                                    10,         // 迭代次数
-                                    &mbStopGBA, // 外界控制 GBA 停止的标志
-                                    nLoopKF, // 形成了闭环的当前关键帧的id
-                                    false); // 不使用鲁棒核函数
+  Optimizer::GlobalBundleAdjustemnt(mpMap,       // 地图点对象
+                                    10,          // 迭代次数
+                                    &mbStopGBA,  // 外界控制 GBA 停止的标志
+                                    nLoopKF,  // 形成了闭环的当前关键帧的id
+                                    false);  // 不使用鲁棒核函数
 
   // Update all MapPoints and KeyFrames
   // Local Mapping was active during BA, that means that there might be new
@@ -1003,8 +999,7 @@ void LoopClosing::RunGlobalBundleAdjustment(unsigned long nLoopKF) {
   {
     unique_lock<mutex> lock(mMutexGBA);
     // 如果全局BA过程是因为意外结束的,那么直接退出GBA
-    if (idx != mnFullBAIdx)
-      return;
+    if (idx != mnFullBAIdx) return;
 
     // 如果当前GBA没有中断请求，更新位姿和地图点
     // 这里和上面那句话的功能还有些不同,因为如果一次全局优化被中断,往往意味又要重新开启一个新的全局BA;为了中断当前正在执行的优化过程mbStopGBA将会被置位,同时会有一定的时间
@@ -1074,8 +1069,7 @@ void LoopClosing::RunGlobalBundleAdjustment(unsigned long nLoopKF) {
       for (size_t i = 0; i < vpMPs.size(); i++) {
         MapPoint *pMP = vpMPs[i];
 
-        if (pMP->isBad())
-          continue;
+        if (pMP->isBad()) continue;
 
         // 如果这个地图点直接参与到了全局BA优化的过程,那么就直接重新设置器位姿即可
         if (pMP->mnBAGlobalForKF == nLoopKF) {
@@ -1087,8 +1081,7 @@ void LoopClosing::RunGlobalBundleAdjustment(unsigned long nLoopKF) {
           KeyFrame *pRefKF = pMP->GetReferenceKeyFrame();
 
           // 如果参考关键帧并没有经过此次全局BA优化，就跳过
-          if (pRefKF->mnBAGlobalForKF != nLoopKF)
-            continue;
+          if (pRefKF->mnBAGlobalForKF != nLoopKF) continue;
 
           // Map to non-corrected camera
           cv::Mat Rcw = pRefKF->mTcwBefGBA.rowRange(0, 3).colRange(0, 3);
@@ -1141,4 +1134,4 @@ bool LoopClosing::isFinished() {
   return mbFinished;
 }
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2

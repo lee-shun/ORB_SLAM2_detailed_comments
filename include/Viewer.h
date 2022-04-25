@@ -47,7 +47,7 @@ class MapDrawer;
 class System;
 
 class Viewer {
-public:
+ public:
   /**
    * @brief 构造函数
    *
@@ -81,7 +81,7 @@ public:
   /** @brief 释放变量，避免互斥关系 */
   void Release();
 
-private:
+ private:
   /**
    * @brief 停止当前查看器的更新
    *
@@ -137,6 +137,6 @@ private:
   std::mutex mMutexStop;
 };
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2
 
-#endif // VIEWER_H
+#endif  // VIEWER_H

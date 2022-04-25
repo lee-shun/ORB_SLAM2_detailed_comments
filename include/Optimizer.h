@@ -47,7 +47,7 @@ class LoopClosing;
 /** @brief 优化器,所有的优化相关的函数都在这个类中;
  * 并且这个类只有成员函数没有成员变量,相对要好分析一点 */
 class Optimizer {
-public:
+ public:
   /**
    * @brief bundle adjustment Optimization
    *
@@ -196,6 +196,6 @@ public:
                           const bool bFixScale);
 };
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2
 
-#endif // OPTIMIZER_H
+#endif  // OPTIMIZER_H

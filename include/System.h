@@ -53,19 +53,19 @@ class LoopClosing;
 
 // 本类的定义
 class System {
-public:
+ public:
   // Input sensor
   // 这个枚举类型用于 表示本系统所使用的传感器类型
   enum eSensor { MONOCULAR = 0, STEREO = 1, RGBD = 2 };
 
-public:
+ public:
   // Initialize the SLAM system. It launches the Local Mapping, Loop Closing and
   // Viewer threads.
   // 构造函数，用来初始化整个系统。
-  System(const string &strVocFile,      // 指定ORB字典文件的路径
-         const string &strSettingsFile, // 指定配置文件的路径
-         const eSensor sensor,          // 指定所使用的传感器类型
-         const bool bUseViewer = true); // 指定是否使用可视化界面 TODO
+  System(const string &strVocFile,       // 指定ORB字典文件的路径
+         const string &strSettingsFile,  // 指定配置文件的路径
+         const eSensor sensor,           // 指定所使用的传感器类型
+         const bool bUseViewer = true);  // 指定是否使用可视化界面 TODO
 
   // 下面是针对三种不同类型的传感器所设计的三种运动追踪接口。彩色图像为CV_8UC3类型，并且都将会被转换成为灰度图像。
   // 追踪接口返回估计的相机位姿，如果追踪失败则返回NULL
@@ -74,23 +74,23 @@ public:
   // rectified（校正）. Input images: RGB (CV_8UC3) or grayscale (CV_8U). RGB is
   // converted to grayscale. Returns the camera pose (empty if tracking fails).
   // NOTE 注意这里英文注释的说法，双目图像有同步和校准的概念。
-  cv::Mat TrackStereo(const cv::Mat &imLeft,    // 左目图像
-                      const cv::Mat &imRight,   // 右目图像
-                      const double &timestamp); // 时间戳
+  cv::Mat TrackStereo(const cv::Mat &imLeft,     // 左目图像
+                      const cv::Mat &imRight,    // 右目图像
+                      const double &timestamp);  // 时间戳
 
   // Process the given rgbd frame. Depthmap must be registered to the RGB frame.
   // Input image: RGB (CV_8UC3) or grayscale (CV_8U). RGB is converted to
   // grayscale. Input depthmap: Float (CV_32F). Returns the camera pose (empty
   // if tracking fails). NOTE 而在这里对RGBD图像的说法则是“配准”
-  cv::Mat TrackRGBD(const cv::Mat &im,        // 彩色图像
-                    const cv::Mat &depthmap,  // 深度图像
-                    const double &timestamp); // 时间戳
+  cv::Mat TrackRGBD(const cv::Mat &im,         // 彩色图像
+                    const cv::Mat &depthmap,   // 深度图像
+                    const double &timestamp);  // 时间戳
 
   // Proccess the given monocular frame
   // Input images: RGB (CV_8UC3) or grayscale (CV_8U). RGB is converted to
   // grayscale. Returns the camera pose (empty if tracking fails).
-  cv::Mat TrackMonocular(const cv::Mat &im,        // 图像
-                         const double &timestamp); // 时间戳
+  cv::Mat TrackMonocular(const cv::Mat &im,         // 图像
+                         const double &timestamp);  // 时间戳
 
   // This stops local mapping thread (map building) and performs only camera
   // tracking.
@@ -120,7 +120,7 @@ public:
   // Call first Shutdown()
   // See format details at: http://vision.in.tum.de/data/datasets/ rgbd-dataset
   // 以TUM格式保存相机的运动轨迹，这个函数将会在Shutdown函数中被首先调用
-  void SaveTrajectoryTUM(const string &filename); // 指定文件名
+  void SaveTrajectoryTUM(const string &filename);  // 指定文件名
 
   // Save keyframe poses in the TUM RGB-D dataset format.
   // NOTE This method works for all sensor input.
@@ -128,7 +128,7 @@ public:
   // See format details at: http://vision.in.tum.de/data/datasets/ rgbd-dataset
   // 以TUM格式保存关键帧位姿。  TODO
   // 是不是这也意味着，我可以使用g2o_viewer这样的软件去查看并且进行优化实验？
-  void SaveKeyFrameTrajectoryTUM(const string &filename); // 指定文件名
+  void SaveKeyFrameTrajectoryTUM(const string &filename);  // 指定文件名
 
   // Save camera trajectory in the KITTI dataset format.
   // NOTE Only for stereo and RGB-D. This method does not work for monocular.
@@ -150,7 +150,7 @@ public:
   std::vector<MapPoint *> GetTrackedMapPoints();
   std::vector<cv::KeyPoint> GetTrackedKeyPointsUn();
 
-private:
+ private:
   // 注意变量命名方式，类的变量有前缀m，如果这个变量是指针类型还要多加个前缀p，
   // 如果是进程那么加个前缀t
 
@@ -223,6 +223,6 @@ private:
   std::mutex mMutexState;
 };
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2
 
-#endif // SYSTEM_H
+#endif  // SYSTEM_H

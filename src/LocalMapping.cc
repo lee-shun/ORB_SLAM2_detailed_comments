@@ -40,9 +40,15 @@ namespace ORB_SLAM2 {
 
 // 构造函数
 LocalMapping::LocalMapping(Map *pMap, const float bMonocular)
-    : mbMonocular(bMonocular), mbResetRequested(false),
-      mbFinishRequested(false), mbFinished(true), mpMap(pMap), mbAbortBA(false),
-      mbStopped(false), mbStopRequested(false), mbNotStop(false),
+    : mbMonocular(bMonocular),
+      mbResetRequested(false),
+      mbFinishRequested(false),
+      mbFinished(true),
+      mpMap(pMap),
+      mbAbortBA(false),
+      mbStopped(false),
+      mbStopRequested(false),
+      mbNotStop(false),
       mbAcceptKeyFrames(true) {
   /*
    * mbStopRequested：    外部线程调用，为true，表示外部线程请求停止 local
@@ -68,7 +74,6 @@ void LocalMapping::SetTracker(Tracking *pTracker) { mpTracker = pTracker; }
 
 // 线程主函数
 void LocalMapping::Run() {
-
   // 标记状态，表示当前run函数正在运行，尚未结束
   mbFinished = false;
   // 主循环
@@ -124,7 +129,7 @@ void LocalMapping::Run() {
       // Step 8 将当前帧加入到闭环检测队列中
       // 注意这里的关键帧被设置成为了bad的情况,这个需要注意
       mpLoopCloser->InsertKeyFrame(mpCurrentKeyFrame);
-    } else if (Stop()) // 当要终止当前线程的时候
+    } else if (Stop())  // 当要终止当前线程的时候
     {
       // Safe area to stop
       while (isStopped() && !CheckFinish()) {
@@ -133,8 +138,7 @@ void LocalMapping::Run() {
         std::this_thread::sleep_for(std::chrono::milliseconds(3));
       }
       // 然后确定终止了就跳出这个线程的主循环
-      if (CheckFinish())
-        break;
+      if (CheckFinish()) break;
     }
 
     // 查看是否有复位线程的请求
@@ -144,8 +148,7 @@ void LocalMapping::Run() {
     SetAcceptKeyFrames(true);
 
     // 如果当前线程已经结束了就跳出主循环
-    if (CheckFinish())
-      break;
+    if (CheckFinish()) break;
 
     // usleep(3000);
     std::this_thread::sleep_for(std::chrono::milliseconds(3));
@@ -206,8 +209,8 @@ void LocalMapping::ProcessNewKeyFrame() {
           pMP->UpdateNormalAndDepth();
           // 更新地图点的最佳描述子
           pMP->ComputeDistinctiveDescriptors();
-        } else // this can only happen for new stereo points inserted by the
-               // Tracking
+        } else  // this can only happen for new stereo points inserted by the
+                // Tracking
         {
           // 如果当前帧中已经包含了这个地图点,但是这个地图点中却没有包含这个关键帧的信息
           // 这些地图点可能来自双目或RGBD跟踪过程中新生成的地图点，或者是CreateNewMapPoints
@@ -283,8 +286,7 @@ void LocalMapping::CreateNewMapPoints() {
   // nn表示搜索最佳共视关键帧的数目
   // 不同传感器下要求不一样,单目的时候需要有更多的具有较好共视关系的关键帧来建立地图
   int nn = 10;
-  if (mbMonocular)
-    nn = 20;
+  if (mbMonocular) nn = 20;
 
   // Step 1：在当前关键帧的共视关键帧中找到共视程度最高的nn帧相邻关键帧
   const vector<KeyFrame *> vpNeighKFs =
@@ -321,8 +323,7 @@ void LocalMapping::CreateNewMapPoints() {
   // Step 2：遍历相邻关键帧，搜索匹配并用极线约束剔除误匹配，最终三角化
   for (size_t i = 0; i < vpNeighKFs.size(); i++) {
     // ! 疑似bug，正确应该是 if(i>0 && !CheckNewKeyFrames())
-    if (i > 0 && CheckNewKeyFrames())
-      return;
+    if (i > 0 && CheckNewKeyFrames()) return;
 
     KeyFrame *pKF2 = vpNeighKFs[i];
 
@@ -338,8 +339,7 @@ void LocalMapping::CreateNewMapPoints() {
     if (!mbMonocular) {
       // 如果是双目相机，关键帧间距小于本身的基线时不生成3D点
       // 因为太短的基线下能够恢复的地图点不稳定
-      if (baseline < pKF2->mb)
-        continue;
+      if (baseline < pKF2->mb) continue;
     } else {
       // 单目相机情况
       // 相邻关键帧的场景深度中值
@@ -347,8 +347,7 @@ void LocalMapping::CreateNewMapPoints() {
       // 基线与景深的比例
       const float ratioBaselineDepth = baseline / medianDepthKF2;
       // 如果比例特别小，基线太短恢复3D点不准，那么跳过当前邻接的关键帧，不生成3D点
-      if (ratioBaselineDepth < 0.01)
-        continue;
+      if (ratioBaselineDepth < 0.01) continue;
     }
 
     // Compute Fundamental Matrix
@@ -457,8 +456,7 @@ void LocalMapping::CreateNewMapPoints() {
 
         x3D = vt.row(3).t();
         // 归一化之前的检查
-        if (x3D.at<float>(3) == 0)
-          continue;
+        if (x3D.at<float>(3) == 0) continue;
         // 归一化成为齐次坐标,然后提取前面三个维度作为欧式坐标
         x3D = x3D.rowRange(0, 3) / x3D.at<float>(3);
       }
@@ -469,7 +467,7 @@ void LocalMapping::CreateNewMapPoints() {
       } else if (bStereo2 && cosParallaxStereo2 < cosParallaxStereo1) {
         x3D = pKF2->UnprojectStereo(idx2);
       } else
-        continue; // No stereo and very low parallax, 放弃
+        continue;  // No stereo and very low parallax, 放弃
 
       // 为方便后续计算，转换成为了行向量
       cv::Mat x3Dt = x3D.t();
@@ -477,12 +475,10 @@ void LocalMapping::CreateNewMapPoints() {
       // Check triangulation in front of cameras
       // Step 6.5：检测生成的3D点是否在相机前方,不在的话就放弃这个点
       float z1 = Rcw1.row(2).dot(x3Dt) + tcw1.at<float>(2);
-      if (z1 <= 0)
-        continue;
+      if (z1 <= 0) continue;
 
       float z2 = Rcw2.row(2).dot(x3Dt) + tcw2.at<float>(2);
-      if (z2 <= 0)
-        continue;
+      if (z2 <= 0) continue;
 
       // Check reprojection error in first keyframe
       // Step 6.6：计算3D点在当前关键帧下的重投影误差
@@ -498,8 +494,7 @@ void LocalMapping::CreateNewMapPoints() {
         float errX1 = u1 - kp1.pt.x;
         float errY1 = v1 - kp1.pt.y;
         // 假设测量有一个像素的偏差，2自由度卡方检验阈值是5.991
-        if ((errX1 * errX1 + errY1 * errY1) > 5.991 * sigmaSquare1)
-          continue;
+        if ((errX1 * errX1 + errY1 * errY1) > 5.991 * sigmaSquare1) continue;
       } else {
         // 双目情况
         float u1 = fx1 * x1 * invz1 + cx1;
@@ -526,8 +521,7 @@ void LocalMapping::CreateNewMapPoints() {
         float v2 = fy2 * y2 * invz2 + cy2;
         float errX2 = u2 - kp2.pt.x;
         float errY2 = v2 - kp2.pt.y;
-        if ((errX2 * errX2 + errY2 * errY2) > 5.991 * sigmaSquare2)
-          continue;
+        if ((errX2 * errX2 + errY2 * errY2) > 5.991 * sigmaSquare2) continue;
       } else {
         float u2 = fx2 * x2 * invz2 + cx2;
         float u2_r = u2 - mpCurrentKeyFrame->mbf * invz2;
@@ -550,8 +544,7 @@ void LocalMapping::CreateNewMapPoints() {
       cv::Mat normal2 = x3D - Ow2;
       float dist2 = cv::norm(normal2);
 
-      if (dist1 == 0 || dist2 == 0)
-        continue;
+      if (dist1 == 0 || dist2 == 0) continue;
 
       // ratioDist是不考虑金字塔尺度下的距离比例
       const float ratioDist = dist2 / dist1;
@@ -609,8 +602,7 @@ void LocalMapping::SearchInNeighbors() {
 
   // 单目情况要20个邻接关键帧，双目或者RGBD则要10个
   int nn = 10;
-  if (mbMonocular)
-    nn = 20;
+  if (mbMonocular) nn = 20;
 
   // 和当前关键帧相邻的关键帧，也就是一级相邻关键帧
   const vector<KeyFrame *> vpNeighKFs =
@@ -690,8 +682,7 @@ void LocalMapping::SearchInNeighbors() {
                                       vendMP = vpMapPointsKFi.end();
          vitMP != vendMP; vitMP++) {
       MapPoint *pMP = *vitMP;
-      if (!pMP)
-        continue;
+      if (!pMP) continue;
 
       // 如果地图点是坏点，或者已经加进集合vpFuseCandidates，跳过
       if (pMP->isBad() || pMP->mnFuseCandidateForKF == mpCurrentKeyFrame->mnId)
@@ -789,8 +780,7 @@ bool LocalMapping::stopRequested() {
 void LocalMapping::Release() {
   unique_lock<mutex> lock(mMutexStop);
   unique_lock<mutex> lock2(mMutexFinish);
-  if (mbFinished)
-    return;
+  if (mbFinished) return;
   mbStopped = false;
   mbStopRequested = false;
   for (list<KeyFrame *>::iterator lit = mlNewKeyFrames.begin(),
@@ -864,8 +854,7 @@ void LocalMapping::KeyFrameCulling() {
        vit != vend; vit++) {
     KeyFrame *pKF = *vit;
     // 第1个关键帧不能删除，跳过
-    if (pKF->mnId == 0)
-      continue;
+    if (pKF->mnId == 0) continue;
     // Step 2：提取每个共视关键帧的地图点
     const vector<MapPoint *> vpMapPoints = pKF->GetMapPointMatches();
 
@@ -904,8 +893,7 @@ void LocalMapping::KeyFrameCulling() {
                      mend = observations.end();
                  mit != mend; mit++) {
               KeyFrame *pKFi = mit->first;
-              if (pKFi == pKF)
-                continue;
+              if (pKFi == pKF) continue;
               const int &scaleLeveli = pKFi->mvKeysUn[mit->second].octave;
 
               // 尺度约束：为什么pKF 尺度+1 要大于等于 pKFi 尺度？
@@ -913,8 +901,7 @@ void LocalMapping::KeyFrameCulling() {
               if (scaleLeveli <= scaleLevel + 1) {
                 nObs++;
                 // 已经找到3个满足条件的关键帧，就停止不找了
-                if (nObs >= thObs)
-                  break;
+                if (nObs >= thObs) break;
               }
             }
             // 地图点至少被3个关键帧观测到，就记录为冗余点，更新冗余点计数数目
@@ -928,8 +915,7 @@ void LocalMapping::KeyFrameCulling() {
 
     // Step
     // 4：如果该关键帧90%以上的有效地图点被判断为冗余的，则认为该关键帧是冗余的，需要删除该关键帧
-    if (nRedundantObservations > 0.9 * nMPs)
-      pKF->SetBadFlag();
+    if (nRedundantObservations > 0.9 * nMPs) pKF->SetBadFlag();
   }
 }
 
@@ -951,8 +937,7 @@ void LocalMapping::RequestReset() {
   while (1) {
     {
       unique_lock<mutex> lock2(mMutexReset);
-      if (!mbResetRequested)
-        break;
+      if (!mbResetRequested) break;
     }
     // usleep(3000);
     std::this_thread::sleep_for(std::chrono::milliseconds(3));
@@ -987,9 +972,9 @@ bool LocalMapping::CheckFinish() {
 // 设置当前线程已经真正地结束了
 void LocalMapping::SetFinish() {
   unique_lock<mutex> lock(mMutexFinish);
-  mbFinished = true; // 线程已经被结束
+  mbFinished = true;  // 线程已经被结束
   unique_lock<mutex> lock2(mMutexStop);
-  mbStopped = true; // 既然已经都结束了,那么当前线程也已经停止工作了
+  mbStopped = true;  // 既然已经都结束了,那么当前线程也已经停止工作了
 }
 
 // 当前线程的run函数是否已经终止
@@ -998,4 +983,4 @@ bool LocalMapping::isFinished() {
   return mbFinished;
 }
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2

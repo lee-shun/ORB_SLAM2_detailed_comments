@@ -46,8 +46,7 @@ Map::Map() : mnMaxKFid(0) {}
 void Map::AddKeyFrame(KeyFrame *pKF) {
   unique_lock<mutex> lock(mMutexMap);
   mspKeyFrames.insert(pKF);
-  if (pKF->mnId > mnMaxKFid)
-    mnMaxKFid = pKF->mnId;
+  if (pKF->mnId > mnMaxKFid) mnMaxKFid = pKF->mnId;
 }
 
 /*
@@ -166,4 +165,4 @@ void Map::clear() {
   mvpKeyFrameOrigins.clear();
 }
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2

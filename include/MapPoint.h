@@ -50,7 +50,7 @@ class Frame;
  * @brief MapPoint是一个地图点
  */
 class MapPoint {
-public:
+ public:
   /**
    * @brief 给定坐标与keyframe构造MapPoint
    * @details 被调用:
@@ -224,13 +224,13 @@ public:
   // ?
   int PredictScale(const float &currentDist, Frame *pF);
 
-public:
-  long unsigned int mnId; /// < Global ID for MapPoint
+ public:
+  long unsigned int mnId;  /// < Global ID for MapPoint
   static long unsigned int nNextId;
-  const long int mnFirstKFid; /// < 创建该MapPoint的关键帧ID
+  const long int mnFirstKFid;  /// < 创建该MapPoint的关键帧ID
   // 呐,如果是从帧中创建的话,会将普通帧的id存放于这里
   const long int
-      mnFirstFrame; /// < 创建该MapPoint的帧ID（即每一关键帧有一个帧ID）
+      mnFirstFrame;  /// < 创建该MapPoint的帧ID（即每一关键帧有一个帧ID）
 
   // 被观测到的相机数目，单目+1，双目或RGB-D则+2
   int nObs;
@@ -238,9 +238,9 @@ public:
   // Variables used by the tracking
   float mTrackProjX;  /// < 当前地图点投影到某帧上后的坐标
   float mTrackProjY;  /// < 当前地图点投影到某帧上后的坐标
-  float mTrackProjXR; /// < 当前地图点投影到某帧上后的坐标(右目)
-  int mnTrackScaleLevel; ///< 所处的尺度, 由其他的类进行操作 // ?
-  float mTrackViewCos; /// < 被追踪到时,那帧相机看到当前地图点的视角
+  float mTrackProjXR;  /// < 当前地图点投影到某帧上后的坐标(右目)
+  int mnTrackScaleLevel;  ///< 所处的尺度, 由其他的类进行操作 // ?
+  float mTrackViewCos;  /// < 被追踪到时,那帧相机看到当前地图点的视角
   // TrackLocalMap - SearchByProjection 中决定是否对该点进行投影的变量
   // NOTICE mbTrackInView==false的点有几种：
   // a
@@ -266,8 +266,8 @@ public:
   // point.h里面也有同名的变量。
   long unsigned int mnBALocalForKF;
   long unsigned int
-      mnFuseCandidateForKF; /// <
-                            /// 在局部建图线程中使用,表示被用来进行地图点融合的关键帧(存储的是这个关键帧的id)
+      mnFuseCandidateForKF;  /// <
+                             /// 在局部建图线程中使用,表示被用来进行地图点融合的关键帧(存储的是这个关键帧的id)
 
   // Variables used by loop closing -- 一般都是为了避免重复操作
   ///  标记当前地图点是作为哪个"当前关键帧"的回环地图点(即回环关键帧上的地图点),在回环检测线程中被调用
@@ -283,9 +283,9 @@ public:
   /// 全局BA中对当前点进行操作的时候使用的互斥量
   static std::mutex mGlobalMutex;
 
-protected:
+ protected:
   // Position in absolute coordinates
-  cv::Mat mWorldPos; /// < MapPoint在世界坐标系下的坐标
+  cv::Mat mWorldPos;  /// < MapPoint在世界坐标系下的坐标
 
   // Keyframes observing the point and associated index in keyframe
   // 观测到该MapPoint的KF和该MapPoint在KF中的索引
@@ -329,6 +329,6 @@ protected:
   std::mutex mMutexFeatures;
 };
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2
 
-#endif // MAPPOINT_H
+#endif  // MAPPOINT_H

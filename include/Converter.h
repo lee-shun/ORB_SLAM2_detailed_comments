@@ -49,7 +49,7 @@ namespace ORB_SLAM2 {
  * @details 注意这是一个完全的静态类，没有成员变量，所有的成员函数均为静态的。
  */
 class Converter {
-public:
+ public:
   /**
    * @brief 描述子矩阵到单行的描述子向量的转换.
    * @details cv::Mat -> std::vector<cv::Mat> \n
@@ -181,6 +181,6 @@ public:
   /** @} */
 };
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2
 
-#endif // CONVERTER_H
+#endif  // CONVERTER_H

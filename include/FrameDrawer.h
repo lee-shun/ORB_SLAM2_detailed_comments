@@ -47,7 +47,7 @@ class Tracking;
 class Viewer;
 
 class FrameDrawer {
-public:
+ public:
   /**
    * @brief 构造函数
    *
@@ -72,7 +72,7 @@ public:
    */
   cv::Mat DrawFrame();
 
-protected:
+ protected:
   /**
    * @brief 绘制底部的信息栏
    *
@@ -110,6 +110,6 @@ protected:
   std::mutex mMutex;
 };
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2
 
-#endif // FRAMEDRAWER_H
+#endif  // FRAMEDRAWER_H

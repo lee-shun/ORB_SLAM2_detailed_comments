@@ -61,19 +61,17 @@ void MapDrawer::DrawMapPoints() {
   // set::count用于返回集合中为某个值的元素的个数
   set<MapPoint *> spRefMPs(vpRefMPs.begin(), vpRefMPs.end());
 
-  if (vpMPs.empty())
-    return;
+  if (vpMPs.empty()) return;
 
   // for AllMapPoints
   // 显示所有的地图点（不包括局部地图点），大小为2个像素，黑色
   glPointSize(mPointSize);
   glBegin(GL_POINTS);
-  glColor3f(0.0, 0.0, 0.0); // 黑色
+  glColor3f(0.0, 0.0, 0.0);  // 黑色
 
   for (size_t i = 0, iend = vpMPs.size(); i < iend; i++) {
     // 不包括ReferenceMapPoints（局部地图点）
-    if (vpMPs[i]->isBad() || spRefMPs.count(vpMPs[i]))
-      continue;
+    if (vpMPs[i]->isBad() || spRefMPs.count(vpMPs[i])) continue;
     cv::Mat pos = vpMPs[i]->GetWorldPos();
     glVertex3f(pos.at<float>(0), pos.at<float>(1), pos.at<float>(2));
   }
@@ -87,8 +85,7 @@ void MapDrawer::DrawMapPoints() {
 
   for (set<MapPoint *>::iterator sit = spRefMPs.begin(), send = spRefMPs.end();
        sit != send; sit++) {
-    if ((*sit)->isBad())
-      continue;
+    if ((*sit)->isBad()) continue;
     cv::Mat pos = (*sit)->GetWorldPos();
     glVertex3f(pos.at<float>(0), pos.at<float>(1), pos.at<float>(2));
   }
@@ -166,7 +163,7 @@ void MapDrawer::DrawKeyFrames(const bool bDrawKF, const bool bDrawGraph) {
     // 设置共视图连接线为绿色，透明度为0.6f
     glColor4f(0.0f, 1.0f, 0.0f, 0.6f);
     glBegin(
-        GL_LINES); // 绘制线条的时候,默认是按照添加顺序,每两个点之间绘制一条直线
+        GL_LINES);  // 绘制线条的时候,默认是按照添加顺序,每两个点之间绘制一条直线
 
     for (size_t i = 0; i < vpKFs.size(); i++) {
       // Covisibility Graph (共视图)
@@ -180,8 +177,7 @@ void MapDrawer::DrawKeyFrames(const bool bDrawKF, const bool bDrawGraph) {
                                                 vend = vCovKFs.end();
              vit != vend; vit++) {
           // 单向绘制
-          if ((*vit)->mnId < vpKFs[i]->mnId)
-            continue;
+          if ((*vit)->mnId < vpKFs[i]->mnId) continue;
           cv::Mat Ow2 = (*vit)->GetCameraCenter();
           glVertex3f(Ow.at<float>(0), Ow.at<float>(1), Ow.at<float>(2));
           glVertex3f(Ow2.at<float>(0), Ow2.at<float>(1), Ow2.at<float>(2));
@@ -206,8 +202,7 @@ void MapDrawer::DrawKeyFrames(const bool bDrawKF, const bool bDrawGraph) {
       for (set<KeyFrame *>::iterator sit = sLoopKFs.begin(),
                                      send = sLoopKFs.end();
            sit != send; sit++) {
-        if ((*sit)->mnId < vpKFs[i]->mnId)
-          continue;
+        if ((*sit)->mnId < vpKFs[i]->mnId) continue;
         cv::Mat Owl = (*sit)->GetCameraCenter();
         glVertex3f(Ow.at<float>(0), Ow.at<float>(1), Ow.at<float>(2));
         glVertex3f(Owl.at<float>(0), Owl.at<float>(1), Owl.at<float>(2));
@@ -309,4 +304,4 @@ void MapDrawer::GetCurrentOpenGLCameraMatrix(pangolin::OpenGlMatrix &M) {
     M.SetIdentity();
 }
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2

@@ -43,7 +43,7 @@
 namespace ORB_SLAM2 {
 
 class ORBmatcher {
-public:
+ public:
   /**
    * Constructor
    * @param nnratio  ratio of the best and the second score 最优和次优评分的比例
@@ -242,17 +242,17 @@ public:
   int Fuse(KeyFrame *pKF, cv::Mat Scw, const std::vector<MapPoint *> &vpPoints,
            float th, vector<MapPoint *> &vpReplacePoint);
 
-public:
+ public:
   // 要用到的一些阈值
   static const int
-      TH_LOW; /// <
-              /// 判断描述子距离时比较低的那个阈值,主要用于基于词袋模型加速的匹配过程，可能是感觉使用词袋模型的时候对匹配的效果要更加严格一些
+      TH_LOW;  /// <
+               /// 判断描述子距离时比较低的那个阈值,主要用于基于词袋模型加速的匹配过程，可能是感觉使用词袋模型的时候对匹配的效果要更加严格一些
   static const int
-      TH_HIGH; /// <
-               /// 判断描述子距离时比较高的那个阈值,用于计算投影后能够匹配上的特征点的数目；如果匹配的函数中没有提供阈值的话，默认就使用这个阈值
-  static const int HISTO_LENGTH; /// < 判断特征点旋转用直方图的长度
+      TH_HIGH;  /// <
+                /// 判断描述子距离时比较高的那个阈值,用于计算投影后能够匹配上的特征点的数目；如果匹配的函数中没有提供阈值的话，默认就使用这个阈值
+  static const int HISTO_LENGTH;  /// < 判断特征点旋转用直方图的长度
 
-protected:
+ protected:
   /**
    * @brief 检查极线距离
    * @param[in] kp1   特征点1
@@ -284,10 +284,10 @@ protected:
   void ComputeThreeMaxima(std::vector<int> *histo, const int L, int &ind1,
                           int &ind2, int &ind3);
 
-  float mfNNratio;         /// < 最优评分和次优评分的比例
-  bool mbCheckOrientation; /// < 是否检查特征点的方向
+  float mfNNratio;          /// < 最优评分和次优评分的比例
+  bool mbCheckOrientation;  /// < 是否检查特征点的方向
 };
 
-} // namespace ORB_SLAM2
+}  // namespace ORB_SLAM2
 
-#endif // ORBMATCHER_H
+#endif  // ORBMATCHER_H
