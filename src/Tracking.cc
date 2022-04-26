@@ -360,6 +360,9 @@ cv::Mat Tracking::GrabImageMonocular(const cv::Mat &im,
   // Step 2 ：构造Frame
   // shun: 内含相机参数，特征点信息等等数据
   // 判断该帧是不是初始化
+  /**
+   * STEP(lee-shun): 构造帧, 或许应该是前端最重要的数据结构了
+   * */
   if (mState == NOT_INITIALIZED ||
       mState == NO_IMAGES_YET)  // 没有成功初始化的前一个状态就是NO_IMAGES_YET
     mCurrentFrame = Frame(

@@ -346,7 +346,7 @@ Frame::Frame(const cv::Mat &imGray, const double &timeStamp,
   // Step 1 帧的ID 自增
   mnId = nNextId++;
 
-  // Step 2 计算图像金字塔的参数
+  // Step: 2 计算图像金字塔的参数
   // Scale Level Info
   // 获取图像金字塔的层数
   mnScaleLevels = mpORBextractorLeft->GetLevels();
@@ -364,7 +364,7 @@ Frame::Frame(const cv::Mat &imGray, const double &timeStamp,
   mvInvLevelSigma2 = mpORBextractorLeft->GetInverseScaleSigmaSquares();
 
   // ORB extraction
-  // Step 3 对这个单目图像进行提取特征点, 第一个参数0-左图， 1-右图
+  // STEP: 3 对这个单目图像进行提取特征点, 第一个参数0-左图， 1-右图
   ExtractORB(0, imGray);
 
   // 求出特征点的个数

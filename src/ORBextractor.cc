@@ -2321,7 +2321,7 @@ void ORBextractor::operator()(InputArray _image, InputArray _mask,
   assert(image.type() == CV_8UC1);
 
   // Pre-compute the scale pyramid
-  // Step 2 构建图像金字塔
+  // STEP: 2 构建图像金字塔
   ComputePyramid(image);
 
   // Step 3
@@ -2442,7 +2442,10 @@ void ORBextractor::ComputePyramid(cv::Mat image) {
     // 定义了两个变量：temp是扩展了边界的图像，masktemp并未使用
     Mat temp(wholeSize, image.type()), masktemp;
     // mvImagePyramid 刚开始时是个空的vector<Mat>
-    // 把图像金字塔该图层的图像指针mvImagePyramid指向temp的中间部分（这里为浅拷贝，内存相同）
+    // 把图像金字塔该图层的图像指针mvImagePyramid指向temp的中间部分（这里为浅拷贝，内存相同)
+
+    // NOTE(lee-shun): 让图像金字塔里面存的都是原图, 但是旁边的部分也是申请了内
+    // NOTE: 存,这样在后面的计算的时候不至于访问到非法的内存...(awesome!)
     mvImagePyramid[level] =
         temp(Rect(EDGE_THRESHOLD, EDGE_THRESHOLD, sz.width, sz.height));
 
@@ -2457,18 +2460,24 @@ void ORBextractor::ComputePyramid(cv::Mat image) {
              0,  // 垂直方向上的缩放系数，留0表示自动计算
              cv::INTER_LINEAR);  // 图像缩放的差值算法类型，这里的是线性插值算法
 
+      // NOTE(lee-shun): 内存已经申请出来了, 只是mvImagePyramid 存的是内部的原图
+      // NOTE: 而已. 我认为没有任何问题
       // // !  原代码mvImagePyramid 并未扩充，上面resize应该改为如下
-      // resize(image,	                // 输入图像
-      // 	   mvImagePyramid[level], 	// 输出图像
-      // 	   sz, 						//
-      // 输出图像的尺寸 	   0,
-      // // 水平方向上的缩放系数，留0表示自动计算 	   0,
-      // // 垂直方向上的缩放系数，留0表示自动计算 	   cv::INTER_LINEAR);
+      // resize(image,                  // 输入图像
+      //     mvImagePyramid[level],   // 输出图像
+      //     sz,            //
+      // 输出图像的尺寸      0,
+      // // 水平方向上的缩放系数，留0表示自动计算      0,
+      // // 垂直方向上的缩放系数，留0表示自动计算      cv::INTER_LINEAR);
       // // 图像缩放的差值算法类型，这里的是线性插值算法
 
       // 把源图像拷贝到目的图像的中央，四面填充指定的像素。图片如果已经拷贝到中间，只填充边界
       // 这样做是为了能够正确提取边界的FAST角点
-      // EDGE_THRESHOLD指的这个边界的宽度，由于这个边界之外的像素不是原图像素而是算法生成出来的，所以不能够在EDGE_THRESHOLD之外提取特征点
+      // EDGE_THRESHOLD指的这个边界的宽度，由于这个边界之外的像素不是原图像素而
+      // 是算法生成出来的，所以不能够在EDGE_THRESHOLD之外提取特征点
+      // NOTE(lee-shun): 此时的mvImagePyramid[level] 以及temp 共享一部分内存, 实
+      // NOTE: 际上只是做了"make border" 的操作.
+
       copyMakeBorder(
           mvImagePyramid[level],  // 源图像
           temp,  // 目标图像（此时其实就已经有大了一圈的尺寸了）
@@ -2485,7 +2494,7 @@ void ORBextractor::ComputePyramid(cv::Mat image) {
        * BORDER_CONSTANT:      iiiiii|abcdefgh|iiiiiii  with some specified 'i'
        */
 
-      // BORDER_ISOLATED	表示对整个图像进行操作
+      // BORDER_ISOLATED  表示对整个图像进行操作
       // https://docs.opencv.org/3.4.4/d2/de8/
       // group__core__array.html#ga2ac1049c2c3dd25c2b41bffe17658a36
 
