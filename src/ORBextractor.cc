@@ -1816,12 +1816,11 @@ vector<cv::KeyPoint> ORBextractor::DistributeOctTree(
 }
 
 // 计算四叉树的特征点，函数名字后面的OctTree只是说明了在过滤和分配特征点时所使用的方式
-// shun: 直接使用的opencv的数据结构KeyPoint
+// NOTE(lee-shun): 直接使用的opencv的数据结构KeyPoint
+// 所有的特征点，这里第一层vector存储的是某图层里面的所有特征点，
+// 第二层存储的是整个图像金字塔中的所有图层里面的所有特征点
 void ORBextractor::ComputeKeyPointsOctTree(
-    vector<vector<KeyPoint>> &
-        allKeypoints)  // 所有的特征点，这里第一层vector存储的是某图层里面的所有特征点，
-                       // 第二层存储的是整个图像金字塔中的所有图层里面的所有特征点
-{
+    vector<vector<KeyPoint>> &allKeypoints) {
   // 重新调整图像层数
   allKeypoints.resize(nlevels);
 
@@ -1858,19 +1857,24 @@ void ORBextractor::ComputeKeyPointsOctTree(
     const int hCell = ceil(height / nRows);
 
     // 开始遍历图像网格，还是以行开始遍历的
+    // NOTE(lee-shun): 此处的两个格子之间会重叠6, 因为下一个initY 小于上一个maxY
+    // 6个格子
     for (int i = 0; i < nRows; i++) {
       // 计算当前网格初始行坐标
       const float iniY = minBorderY + i * hCell;
-      // 计算当前网格最大的行坐标，这里的+6=+3+3，即考虑到了多出来3是为了cell边界像素进行FAST特征点提取用
-      // 前面的EDGE_THRESHOLD指的应该是提取后的特征点所在的边界，所以minBorderY是考虑了计算半径时候的图像边界
-      // 目测一个图像网格的大小是25*25啊
+      // 计算当前网格最大的行坐标，这里的+6=+3+3，即考虑到了多出来3是为了cell边
+      // 界像素进行FAST特征点提取用前面的EDGE_THRESHOLD指的应该是提取后的特征点
+      // 所在的边界，所以minBorderY是考虑了计算半径时候的图像边界目测一个图像网
+      // 格的大小是25*25啊
       float maxY = iniY + hCell + 6;
 
-      // 如果初始的行坐标就已经超过了有效的图像边界了，这里的“有效图像”是指原始的、可以提取FAST特征点的图像区域
+      // 如果初始的行坐标就已经超过了有效的图像边界了，这里的“有效图像”是指原始
+      // 的、可以提取FAST特征点的图像区域
       if (iniY >= maxBorderY - 3)
         // 那么就跳过这一行
         continue;
-      // 如果图像的大小导致不能够正好划分出来整齐的图像网格，那么就要委屈最后一行了
+      // 如果图像的大小导致不能够正好划分出来整齐的图像网格，剩下的全部作为一个
+      // 网格
       if (maxY > maxBorderY) maxY = maxBorderY;
 
       // 开始列的遍历
@@ -1904,7 +1908,7 @@ void ORBextractor::ComputeKeyPointsOctTree(
           // 那么就使用更低的阈值来进行重新检测
           FAST(mvImagePyramid[level]
                    .rowRange(iniY, maxY)
-                   .colRange(iniX, maxX),  // 待检测的图像
+                   .colRange(iniX, maxX),  // 待检测的图像, 截取了一块儿patch进去
                vKeysCell,                  // 存储角点位置的容器
                minThFAST,                  // 更低的检测阈值
                true);                      // 使能非极大值抑制
@@ -1937,7 +1941,7 @@ void ORBextractor::ComputeKeyPointsOctTree(
     // allKeypoints[level];resPerLevel,即该层的兴趣点数,对特征点进行剔除
     // 返回值是一个保存有特征点的vector容器，含有剔除后的保留下来的特征点
     // 得到的特征点的坐标，依旧是在当前图层下来讲的
-    // shun: 核心的均匀化
+    // NOTE(lee-shun): 核心的均匀化
     keypoints = DistributeOctTree(
         vToDistributeKeys,  // 当前图层提取出来的特征点，也即是等待剔除的特征点
                             // NOTICE
@@ -2326,7 +2330,8 @@ void ORBextractor::operator()(InputArray _image, InputArray _mask,
 
   // Step 3
   // 计算图像的特征点，并且将特征点进行均匀化。均匀的特征点可以提高位姿计算精度
-  // 存储所有的特征点，注意此处为二维的vector，第一维存储的是金字塔的层数，第二维存储的是那一层金字塔图像里提取的所有特征点
+  // 存储所有的特征点，注意此处为二维的vector，第一维存储的是金字塔的层数，第二
+  // 维存储的是那一层金字塔图像里提取的所有特征点
   vector<vector<KeyPoint>> allKeypoints;
   // 使用四叉树的方式计算每层图像的特征点并进行分配
   ComputeKeyPointsOctTree(allKeypoints);
