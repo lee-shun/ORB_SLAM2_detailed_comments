@@ -55,9 +55,9 @@ class ExtractorNode {
   std::vector<cv::KeyPoint> vKeys;
   /// 当前节点所对应的图像坐标边界
   cv::Point2i UL, UR, BL, BR;
-  //存储提取器节点的列表（其实就是双向链表）的一个迭代器,可以参考[http://www.runoob.com/cplusplus/
-  // cpp-overloading.html]
-  // 这个迭代器提供了访问总节点列表的方式，需要结合cpp文件进行分析
+  // 存储提取器节点的列表（其实就是双向链表）的一个迭代器,可以参考[http:
+  // www.runoob.com/cplusplus/ cpp-overloading.html] 这个迭代器提供了访问总节点
+  // 列表的方式，需要结合cpp文件进行分析
   std::list<ExtractorNode>::iterator lit;
 
   /// 如果节点中只有一个特征点的话，说明这个节点不能够再进行分裂了，这个标志置位
