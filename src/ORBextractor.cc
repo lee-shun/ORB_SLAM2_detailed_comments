@@ -2371,12 +2371,14 @@ void ORBextractor::operator()(InputArray _image, InputArray _mask,
     // //blog.csdn.net/giantchen547792075/article/details/ 9107877]
     _descriptors.release();
   } else {
-    // 如果图像金字塔中有特征点，那么就创建这个存储描述子的矩阵，注意这个矩阵是存储整个图像金字塔中特征点的描述子的
+    // 如果图像金字塔中有特征点，那么就创建这个存储描述子的矩阵，注意这个矩阵是
+    // 存储整个图像金字塔中特征点的描述子的
     _descriptors.create(nkeypoints,  // 矩阵的行数，对应为特征点的总个数
                         32,  // 矩阵的列数，对应为使用32*8=256位描述子
                         CV_8U);  // 矩阵元素的格式
                                  // 获取这个描述子的矩阵信息
-    // ?为什么不是直接在参数_descriptors上对矩阵内容进行修改，而是重新新建了一个变量，复制矩阵后，在这个新建变量的基础上进行修改？
+    // ?为什么不是直接在参数_descriptors上对矩阵内容进行修改，而是重新新建了一个
+    // 变量，复制矩阵后，在这个新建变量的基础上进行修改？
     descriptors = _descriptors.getMat();
   }
 
@@ -2385,7 +2387,8 @@ void ORBextractor::operator()(InputArray _image, InputArray _mask,
   // 并预分配正确大小的空间
   _keypoints.reserve(nkeypoints);
 
-  // 因为遍历是一层一层进行的，但是描述子那个矩阵是存储整个图像金字塔中特征点的描述子，所以在这里设置了Offset变量来保存“寻址”时的偏移量，
+  // 因为遍历是一层一层进行的，但是描述子那个矩阵是存储整个图像金字塔中特征点的
+  // 描述子，所以在这里设置了Offset变量来保存“寻址”时的偏移量，
   // 辅助进行在总描述子mat中的定位
   int offset = 0;
   // 开始遍历每一层图像
@@ -2403,7 +2406,8 @@ void ORBextractor::operator()(InputArray _image, InputArray _mask,
     // 深拷贝当前金字塔所在层级的图像
     Mat workingMat = mvImagePyramid[level].clone();
 
-    // 注意：提取特征点的时候，使用的是清晰的原图像；这里计算描述子的时候，为了避免图像噪声的影响，使用了高斯模糊
+    // 注意：提取特征点的时候，使用的是清晰的原图像；这里计算描述子的时候，为了
+    // 避免图像噪声的影响，使用了高斯模糊
     GaussianBlur(workingMat,  // 源图像
                  workingMat,  // 输出图像
                  Size(7, 7),  // 高斯滤波器kernel大小，必须为正的奇数

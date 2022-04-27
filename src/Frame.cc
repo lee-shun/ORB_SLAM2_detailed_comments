@@ -373,7 +373,7 @@ Frame::Frame(const cv::Mat &imGray, const double &timeStamp,
   // 如果没有能够成功提取出特征点，那么就直接返回了
   if (mvKeys.empty()) return;
 
-  // Step 4 用OpenCV的矫正函数、内参对提取到的特征点进行矫正
+  // STEP: 4 用OpenCV的矫正函数、内参对提取到的特征点进行矫正
   UndistortKeyPoints();
 
   // Set no stereo information
@@ -388,8 +388,8 @@ Frame::Frame(const cv::Mat &imGray, const double &timeStamp,
 
   // This is done only for the first Frame (or after a change in the
   // calibration)
-  //  Step 5
-  //  计算去畸变后图像边界，将特征点分配到网格中。这个过程一般是在第一帧或者是相机标定参数发生变化之后进行
+  //  STEP: 5 计算去畸变后图像边界，将特征点分配到网格中。这个过程一般是在第一帧
+  //  或者是相机标定参数发生变化之后进行
   if (mbInitialComputations) {
     // 计算去畸变后图像的边界
     ComputeImageBounds(imGray);
@@ -426,7 +426,7 @@ Frame::Frame(const cv::Mat &imGray, const double &timeStamp,
  *
  */
 void Frame::AssignFeaturesToGrid() {
-  // Step 1  给存储特征点的网格数组 Frame::mGrid 预分配空间
+  // STEP: 1  给存储特征点的网格数组 Frame::mGrid 预分配空间
   // ? 这里0.5 是为什么？节省空间？
   // FRAME_GRID_COLS = 64，FRAME_GRID_ROWS=48
   int nReserve = 0.5f * N / (FRAME_GRID_COLS * FRAME_GRID_ROWS);
@@ -752,18 +752,20 @@ void Frame::ComputeBoW() {
  */
 void Frame::UndistortKeyPoints() {
   // Step 1
-  // 如果第一个畸变参数为0，不需要矫正。第一个畸变参数k1是最重要的，一般不为0，为0的话，说明畸变参数都是0
-  // 变量mDistCoef中存储了opencv指定格式的去畸变参数，格式为：(k1,k2,p1,p2,k3)
+  // 如果第一个畸变参数为0，不需要矫正。第一个畸变参数k1是最重要的，一般不为0，
+  // 为0的话，说明畸变参数都是0 变量mDistCoef中存储了opencv指定格式的去畸变参数
+  // 格式为：(k1,k2,p1,p2,k3)
   if (mDistCoef.at<float>(0) == 0.0) {
     mvKeysUn = mvKeys;
     return;
   }
 
-  // Step 2 如果畸变参数不为0，用OpenCV函数进行畸变矫正
+  // STEP: 2 如果畸变参数不为0，用OpenCV函数进行畸变矫正
   // Fill matrix with points
   // N为提取的特征点数量，为满足OpenCV函数输入要求，将N个特征点保存在N*2的矩阵中
   cv::Mat mat(N, 2, CV_32F);
   // 遍历每个特征点，并将它们的坐标保存到矩阵中
+  // NOTE(shun): 实际上只是对于特征点进行了去畸变
   for (int i = 0; i < N; i++) {
     // 然后将这个特征点的横纵坐标分别保存
     mat.at<float>(i, 0) = mvKeys[i].pt.x;
@@ -786,12 +788,13 @@ void Frame::UndistortKeyPoints() {
   mat = mat.reshape(1);
 
   // Fill undistorted keypoint vector
-  // Step 存储校正后的特征点
+  // STEP: 存储校正后的特征点
   mvKeysUn.resize(N);
   // 遍历每一个特征点
   for (int i = 0; i < N; i++) {
     // 根据索引获取这个特征点
-    // 注意之所以这样做而不是直接重新声明一个特征点对象的目的是，能够得到源特征点对象的其他属性
+    // 注意之所以这样做而不是直接重新声明一个特征点对象的目的是，能够得到源特征
+    // 点对象的其他属性
     cv::KeyPoint kp = mvKeys[i];
     // 读取校正后的坐标并覆盖老坐标
     kp.pt.x = mat.at<float>(i, 0);
