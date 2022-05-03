@@ -628,18 +628,18 @@ vector<size_t> Frame::GetFeaturesInArea(const float &x, const float &y,
   vector<size_t> vIndices;
   vIndices.reserve(N);
 
-  // Step 1 计算半径为r圆左右上下边界所在的网格列和行的id
-  // 查找半径为r的圆左侧边界所在网格列坐标。这个地方有点绕，慢慢理解下：
-  // (mnMaxX-mnMinX)/FRAME_GRID_COLS：表示列方向每个网格可以平均分得几个像素（肯定大于1）
-  // mfGridElementWidthInv=FRAME_GRID_COLS/(mnMaxX-mnMinX)
-  // 是上面倒数，表示每个像素可以均分几个网格列（肯定小于1）
-  // (x-mnMinX-r)，可以看做是从图像的左边界mnMinX到半径r的圆的左边界区域占的像素列数
-  // 两者相乘，就是求出那个半径为r的圆的左侧边界在哪个网格列中
-  // 保证nMinCellX 结果大于等于0
+  // STEP: 1 计算半径为r圆左右上下边界所在的网格列和行的id 查找半径为r的圆左侧边
+  // 界所在网格列坐标。这个地方有点绕，慢慢理解下：(mnMaxX-mnMinX)
+  // /FRAME_GRID_COLS：表示列方向每个网格可以平均分得几个像素（肯定大于1）
+  // mfGridElementWidthInv=FRAME_GRID_COLS/(mnMaxX-mnMinX) 是上面倒数，表示每个
+  // 像素可以均分几个网格列（肯定小于1）(x-mnMinX-r)，可以看做是从图像的左边界
+  // mnMinX到半径r的圆的左边界区域占的像素列数两者相乘，就是求出那个半径为r的圆
+  // 的左侧边界在哪个网格列中保证nMinCellX 结果大于等于0
   const int nMinCellX =
       max(0, (int)floor((x - mnMinX - r) * mfGridElementWidthInv));
 
-  // 如果最终求得的圆的左边界所在的网格列超过了设定了上限，那么就说明计算出错，找不到符合要求的特征点，返回空vector
+  // 如果最终求得的圆的左边界所在的网格列超过了设定了上限，那么就说明计算出错，
+  // 找不到符合要求的特征点，返回空vector
   if (nMinCellX >= FRAME_GRID_COLS) return vIndices;
 
   // 计算圆所在的右边界网格列索引
@@ -664,8 +664,8 @@ vector<size_t> Frame::GetFeaturesInArea(const float &x, const float &y,
   // ? 改为 const bool bCheckLevels = (minLevel>=0) || (maxLevel>=0);
   const bool bCheckLevels = (minLevel > 0) || (maxLevel >= 0);
 
-  // Step 2
-  // 遍历圆形区域内的所有网格，寻找满足条件的候选特征点，并将其index放到输出里
+  // STEP: 2 遍历圆形区域内的所有网格，寻找满足条件的候选特征点，并将其index放到
+  // 输出里
   for (int ix = nMinCellX; ix <= nMaxCellX; ix++) {
     for (int iy = nMinCellY; iy <= nMaxCellY; iy++) {
       // 获取这个网格内的所有特征点在 Frame::mvKeysUn 中的索引

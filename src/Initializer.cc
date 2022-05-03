@@ -34,7 +34,7 @@
 #include "Thirdparty/DBoW2/DUtils/Random.h"
 
 #include "ORBmatcher.h"
-#include "Optimizer.h"  // 不太明白为什么这个头文件的包含在vscode中会报错
+#include "Optimizer.h"
 
 // 这里使用到了多线程的加速技术
 #include <thread>
@@ -66,7 +66,8 @@ Initializer::Initializer(const Frame &ReferenceFrame, float sigma,
 
 /**
  * @brief
- * 计算基础矩阵和单应性矩阵，选取最佳的来恢复出最开始两帧之间的相对姿态，并进行三角化得到初始地图点
+ * 计算基础矩阵和单应性矩阵，选取最佳的来恢复出最开始两帧之间的相对姿态，并进行
+ * 三角化得到初始地图点
  * Step 1 重新记录特征点对的匹配关系
  * Step 2 在所有匹配特征点对中随机选择8对匹配特征点为一组，用于估计H矩阵和F矩阵
  * Step 3 计算fundamental 矩阵 和homography 矩阵，为了加速分别开了线程计算
@@ -74,7 +75,8 @@ Initializer::Initializer(const Frame &ReferenceFrame, float sigma,
  *
  * @param[in] CurrentFrame          当前帧，也就是SLAM意义上的第二帧
  * @param[in] vMatches12 当前帧（2）和参考帧（1）图像中特征点的匹配关系
- *                                  vMatches12[i]解释：i表示帧1中关键点的索引值，vMatches12[i]的值为帧2的关键点索引值
+ *                                  vMatches12[i]解释：i表示帧1中关键点的索引值，
+ *                                  vMatches12[i]的值为帧2的关键点索引值
  *                                  没有匹配关系的话，vMatches12[i]值为 -1
  * @param[in & out] R21                   相机从参考帧到当前帧的旋转
  * @param[in & out] t21                   相机从参考帧到当前帧的平移
@@ -106,7 +108,8 @@ bool Initializer::Initialize(const Frame &CurrentFrame,
   // 重新记录特征点对的匹配关系存储在mvMatches12，是否有匹配存储在mvbMatched1
   // 将vMatches12（有冗余） 转化为 mvMatches12（只记录了匹配关系）
   for (size_t i = 0, iend = vMatches12.size(); i < iend; i++) {
-    // vMatches12[i]解释：i表示帧1中关键点的索引值，vMatches12[i]的值为帧2的关键点索引值
+    // vMatches12[i]解释：i表示帧1中关键点的索引值，vMatches12[i]的值为帧2的关键
+    // 点索引值
     // 没有匹配关系的话，vMatches12[i]值为 -1
     if (vMatches12[i] >= 0) {
       // mvMatches12 中只记录有匹配关系的特征点对的索引值
@@ -126,7 +129,8 @@ bool Initializer::Initialize(const Frame &CurrentFrame,
   vector<size_t> vAllIndices;
   vAllIndices.reserve(N);
 
-  // 在RANSAC的某次迭代中，还可以被抽取来作为数据样本的特征点对的索引，所以这里起的名字叫做可用的索引
+  // 在RANSAC的某次迭代中，还可以被抽取来作为数据样本的特征点对的索引，所以这里
+  // 起的名字叫做可用的索引
   vector<size_t> vAvailableIndices;
   // 初始化所有特征点对的索引，索引值0到N-1
   for (int i = 0; i < N; i++) {
@@ -142,7 +146,8 @@ bool Initializer::Initialize(const Frame &CurrentFrame,
       mMaxIterations,  // 最大的RANSAC迭代次数
       vector<size_t>(
           8,
-          0));  // 这个则是第二维元素的初始值，也就是第一维。这里其实也是一个第一维的构造函数，第一维vector有8项，每项的初始值为0.
+          0));  // 这个则是第二维元素的初始值，也就是第一维。这里其实也是一个第
+                // 一维的构造函数，第一维vector有8项，每项的初始值为0.
 
   // 用于进行随机数据样本采样，设置随机数种子
   DUtils::Random::SeedRandOnce(0);
