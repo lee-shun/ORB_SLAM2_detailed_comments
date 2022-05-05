@@ -921,15 +921,15 @@ void Tracking::CreateInitialMapMonocular() {
   pKFcur->ComputeBoW();
 
   // Insert KFs in the map
-  // Step 2 将关键帧插入到地图
+  // STEP: 2 将关键帧插入到地图
   mpMap->AddKeyFrame(pKFini);
   mpMap->AddKeyFrame(pKFcur);
 
   // Create MapPoints and asscoiate to keyframes
-  // Step 3 用初始化得到的3D点来生成地图点MapPoints
+  // STEP: 3 用初始化得到的3D点来生成地图点MapPoints
   //  mvIniMatches[i] 表示初始化两帧特征点匹配关系。
-  //  具体解释：i表示帧1中关键点的索引值，vMatches12[i]的值为帧2的关键点索引值,没有匹配关系的话，vMatches12[i]值为
-  //  -1
+  //  具体解释：i表示帧1中关键点的索引值，vMatches12[i]的值为帧2的关键点索引值,
+  //  没有匹配关系的话，vMatches12[i]值为 -1
   for (size_t i = 0; i < mvIniMatches.size(); i++) {
     // 没有匹配，跳过
     if (mvIniMatches[i] < 0) continue;
@@ -938,10 +938,10 @@ void Tracking::CreateInitialMapMonocular() {
     // 用三角化点初始化为空间点的世界坐标
     cv::Mat worldPos(mvIniP3D[i]);
 
-    // Step 3.1 用3D点构造MapPoint
+    // STEP: 3.1 用3D点构造MapPoint
     MapPoint *pMP = new MapPoint(worldPos, pKFcur, mpMap);
 
-    // Step 3.2 为该MapPoint添加属性：
+    // STEP: 3.2 为该MapPoint添加属性：
     // a.观测到该MapPoint的关键帧
     // b.该MapPoint的描述子
     // c.该MapPoint的平均观测方向和深度范围
@@ -970,8 +970,9 @@ void Tracking::CreateInitialMapMonocular() {
   }
 
   // Update Connections
-  // Step 3.3 更新关键帧间的连接关系
-  // 在3D点和关键帧之间建立边，每个边有一个权重，边的权重是该关键帧与当前帧公共3D点的个数
+  // STEP: 3.3 更新关键帧间的连接关系
+  // 使用3D点在关键帧之间建立边，每个边有一个权重，边的权重是该关键帧与当前帧公共
+  // 3D点的个数
   pKFini->UpdateConnections();
   pKFcur->UpdateConnections();
 

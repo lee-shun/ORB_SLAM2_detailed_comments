@@ -409,13 +409,13 @@ MapPoint *KeyFrame::GetMapPoint(const size_t &idx) {
 /*
  * 更新关键帧之间的连接图, 共视图
  *
- * 1.
- * 首先获得该关键帧的所有MapPoint点，统计观测到这些3d点的每个关键帧与其它所有关键帧之间的共视程度
- *    对每一个找到的关键帧，建立一条边，边的权重是该关键帧与当前关键帧公共3d点的个数。
- * 2.
- * 并且该权重必须大于一个阈值，如果没有超过该阈值的权重，那么就只保留权重最大的边（与其它关键帧的共视程度比较高）
- * 3. 对这些连接按照权重从大到小进行排序，以方便将来的处理
- *    更新完covisibility图之后，如果没有初始化过，则初始化为连接权重最大的边（与其它关键帧共视程度最高的那个关键帧），类似于最大生成树
+ * 1. 首先获得该关键帧的所有MapPoint点，统计观测到这些3d点的每个关键帧与其它所有
+ * 关键帧之间的共视程度对每一个找到的关键帧，建立一条边，边的权重是该关键帧与当
+ * 前关键帧公共3d点的个数。
+ * 2. 并且该权重必须大于一个阈值，如果没有超过该阈值的权重，那么就只保留权重最大
+ * 的边（与其它关键帧的共视程度比较高）3. 对这些连接按照权重从大到小进行排序，以
+ * 方便将来的处理更新完covisibility图之后，如果没有初始化过，则初始化为连接权重
+ * 最大的边（与其它关键帧共视程度最高的那个关键帧），类似于最大生成树
  */
 void KeyFrame::UpdateConnections() {
   // 关键帧-权重，权重为其它关键帧与当前关键帧共视地图点的个数，也称为共视程度
@@ -430,7 +430,7 @@ void KeyFrame::UpdateConnections() {
 
   // For all map points in keyframe check in which other keyframes are they seen
   // Increase counter for those keyframes
-  // Step 1 通过地图点被关键帧观测来间接统计关键帧之间的共视程度
+  // STEP: 1 通过地图点被关键帧观测来间接统计关键帧之间的共视程度
   // 统计每一个地图点都有多少关键帧与当前关键帧存在共视关系，统计结果放在KFcounter
   for (vector<MapPoint *>::iterator vit = vpMP.begin(), vend = vpMP.end();
        vit != vend; vit++) {
@@ -846,8 +846,9 @@ cv::Mat KeyFrame::UnprojectStereo(int i) {
 }
 
 // Compute Scene Depth (q=2 median). Used in monocular.
-// 评估当前关键帧场景深度，q=2表示中值. 只是在单目情况下才会使用
-// 其实过程就是对当前关键帧下所有地图点的深度进行从小到大排序,返回距离头部其中1/q处的深度值作为当前场景的平均深度
+// 评估当前关键帧场景深度，q=2表示中值. 只是在单目情况下才会使用其实过程就是对当
+// 前关键帧下所有地图点的深度进行从小到大排序,返回距离头部其中1/q处的深度值作为
+// 当前场景的平均深度
 float KeyFrame::ComputeSceneMedianDepth(const int q) {
   vector<MapPoint *> vpMapPoints;
   cv::Mat Tcw_;
