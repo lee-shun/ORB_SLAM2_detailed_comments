@@ -980,11 +980,11 @@ void Tracking::CreateInitialMapMonocular() {
   cout << "New Map created with " << mpMap->MapPointsInMap() << " points"
        << endl;
 
-  // Step 4 全局BA优化，同时优化所有位姿和三维点
+  // STEP: 4 全局BA优化，同时优化所有位姿和三维点, 只有初始化帧
   Optimizer::GlobalBundleAdjustemnt(mpMap, 20);
 
   // Set median depth to 1
-  // Step 5 取场景的中值深度，用于尺度归一化
+  // STEP: 5 取场景的中值深度，用于尺度归一化
   // 为什么是 pKFini 而不是 pKCur ? 答：都可以的，内部做了位姿变换了
   float medianDepth = pKFini->ComputeSceneMedianDepth(2);
   float invMedianDepth = 1.0f / medianDepth;
@@ -996,7 +996,7 @@ void Tracking::CreateInitialMapMonocular() {
     return;
   }
 
-  // Step 6 将两帧之间的变换归一化到平均深度1的尺度下
+  // STEP: 6 将两帧之间的变换归一化到平均深度1的尺度下
   // Scale initial baseline
   cv::Mat Tc2w = pKFcur->GetPose();
   // x/z y/z 将z归一化到1
@@ -1004,7 +1004,7 @@ void Tracking::CreateInitialMapMonocular() {
   pKFcur->SetPose(Tc2w);
 
   // Scale points
-  // Step 7 把3D点的尺度也归一化到1
+  // STEP: 7 把3D点的尺度也归一化到1
   // 为什么是pKFini? 是不是就算是使用 pKFcur 得到的结果也是相同的?
   // 答：是的，因为是同样的三维点
   vector<MapPoint *> vpAllMapPoints = pKFini->GetMapPointMatches();
@@ -1015,7 +1015,8 @@ void Tracking::CreateInitialMapMonocular() {
     }
   }
 
-  //  Step 8 将关键帧插入局部地图，更新归一化后的位姿、局部地图点
+  //  STEP: 8 将关键帧插入局部地图，更新归一化后的位姿、局部地图点
+  //  NOTE: 关键帧更新之后, 因为之前的关键帧是指针, 所以拿到指针的, 位姿也更新了
   mpLocalMapper->InsertKeyFrame(pKFini);
   mpLocalMapper->InsertKeyFrame(pKFcur);
 
@@ -1134,7 +1135,7 @@ bool Tracking::TrackReferenceKeyFrame() {
  */
 void Tracking::UpdateLastFrame() {
   // Update pose according to reference keyframe
-  // Step 1：利用参考关键帧更新上一帧在世界坐标系下的位姿
+  // STEP: 1：利用参考关键帧更新上一帧在世界坐标系下的位姿
   // 上一普通帧的参考关键帧，注意这里用的是参考关键帧（位姿准）而不是上上一帧的普通帧
   KeyFrame *pRef = mLastFrame.mpReferenceKF;
   // ref_keyframe 到 lastframe的位姿变换
@@ -1149,13 +1150,14 @@ void Tracking::UpdateLastFrame() {
   if (mnLastKeyFrameId == mLastFrame.mnId || mSensor == System::MONOCULAR)
     return;
 
-  // Step 2：对于双目或rgbd相机，为上一帧生成新的临时地图点
-  // 注意这些地图点只是用来跟踪，不加入到地图中，跟踪完后会删除
+  // STEP: 2：对于双目或rgbd相机，为上一帧生成新的临时地图点
+  // NOTE: 注意这些地图点只是用来跟踪，不加入到地图中，跟踪完后会删除
 
   // Create "visual odometry" MapPoints
   // We sort points according to their measured depth by the stereo/RGB-D sensor
-  // Step 2.1：得到上一帧中具有有效深度值的特征点（不一定是地图点）
+  // STEP: 2.1：得到上一帧中具有有效深度值的特征点（不一定是地图点）
   vector<pair<float, int>> vDepthIdx;
+  // NOTE: 准备找出特征点个三维点, 然后将不是地图点的生成临时地图点
   vDepthIdx.reserve(mLastFrame.N);
 
   for (int i = 0; i < mLastFrame.N; i++) {
@@ -1174,14 +1176,15 @@ void Tracking::UpdateLastFrame() {
 
   // We insert all close points (depth<mThDepth)
   // If less than 100 close points, we insert the 100 closest ones.
-  // Step 2.2：从中找出不是地图点的部分
+  // STEP: 2.2：从中找出不是地图点的部分
   int nPoints = 0;
   for (size_t j = 0; j < vDepthIdx.size(); j++) {
     int i = vDepthIdx[j].second;
 
     bool bCreateNew = false;
 
-    // 如果这个点对应在上一帧中的地图点没有,或者创建后就没有被观测到,那么就生成一个临时的地图点
+    // 如果这个点对应在上一帧中的地图点没有,或者创建后就没有被观测到,那么就生成
+    // 一个临时的地图点
     MapPoint *pMP = mLastFrame.mvpMapPoints[i];
     if (!pMP)
       bCreateNew = true;
@@ -1191,8 +1194,8 @@ void Tracking::UpdateLastFrame() {
     }
 
     if (bCreateNew) {
-      // Step 2.3：需要创建的点，包装为地图点。只是为了提高双目和RGBD的跟踪成功率，并没有添加复杂属性，因为后面会扔掉
-      // 反投影到世界坐标系中
+      // STEP: 2.3：需要创建的点，包装为地图点。只是为了提高双目和RGBD的跟踪成功
+      // 率，并没有添加复杂属性，因为后面会扔掉反投影到世界坐标系中
       cv::Mat x3D = mLastFrame.UnprojectStereo(i);
       MapPoint *pNewMP =
           new MapPoint(x3D,          // 世界坐标系坐标
@@ -1211,7 +1214,7 @@ void Tracking::UpdateLastFrame() {
       nPoints++;
     }
 
-    // Step 2.4：如果地图点质量不好，停止创建地图点
+    // STEP: 2.4：如果地图点质量不好，停止创建地图点
     // 停止新增临时地图点必须同时满足以下条件：
     // 1、当前的点的深度已经超过了设定的深度阈值（35倍基线）
     // 2、nPoints已经超过100个点，说明距离比较远了，可能不准确，停掉退出

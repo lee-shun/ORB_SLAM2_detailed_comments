@@ -869,7 +869,7 @@ float KeyFrame::ComputeSceneMedianDepth(const int q) {
     if (mvpMapPoints[i]) {
       MapPoint *pMP = mvpMapPoints[i];
       cv::Mat x3Dw = pMP->GetWorldPos();
-      float z = Rcw2.dot(x3Dw) + zcw;  // (R*x3Dw+t)的第三行，即z
+      float z = Rcw2.dot(x3Dw) + zcw;  // (R*x3Dw+t)的第三行，即z, 相机坐标系
       vDepths.push_back(z);
     }
   }

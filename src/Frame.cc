@@ -275,7 +275,8 @@ Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth,
   // Step 4 用OpenCV的矫正函数、内参对提取到的特征点进行矫正
   UndistortKeyPoints();
 
-  // Step 5 获取图像的深度，并且根据这个深度推算其右图中匹配的特征点的视差
+  // Step 5 获取图像的深度，并且根据这个深度推算其右图中匹配的特征点的视差,
+  // 深度信息
   ComputeStereoFromRGBD(imDepth);
 
   // 初始化本帧的地图点
