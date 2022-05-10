@@ -480,12 +480,12 @@ void Frame::SetPose(cv::Mat Tcw) {
 }
 
 // 根据Tcw计算mRcw、mtcw和mRwc、mOw
-void Frame::UpdatePoseMatrices() {
   // mOw：    当前相机光心在世界坐标系下坐标
   // mTcw：   世界坐标系到相机坐标系的变换矩阵
   // mRcw：   世界坐标系到相机坐标系的旋转矩阵
   // mtcw：   世界坐标系到相机坐标系的平移向量
   // mRwc：   相机坐标系到世界坐标系的旋转矩阵
+void Frame::UpdatePoseMatrices() {
 
   // 从变换矩阵中提取出旋转矩阵
   // 注意，rowRange这个只取到范围的左边界，而不取右边界

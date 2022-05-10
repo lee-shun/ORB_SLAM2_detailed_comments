@@ -617,10 +617,11 @@ void KeyFrame::SetErase() {
  * @brief 真正地执行删除关键帧的操作
  * 需要删除的是该关键帧和其他所有帧、地图点之间的连接关系
  *
- * mbNotErase作用：表示要删除该关键帧及其连接关系但是这个关键帧有可能正在回环检测或者计算sim3操作，这时候虽然这个关键帧冗余，但是却不能删除，
- * 仅设置mbNotErase为true，这时候调用setbadflag函数时，不会将这个关键帧删除，只会把mbTobeErase变成true，代表这个关键帧可以删除但不到时候,先记下来以后处理。
- * 在闭环线程里调用 SetErase()会根据mbToBeErased
- * 来删除之前可以删除还没删除的帧。
+ * mbNotErase作用：表示要删除该关键帧及其连接关系但是这个关键帧有可能正在回环检
+ * 测或者计算sim3操作，这时候虽然这个关键帧冗余，但是却不能删除，仅设置
+ * mbNotErase为true，这时候调用setbadflag函数时，不会将这个关键帧删除，只会把
+ * mbTobeErase变成true，代表这个关键帧可以删除但不到时候,先记下来以后处理。在闭
+ * 环线程里调用 SetErase()会根据mbToBeErased 来删除之前可以删除还没删除的帧。
  */
 void KeyFrame::SetBadFlag() {
   // Step 1 首先处理一下删除不了的特殊情况
@@ -631,7 +632,7 @@ void KeyFrame::SetBadFlag() {
     if (mnId == 0)
       return;
     else if (mbNotErase) {
-      // mbNotErase表示不应该删除，于是把mbToBeErased置为true，假装已经删除，其实没有删除
+      // mbNotErase表示现在不应该删除，于是把mbToBeErased置为true，假装已经删除，其实没有删除
       mbToBeErased = true;
       return;
     }
