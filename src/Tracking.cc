@@ -563,7 +563,8 @@ void Tracking::Track() {
 
     // If we have an initial estimation of the camera pose and matching. Track
     // the local map.
-    // STEP: 3：在跟踪得到当前帧初始姿态后，现在对local map进行跟踪得到更多的匹配，
+    // STEP: 3：在跟踪得到当前帧初始姿态后，现在对local
+    // map进行跟踪得到更多的匹配，
     // 并优化当前位姿前面只是跟踪一帧得到初始位姿，这里搜索局部关键帧、局部地图
     // 点，和当前帧进行投影匹配，得到更多匹配的MapPoints后进行Pose优化
     if (!mbOnlyTracking) {
@@ -1889,19 +1890,20 @@ void Tracking::UpdateLocalKeyFrames() {
  * Step 1：计算当前帧特征点的词袋向量
  * Step 2：找到与当前帧相似的候选关键帧
  * Step 3：通过BoW进行匹配
- * Step 4：通过EPnP算法估计姿态
+ * Step 4：通过EPnP算法估计姿态2D-3D
  * Step 5：通过PoseOptimization对姿态进行优化求解
  * Step
  * 6：如果内点较少，则通过投影的方式对之前未匹配的点进行匹配，再进行优化求解
  */
 bool Tracking::Relocalization() {
   // Compute Bag of Words Vector
-  // Step 1：计算当前帧特征点的词袋向量
+  // STEP: 1：计算当前帧特征点的词袋向量
   mCurrentFrame.ComputeBoW();
 
   // Relocalization is performed when tracking is lost
   // Track Lost: Query KeyFrame Database for keyframe candidates for
-  // relocalisation Step 2：用词袋找到与当前帧相似的候选关键帧
+  // relocalisation
+  // STEP: 2：用词袋找到与当前帧相似的候选关键帧
   vector<KeyFrame *> vpCandidateKFs =
       mpKeyFrameDB->DetectRelocalizationCandidates(&mCurrentFrame);
 
