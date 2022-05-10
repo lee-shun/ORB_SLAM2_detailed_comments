@@ -357,8 +357,9 @@ float MapPoint::GetFoundRatio() {
 /**
  * @brief 计算地图点最具代表性的描述子
  *
- * 由于一个地图点会被许多相机观测到，因此在插入关键帧后，需要判断是否更新代表当前点的描述子
- * 先获得当前点的所有描述子，然后计算描述子之间的两两距离，最好的描述子与其他描述子应该具有最小的距离中值
+ * 由于一个地图点会被许多相机观测到，因此在插入关键帧后，需要判断是否更新代表当
+ * 前点的描述子先获得当前点的所有描述子，然后计算描述子之间的两两距离，最好的描
+ * 述子与其他描述子应该具有最小的距离中值
  */
 void MapPoint::ComputeDistinctiveDescriptors() {
   // Retrieve all observed descriptors
@@ -366,7 +367,7 @@ void MapPoint::ComputeDistinctiveDescriptors() {
 
   map<KeyFrame *, size_t> observations;
 
-  // Step 1 获取该地图点所有有效的观测关键帧信息
+  // STEP: 1 获取该地图点所有有效的观测关键帧信息
   {
     unique_lock<mutex> lock1(mMutexFeatures);
     if (mbBad) return;
@@ -377,7 +378,7 @@ void MapPoint::ComputeDistinctiveDescriptors() {
 
   vDescriptors.reserve(observations.size());
 
-  // Step 2
+  // STEP: 2
   // 遍历观测到该地图点的所有关键帧，对应的orb描述子，放到向量vDescriptors中
   for (map<KeyFrame *, size_t>::iterator mit = observations.begin(),
                                          mend = observations.end();
@@ -394,7 +395,7 @@ void MapPoint::ComputeDistinctiveDescriptors() {
   if (vDescriptors.empty()) return;
 
   // Compute distances between them
-  // Step 3 计算这些描述子两两之间的距离
+  // STEP: 3 计算这些描述子两两之间的距离
   // N表示为一共多少个描述子
   const size_t N = vDescriptors.size();
 
@@ -415,7 +416,7 @@ void MapPoint::ComputeDistinctiveDescriptors() {
   }
 
   // Take the descriptor with least median distance to the rest
-  // Step 4 选择最有代表性的描述子，它与其他描述子应该具有最小的距离中值
+  // STEP: 4 选择最有代表性的描述子，它与其他描述子应该具有最小的距离中值
   int BestMedian = INT_MAX;  // 记录最小的中值
   int BestIdx = 0;           // 最小中值对应的索引
   for (size_t i = 0; i < N; i++) {
@@ -480,7 +481,7 @@ bool MapPoint::IsInKeyFrame(KeyFrame *pKF) {
  *
  */
 void MapPoint::UpdateNormalAndDepth() {
-  // Step 1 获得观测到该地图点的所有关键帧、坐标等信息
+  // STEP: 1 获得观测到该地图点的所有关键帧、坐标等信息
   map<KeyFrame *, size_t> observations;
   KeyFrame *pRefKF;
   cv::Mat Pos;
@@ -496,9 +497,9 @@ void MapPoint::UpdateNormalAndDepth() {
 
   if (observations.empty()) return;
 
-  // Step 2 计算该地图点的平均观测方向
-  // 能观测到该地图点的所有关键帧，对该点的观测方向归一化为单位向量，然后进行求和得到该地图点的朝向
-  // 初始值为0向量，累加为归一化向量，最后除以总数n
+  // STEP: 2 计算该地图点的平均观测方向
+  // 能观测到该地图点的所有关键帧，对该点的观测方向归一化为单位向量，然后进行求
+  // 和得到该地图点的朝向初始值为0向量，累加为归一化向量，最后除以总数n
   cv::Mat normal = cv::Mat::zeros(3, 1, CV_32F);
   int n = 0;
   for (map<KeyFrame *, size_t>::iterator mit = observations.begin(),
@@ -557,10 +558,11 @@ float MapPoint::GetMaxDistanceInvariance() {
 //           log(dmax/d)
 // m = ceil(------------)
 //            log(1.2)
-// 这个函数的作用:
-// 在进行投影匹配的时候会给定特征点的搜索范围,考虑到处于不同尺度(也就是距离相机远近,位于图像金字塔中不同图层)的特征点受到相机旋转的影响不同,
-// 因此会希望距离相机近的点的搜索范围更大一点,距离相机更远的点的搜索范围更小一点,所以要在这里,根据点到关键帧/帧的距离来估计它在当前的关键帧/帧中,
-// 会大概处于哪个尺度
+// 这个函数的作用: 在进行投影匹配的时候会给定特征点的搜索范围,考虑到处于不同尺度
+// (也就是距离相机远近,位于图像金字塔中不同图层)的特征点受到相机旋转的影响不同,
+// 因此会希望距离相机近的点的搜索范围更大一点,距离相机更远的点的搜索范围更小一点,
+// 所以要在这里,根据点到关键帧/帧的距离来估计它在当前的关键帧/帧中, 会大概处于哪
+// 个尺度
 
 /**
  * @brief 预测地图点对应特征点所在的图像金字塔尺度层数
