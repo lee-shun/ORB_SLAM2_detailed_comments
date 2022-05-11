@@ -1401,7 +1401,7 @@ bool Tracking::NeedNewKeyFrame() {
   if (mbOnlyTracking) return false;
 
   // If Local Mapping is freezed by a Loop Closure do not insert keyframes
-  // STEP: 2：如果局部地图线程被闭环检测使用，则不插入关键帧
+  // STEP: 2：如果局部建图线程被闭环检测使用，则不插入关键帧
   if (mpLocalMapper->isStopped() || mpLocalMapper->stopRequested())
     return false;
   // 获取当前地图中的关键帧数目
@@ -1573,7 +1573,8 @@ void Tracking::CreateNewKeyFrame() {
 
         bool bCreateNew = false;
 
-        // 如果这个点对应在上一帧中的地图点没有,或者创建后就没有被观测到,那么就生成一个临时的地图点
+        // 如果这个点对应在上一帧中的地图点没有,或者创建后就没有被观测到,那么就
+        // 生成一个临时的地图点
         MapPoint *pMP = mCurrentFrame.mvpMapPoints[i];
         if (!pMP)
           bCreateNew = true;
@@ -1582,7 +1583,8 @@ void Tracking::CreateNewKeyFrame() {
           mCurrentFrame.mvpMapPoints[i] = static_cast<MapPoint *>(NULL);
         }
 
-        // 如果需要就新建地图点，这里的地图点不是临时的，是全局地图中新建地图点，用于跟踪
+        //NOTE: 如果需要就新建地图点，这里的地图点不是临时的，是全局地图中新建地图点，
+        // 用于跟踪
         if (bCreateNew) {
           cv::Mat x3D = mCurrentFrame.UnprojectStereo(i);
           MapPoint *pNewMP = new MapPoint(x3D, pKF, mpMap);
@@ -1930,7 +1932,7 @@ bool Tracking::Relocalization() {
   // 有效的候选关键帧数目
   int nCandidates = 0;
 
-  // Step 3：遍历所有的候选关键帧，通过词袋进行快速匹配，用匹配结果初始化PnP
+  // STEP: 3：遍历所有的候选关键帧，通过词袋进行快速匹配，用匹配结果初始化PnP
   // Solver
   for (int i = 0; i < nKFs; i++) {
     KeyFrame *pKF = vpCandidateKFs[i];
