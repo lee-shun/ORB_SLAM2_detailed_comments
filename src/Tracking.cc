@@ -1073,17 +1073,17 @@ void Tracking::CheckReplacedInLastFrame() {
 /*
  * @brief 用参考关键帧的地图点来对当前普通帧进行跟踪
  *
- * Step 1：将当前普通帧的描述子转化为BoW向量
- * Step 2：通过词袋BoW加速当前帧与参考帧之间的特征点匹配
- * Step 3: 将上一帧的位姿态作为当前帧位姿的初始值
- * Step 4: 通过优化3D-2D的重投影误差来获得位姿
- * Step 5：剔除优化后的匹配点中的外点
+ * STEP: 1：将当前普通帧的描述子转化为BoW向量
+ * STEP: 2：通过词袋BoW加速当前帧与参考帧之间的特征点匹配
+ * STEP: 3: 将上一帧的位姿态作为当前帧位姿的初始值
+ * STEP: 4: 通过优化3D-2D的重投影误差来获得位姿
+ * STEP: 5：剔除优化后的匹配点中的外点
  * @return 如果匹配数超10，返回true
  *
  */
 bool Tracking::TrackReferenceKeyFrame() {
   // Compute Bag of Words vector
-  // Step 1：将当前帧的描述子转化为BoW向量
+  // STEP: 1：将当前帧的描述子转化为BoW向量
   mCurrentFrame.ComputeBoW();
 
   // We perform first an ORB matching with the reference keyframe
@@ -1091,7 +1091,7 @@ bool Tracking::TrackReferenceKeyFrame() {
   ORBmatcher matcher(0.7, true);
   vector<MapPoint *> vpMapPointMatches;
 
-  // Step 2：通过词袋BoW加速当前帧与参考帧之间的特征点匹配
+  // STEP: 2：通过词袋BoW加速当前帧与参考帧之间的特征点匹配
   int nmatches = matcher.SearchByBoW(mpReferenceKF,       // 参考关键帧
                                      mCurrentFrame,       // 当前帧
                                      vpMapPointMatches);  // 存储匹配关系
@@ -1099,16 +1099,16 @@ bool Tracking::TrackReferenceKeyFrame() {
   // 匹配数目小于15，认为跟踪失败
   if (nmatches < 15) return false;
 
-  // Step 3:将上一帧的位姿态作为当前帧位姿的初始值
+  // STEP: 3:将上一帧的位姿态作为当前帧位姿的初始值
   mCurrentFrame.mvpMapPoints = vpMapPointMatches;
   // 用上一次的Tcw设置初值，在PoseOptimization可以收敛快一些
   mCurrentFrame.SetPose(mLastFrame.mTcw);
 
-  // Step 4:通过优化3D-2D的重投影误差来获得位姿
+  // STEP: 4:通过优化3D-2D的重投影误差来获得位姿
   Optimizer::PoseOptimization(&mCurrentFrame);
 
   // Discard outliers
-  // Step 5：剔除优化后的匹配点中的外点
+  // STEP: 5：剔除优化后的匹配点中的外点
   // 之所以在优化之后才剔除外点，是因为在优化的过程中就有了对这些外点的标记
   int nmatchesMap = 0;
   for (int i = 0; i < mCurrentFrame.N; i++) {
@@ -1123,9 +1123,10 @@ bool Tracking::TrackReferenceKeyFrame() {
         pMP->mbTrackInView = false;
         pMP->mnLastFrameSeen = mCurrentFrame.mnId;
         nmatches--;
-      } else if (mCurrentFrame.mvpMapPoints[i]->Observations() > 0)
+      } else if (mCurrentFrame.mvpMapPoints[i]->Observations() > 0) {
         // 匹配的内点计数++
         nmatchesMap++;
+      }
     }
   }
   // 跟踪成功的数目超过10才认为跟踪成功，否则跟踪失败
@@ -1583,7 +1584,8 @@ void Tracking::CreateNewKeyFrame() {
           mCurrentFrame.mvpMapPoints[i] = static_cast<MapPoint *>(NULL);
         }
 
-        //NOTE: 如果需要就新建地图点，这里的地图点不是临时的，是全局地图中新建地图点，
+        // NOTE:
+        // 如果需要就新建地图点，这里的地图点不是临时的，是全局地图中新建地图点，
         // 用于跟踪
         if (bCreateNew) {
           cv::Mat x3D = mCurrentFrame.UnprojectStereo(i);

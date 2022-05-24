@@ -228,11 +228,11 @@ bool ORBmatcher::CheckDistEpipolarLine(const cv::KeyPoint &kp1,
 /*
  * @brief 通过词袋，对关键帧的特征点进行跟踪
  * 步骤
- * Step 1：分别取出属于同一node的ORB特征点(只有属于同一node，才有可能是匹配点)
- * Step 2：遍历KF中属于该node的特征点
- * Step 3：遍历F中属于该node的特征点，寻找最佳匹配点
- * Step 4：根据阈值 和 角度投票剔除误匹配
- * Step 5：根据方向剔除误匹配的点
+ * STEP: 1：分别取出属于同一node的ORB特征点(只有属于同一node，才有可能是匹配点)
+ * STEP: 2：遍历KF中属于该node的特征点
+ * STEP: 3：遍历F中属于该node的特征点，寻找最佳匹配点
+ * STEP: 4：根据阈值 和 角度投票剔除误匹配
+ * STEP: 5：根据方向剔除误匹配的点
  * @param  pKF               关键帧
  * @param  F                 当前普通帧
  * @param  vpMapPointMatches F中地图点对应的匹配，NULL表示未匹配
@@ -268,15 +268,14 @@ int ORBmatcher::SearchByBoW(KeyFrame *pKF, Frame &F,
   DBoW2::FeatureVector::const_iterator Fend = F.mFeatVec.end();
 
   while (KFit != KFend && Fit != Fend) {
-    // Step
-    // 1：分别取出属于同一node的ORB特征点(只有属于同一node，才有可能是匹配点)
-    // first 元素就是node id，遍历
+    // STEP: 1：分别取出属于同一node的ORB特征点(只有属于同一node，才有可能是匹配
+    // 点) first 元素就是node id，遍历
     if (KFit->first == Fit->first) {
       // second 是该node内存储的feature index
       const vector<unsigned int> vIndicesKF = KFit->second;
       const vector<unsigned int> vIndicesF = Fit->second;
 
-      // Step 2：遍历KF中属于该node的特征点
+      // STEP: 2：遍历KF中属于该node的特征点
       for (size_t iKF = 0; iKF < vIndicesKF.size(); iKF++) {
         // 关键帧该节点中特征点的索引
         const unsigned int realIdxKF = vIndicesKF[iKF];
@@ -295,7 +294,7 @@ int ORBmatcher::SearchByBoW(KeyFrame *pKF, Frame &F,
         int bestIdxF = -1;
         int bestDist2 = 256;  // 次好距离（倒数第二小距离）
 
-        // Step 3：遍历F中属于该node的特征点，寻找最佳匹配点
+        // STEP: 3：遍历F中属于该node的特征点，寻找最佳匹配点
         for (size_t iF = 0; iF < vIndicesF.size(); iF++) {
           // 和上面for循环重名了,这里的realIdxF是指普通帧该节点中特征点的索引
           const unsigned int realIdxF = vIndicesF[iF];
@@ -321,19 +320,20 @@ int ORBmatcher::SearchByBoW(KeyFrame *pKF, Frame &F,
           }
         }
 
-        // Step 4：根据阈值 和 角度投票剔除误匹配
-        // Step 4.1：第一关筛选：匹配距离必须小于设定阈值
+        // STEP: 4：根据阈值 和 角度投票剔除误匹配
+        // STEP: 4.1：第一关筛选：匹配距离必须小于设定阈值
         if (bestDist1 <= TH_LOW) {
-          // Step 4.2：第二关筛选：最佳匹配比次佳匹配明显要好，那么最佳匹配才真正靠谱
+          // STEP: 4.2：第二关筛选：最佳匹配比次佳匹配明显要好，那么最佳匹配才真
+          // 正靠谱
           if (static_cast<float>(bestDist1) <
               mfNNratio * static_cast<float>(bestDist2)) {
-            // Step 4.3：记录成功匹配特征点的对应的地图点(来自关键帧)
+            // STEP: 4.3：记录成功匹配特征点的对应的地图点(来自关键帧)
             vpMapPointMatches[bestIdxF] = pMP;
 
             // 这里的realIdxKF是当前遍历到的关键帧的特征点id
             const cv::KeyPoint &kp = pKF->mvKeysUn[realIdxKF];
 
-            // Step 4.4：计算匹配点旋转角度差所在的直方图
+            // STEP: 4.4：计算匹配点旋转角度差所在的直方图
             if (mbCheckOrientation) {
               // angle：每个特征点在提取描述子时的旋转主方向角度，如果图像旋转了，这个角度将发生改变
               // 所有的特征点的角度变化应该是一致的，通过直方图统计得到最准确的角度变化值
@@ -361,7 +361,7 @@ int ORBmatcher::SearchByBoW(KeyFrame *pKF, Frame &F,
     }
   }
 
-  // Step 5 根据方向剔除误匹配的点
+  // STEP: 5 根据方向剔除误匹配的点
   if (mbCheckOrientation) {
     // index
     int ind1 = -1;
