@@ -58,9 +58,11 @@ ORBmatcher::ORBmatcher(float nnratio, bool checkOri)
  * 步骤
  * Step 1 遍历有效的局部地图点
  * Step 2 设定搜索搜索窗口的大小。取决于视角, 若当前视角和平均视角夹角较小时,
- * r取一个较小的值 Step 3 通过投影点以及搜索窗口和预测的尺度进行搜索,
- * 找出搜索半径内的候选匹配点索引 Step 4 寻找候选匹配点中的最佳和次佳匹配点 Step
- * 5 筛选最佳匹配点
+ * r取一个较小的值 
+ * Step 3 通过投影点以及搜索窗口和预测的尺度进行搜索,
+ * 找出搜索半径内的候选匹配点索引 
+ * Step 4 寻找候选匹配点中的最佳和次佳匹配点 
+ * Step 5 筛选最佳匹配点
  * @param[in] F                         当前帧
  * @param[in] vpMapPoints               局部地图点，来自局部关键帧
  * @param[in] th                        搜索范围
@@ -74,7 +76,7 @@ int ORBmatcher::SearchByProjection(Frame &F,
   // 如果 th！=1 (RGBD 相机或者刚刚进行过重定位), 需要扩大范围搜索
   const bool bFactor = th != 1.0;
 
-  // Step 1 遍历有效的局部地图点
+  // STEP: 1 遍历有效的局部地图点
   for (size_t iMP = 0; iMP < vpMapPoints.size(); iMP++) {
     MapPoint *pMP = vpMapPoints[iMP];
 
@@ -87,14 +89,14 @@ int ORBmatcher::SearchByProjection(Frame &F,
     const int &nPredictedLevel = pMP->mnTrackScaleLevel;
 
     // The size of the window will depend on the viewing direction
-    // Step 2 设定搜索搜索窗口的大小。取决于视角,
+    // STEP: 2 设定搜索搜索窗口的大小。取决于视角,
     // 若当前视角和平均视角夹角较小时, r取一个较小的值
     float r = RadiusByViewingCos(pMP->mTrackViewCos);
 
     // 如果需要扩大范围搜索，则乘以阈值th
     if (bFactor) r *= th;
 
-    // Step 3 通过投影点以及搜索窗口和预测的尺度进行搜索,
+    // STEP: 3 通过投影点以及搜索窗口和预测的尺度进行搜索,
     // 找出搜索半径内的候选匹配点索引
     const vector<size_t> vIndices = F.GetFeaturesInArea(
         pMP->mTrackProjX, pMP->mTrackProjY,  // 该地图点投影到一帧上的坐标
@@ -105,6 +107,7 @@ int ORBmatcher::SearchByProjection(Frame &F,
     // 没找到候选的,就放弃对当前点的匹配
     if (vIndices.empty()) continue;
 
+    // NOTE: 也就是那个最具有特征的描述子
     const cv::Mat MPdescriptor = pMP->GetDescriptor();
 
     // 最优的次优的描述子距离和index
@@ -115,7 +118,7 @@ int ORBmatcher::SearchByProjection(Frame &F,
     int bestIdx = -1;
 
     // Get best and second matches with near keypoints
-    // Step 4 寻找候选匹配点中的最佳和次佳匹配点
+    // STEP: 4 寻找候选匹配点中的最佳和次佳匹配点
     for (vector<size_t>::const_iterator vit = vIndices.begin(),
                                         vend = vIndices.end();
          vit != vend; vit++) {
@@ -139,7 +142,8 @@ int ORBmatcher::SearchByProjection(Frame &F,
 
       const cv::Mat &d = F.mDescriptors.row(idx);
 
-      // 计算地图点和候选投影点的描述子距离
+      // 计算地图点和候选投影点的描述子距离, 
+      // NOTE: 也就是那个最具有特征代表性的描述子
       const int dist = DescriptorDistance(MPdescriptor, d);
 
       // 寻找描述子距离最小和次小的特征点和索引
