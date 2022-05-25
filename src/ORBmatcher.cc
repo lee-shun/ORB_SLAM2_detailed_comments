@@ -1571,13 +1571,13 @@ int ORBmatcher::SearchBySim3(KeyFrame *pKF1, KeyFrame *pKF2,
 /**
  * @brief 将上一帧跟踪的地图点投影到当前帧，并且搜索匹配点。用于跟踪前一帧
  * 步骤
- * Step 1 建立旋转直方图，用于检测旋转一致性
- * Step 2 计算当前帧和前一帧的平移向量
- * Step 3 对于前一帧的每一个地图点，通过相机投影模型，得到投影到当前帧的像素坐标
- * Step 4 根据相机的前后前进方向来判断搜索尺度范围
- * Step 5 遍历候选匹配点，寻找距离最小的最佳匹配点
- * Step 6 计算匹配点旋转角度差所在的直方图
- * Step 7 进行旋转一致检测，剔除不一致的匹配
+ * STEP: 1 建立旋转直方图，用于检测旋转一致性
+ * STEP: 2 计算当前帧和前一帧的平移向量
+ * STEP: 3
+ * 对于前一帧的每一个地图点，通过相机投影模型，得到投影到当前帧的像素坐标 STEP:
+ * 4 根据相机的前后前进方向来判断搜索尺度范围 STEP: 5
+ * 遍历候选匹配点，寻找距离最小的最佳匹配点 STEP: 6
+ * 计算匹配点旋转角度差所在的直方图 STEP: 7 进行旋转一致检测，剔除不一致的匹配
  * @param[in] CurrentFrame          当前帧
  * @param[in] LastFrame             上一帧
  * @param[in] th                    搜索范围阈值，默认单目为7，双目15
@@ -1589,7 +1589,7 @@ int ORBmatcher::SearchByProjection(Frame &CurrentFrame, const Frame &LastFrame,
   int nmatches = 0;
 
   // Rotation Histogram (to check rotation consistency)
-  // Step 1 建立旋转直方图，用于检测旋转一致性
+  // STEP: 1 建立旋转直方图，用于检测旋转一致性
   vector<int> rotHist[HISTO_LENGTH];
   for (int i = 0; i < HISTO_LENGTH; i++) rotHist[i].reserve(500);
 
@@ -1597,7 +1597,7 @@ int ORBmatcher::SearchByProjection(Frame &CurrentFrame, const Frame &LastFrame,
   // ! 是错误的，更改为下面代码
   const float factor = HISTO_LENGTH / 360.0f;
 
-  // Step 2 计算当前帧和前一帧的平移向量
+  // STEP: 2 计算当前帧和前一帧的平移向量
   // 当前帧的相机位姿
   const cv::Mat Rcw = CurrentFrame.mTcw.rowRange(0, 3).colRange(0, 3);
   const cv::Mat tcw = CurrentFrame.mTcw.rowRange(0, 3).col(3);
@@ -1614,14 +1614,12 @@ int ORBmatcher::SearchByProjection(Frame &CurrentFrame, const Frame &LastFrame,
   const cv::Mat tlc = Rlw * twc + tlw;
 
   // 判断前进还是后退
-  const bool bForward =
-      tlc.at<float>(2) > CurrentFrame.mb &&
-      !bMono;  // 非单目情况，如果Z大于基线，则表示相机明显前进
-  const bool bBackward =
-      -tlc.at<float>(2) > CurrentFrame.mb &&
-      !bMono;  // 非单目情况，如果-Z小于基线，则表示相机明显后退
+  // 非单目情况，如果Z大于基线，则表示相机明显前进
+  const bool bForward = tlc.at<float>(2) > CurrentFrame.mb && !bMono;
+  // 非单目情况，如果-Z小于基线，则表示相机明显后退
+  const bool bBackward = -tlc.at<float>(2) > CurrentFrame.mb && !bMono;
 
-  //  Step 3
+  //  STEP: 3
   //  对于前一帧的每一个地图点，通过相机投影模型，得到投影到当前帧的像素坐标
   for (int i = 0; i < LastFrame.N; i++) {
     MapPoint *pMP = LastFrame.mvpMapPoints[i];
@@ -1657,17 +1655,19 @@ int ORBmatcher::SearchByProjection(Frame &CurrentFrame, const Frame &LastFrame,
         // 记录候选匹配点的id
         vector<size_t> vIndices2;
 
-        // Step 4 根据相机的前后前进方向来判断搜索尺度范围。
-        // 以下可以这么理解，例如一个有一定面积的圆点，在某个尺度n下它是一个特征点
-        // 当相机前进时，圆点的面积增大，在某个尺度m下它是一个特征点，由于面积增大，则需要在更高的尺度下才能检测出来
-        // 当相机后退时，圆点的面积减小，在某个尺度m下它是一个特征点，由于面积减小，则需要在更低的尺度下才能检测出来
+        // STEP: 4 根据相机的前后前进方向来判断搜索尺度范围。
+        // 以下可以这么理解，例如一个有一定面积的圆点，在某个尺度n下它是一个特征
+        // 点当相机前进时，圆点的面积增大，在某个尺度m下它是一个特征点，由于面积
+        // 增大，则需要在更高的尺度下才能检测出来当相机后退时，圆点的面积减小，
+        // 在某个尺度m下它是一个特征点，由于面积减小，则需要在更低的尺度下才能检
+        // 测出来
         if (bForward)  // 前进,则上一帧兴趣点在所在的尺度nLastOctave<=nCurOctave
           vIndices2 = CurrentFrame.GetFeaturesInArea(u, v, radius, nLastOctave);
-        else if (
-            bBackward)  // 后退,则上一帧兴趣点在所在的尺度0<=nCurOctave<=nLastOctave
+        else if (bBackward)
+          // 后退,则上一帧兴趣点在所在的尺度0<=nCurOctave<=nLastOctave
           vIndices2 =
               CurrentFrame.GetFeaturesInArea(u, v, radius, 0, nLastOctave);
-        else  // 在[nLastOctave-1, nLastOctave+1]中搜索
+        else  // 在[nLastOctave-1, nLastOctave+1]中搜索 // NOTE: mono情况
           vIndices2 = CurrentFrame.GetFeaturesInArea(
               u, v, radius, nLastOctave - 1, nLastOctave + 1);
 
@@ -1678,7 +1678,7 @@ int ORBmatcher::SearchByProjection(Frame &CurrentFrame, const Frame &LastFrame,
         int bestDist = 256;
         int bestIdx2 = -1;
 
-        // Step 5 遍历候选匹配点，寻找距离最小的最佳匹配点
+        // STEP: 5 遍历候选匹配点，寻找距离最小的最佳匹配点
         for (vector<size_t>::const_iterator vit = vIndices2.begin(),
                                             vend = vIndices2.end();
              vit != vend; vit++) {
@@ -1710,7 +1710,7 @@ int ORBmatcher::SearchByProjection(Frame &CurrentFrame, const Frame &LastFrame,
           CurrentFrame.mvpMapPoints[bestIdx2] = pMP;
           nmatches++;
 
-          // Step 6 计算匹配点旋转角度差所在的直方图
+          // STEP: 6 计算匹配点旋转角度差所在的直方图
           if (mbCheckOrientation) {
             float rot = LastFrame.mvKeysUn[i].angle -
                         CurrentFrame.mvKeysUn[bestIdx2].angle;
@@ -1726,7 +1726,7 @@ int ORBmatcher::SearchByProjection(Frame &CurrentFrame, const Frame &LastFrame,
   }
 
   // Apply rotation consistency
-  //  Step 7 进行旋转一致检测，剔除不一致的匹配
+  //  STEP: 7 进行旋转一致检测，剔除不一致的匹配
   if (mbCheckOrientation) {
     int ind1 = -1;
     int ind2 = -1;

@@ -738,7 +738,9 @@ void Frame::ComputeBoW() {
   if (mBowVec.empty()) {
     // 将描述子mDescriptors转换为DBOW要求的输入格式
     vector<cv::Mat> vCurrentDesc = Converter::toDescriptorVector(mDescriptors);
+
     // 将特征点的描述子转换成词袋向量mBowVec以及特征向量mFeatVec
+    // NOTE: 输入当前帧的描述子的向量, 输出就是词袋向量以及feature向量
     mpORBvocabulary->transform(
         vCurrentDesc,  // 当前的描述子vector
         mBowVec,  // 输出，词袋向量，记录的是单词的id及其对应权重TF-IDF值

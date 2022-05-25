@@ -1134,9 +1134,9 @@ bool Tracking::TrackReferenceKeyFrame() {
 }
 
 /**
- * @brief 更新上一帧位姿，在上一帧中生成临时地图点
- * 单目情况：只计算了上一帧的世界坐标系位姿
- * 双目和rgbd情况：选取有有深度值的并且没有被选为地图点的点生成新的临时地图点，提高跟踪鲁棒性
+ * @brief 更新上一帧位姿，在上一帧中生成临时地图点单目情况：只计算了上一帧的世界
+ * 坐标系位姿双目和rgbd情况：选取有有深度值的并且没有被选为地图点的点生成新的临
+ * 时地图点，提高跟踪鲁棒性
  */
 void Tracking::UpdateLastFrame() {
   // Update pose according to reference keyframe
@@ -1191,9 +1191,9 @@ void Tracking::UpdateLastFrame() {
     // 如果这个点对应在上一帧中的地图点没有,或者创建后就没有被观测到,那么就生成
     // 一个临时的地图点
     MapPoint *pMP = mLastFrame.mvpMapPoints[i];
-    if (!pMP)
+    if (!pMP) {
       bCreateNew = true;
-    else if (pMP->Observations() < 1) {
+    } else if (pMP->Observations() < 1) {
       // 地图点被创建后就没有被观测，认为不靠谱，也需要重新创建
       bCreateNew = true;
     }
@@ -1229,10 +1229,10 @@ void Tracking::UpdateLastFrame() {
 
 /**
  * @brief 根据恒定速度模型用上一帧地图点来对当前帧进行跟踪
- * Step 1：更新上一帧的位姿；对于双目或RGB-D相机，还会根据深度值生成临时地图点
- * Step 2：根据上一帧特征点对应地图点进行投影匹配
- * Step 3：优化当前帧位姿
- * Step 4：剔除地图点中外点
+ * STEP: 1：更新上一帧的位姿；对于双目或RGB-D相机，还会根据深度值生成临时地图点
+ * STEP: 2：根据上一帧特征点对应地图点进行投影匹配
+ * STEP: 3：优化当前帧位姿
+ * STEP: 4：剔除地图点中外点
  * @return 如果匹配数大于10，认为跟踪成功，返回true
  */
 bool Tracking::TrackWithMotionModel() {
@@ -1241,13 +1241,14 @@ bool Tracking::TrackWithMotionModel() {
 
   // Update last frame pose according to its reference keyframe
   // Create "visual odometry" points
-  // Step 1：更新上一帧的位姿；对于双目或RGB-D相机，还会根据深度值生成临时地图点
+  // STEP: 1：更新上一帧的位姿；对于双目或RGB-D相机，还会根据深度值生成临时地图
+  // 点
   UpdateLastFrame();
 
-  // Step 2：根据之前估计的速度，用恒速模型得到当前帧的初始位姿。
+  // STEP: 2：根据之前估计的速度，用恒速模型得到当前帧的初始位姿。
   mCurrentFrame.SetPose(mVelocity * mLastFrame.mTcw);
 
-  // 清空当前帧的地图点
+  // 清空当前帧的地图点, 待生成
   fill(mCurrentFrame.mvpMapPoints.begin(), mCurrentFrame.mvpMapPoints.end(),
        static_cast<MapPoint *>(NULL));
 
@@ -1259,7 +1260,7 @@ bool Tracking::TrackWithMotionModel() {
   else
     th = 7;  // 双目
 
-  // Step 3：用上一帧地图点进行投影匹配，如果匹配点不够，则扩大搜索半径再来一次
+  // STEP: 3：用上一帧地图点进行投影匹配，如果匹配点不够，则扩大搜索半径再来一次
   int nmatches = matcher.SearchByProjection(mCurrentFrame, mLastFrame, th,
                                             mSensor == System::MONOCULAR);
 
