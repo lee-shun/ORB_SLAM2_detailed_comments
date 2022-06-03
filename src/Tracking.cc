@@ -30,6 +30,7 @@
  */
 
 #include "Tracking.h"
+#include "print_ctrl_macro.h"
 #include <opencv2/core/core.hpp>
 #include <opencv2/features2d/features2d.hpp>
 
@@ -442,6 +443,7 @@ void Tracking::Track() {
       // STEP: 2：跟踪进入正常SLAM模式，有地图更新
       // 是否正常跟踪
       if (mState == OK) {
+        PRINT_INFO("Get into normal track!")
         // Local Mapping might have changed some MapPoints tracked in last frame
         // STEP: 2.1 检查并更新上一帧被替换的MapPoints
         // 局部建图线程则可能会对原有的地图点进行替换.在这里进行检查
@@ -584,6 +586,7 @@ void Tracking::Track() {
       mState = OK;
     else
       mState = LOST;
+    PRINT_DEBUG("bOK is %d!", bOK);
 
     // STEP: 4：更新显示线程中的图像、特征点、地图点等信息
     mpFrameDrawer->Update(this);
@@ -811,7 +814,7 @@ void Tracking::MonocularInitialization() {
   if (!mpInitializer) {
     // Set Reference Frame
     // 单目初始帧的特征点数必须大于100
-    if (mCurrentFrame.mvKeys.size() > 100) {
+    if (mCurrentFrame.mvKeys.size() > 70) {
       // 初始化需要两帧，分别是mInitialFrame，mCurrentFrame
       mInitialFrame = Frame(mCurrentFrame);
       // 用当前帧更新上一帧
@@ -837,7 +840,7 @@ void Tracking::MonocularInitialization() {
     // Try to initialize
     // STEP: 2 如果当前帧特征点数太少（不超过100），则重新构造初始器
     // NOTICE 只有连续两帧的特征点个数都大于100时，才能继续进行初始化过程
-    if ((int)mCurrentFrame.mvKeys.size() <= 100) {
+    if ((int)mCurrentFrame.mvKeys.size() <= 70) {
       delete mpInitializer;
       mpInitializer = static_cast<Initializer *>(NULL);
       fill(mvIniMatches.begin(), mvIniMatches.end(), -1);
@@ -863,9 +866,11 @@ void Tracking::MonocularInitialization() {
         mvIniMatches,    // 保存匹配关系
         100);            // 搜索窗口大小
 
+    PRINT_DEBUG("nmatches: %d", nmatches);
+
     // Check if there are enough correspondences
     // STEP: 4 验证匹配结果，如果初始化的两帧之间的匹配点太少，重新初始化
-    if (nmatches < 100) {
+    if (nmatches < 10) {
       delete mpInitializer;
       mpInitializer = static_cast<Initializer *>(NULL);
       return;
@@ -883,6 +888,7 @@ void Tracking::MonocularInitialization() {
             mvIniP3D,       // 进行三角化得到的空间点集合
             vbTriangulated)) {  // 以及对应于mvIniMatches来讲,其中哪些点被三角
                                 // 化了
+      PRINT_DEBUG("initialize succeeded!");
       // STEP: 6 初始化成功后，删除那些无法进行三角化的匹配点
       for (size_t i = 0, iend = mvIniMatches.size(); i < iend; i++) {
         if (mvIniMatches[i] >= 0 && !vbTriangulated[i]) {
@@ -905,8 +911,10 @@ void Tracking::MonocularInitialization() {
       // mvIniP3D是cv::Point3f类型的一个容器，是个存放3D点的临时变量，
       // CreateInitialMapMonocular将3D点包装成MapPoint类型存入KeyFrame和Map中
       CreateInitialMapMonocular();
-    }  // 当初始化成功的时候进行
-  }    // 如果单目初始化器已经被创建
+    } else {
+      PRINT_DEBUG("initialize failed!");
+    }
+  }
 }
 
 /**
@@ -1045,6 +1053,7 @@ void Tracking::CreateInitialMapMonocular() {
   mpMap->mvpKeyFrameOrigins.push_back(pKFini);
 
   mState = OK;  // 初始化成功，至此，初始化过程完成
+  PRINT_INFO("mStatus: %d", mState);
 }
 
 /*

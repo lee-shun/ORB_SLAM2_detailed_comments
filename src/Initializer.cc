@@ -36,6 +36,9 @@
 #include "ORBmatcher.h"
 #include "Optimizer.h"
 
+// for debug
+#include "print_ctrl_macro.h"
+
 // 这里使用到了多线程的加速技术
 #include <thread>
 
@@ -216,7 +219,8 @@ bool Initializer::Initialize(const Frame &CurrentFrame,
   // (0.40-0.45)
   // 注意这里更倾向于用H矩阵恢复位姿。如果单应矩阵的评分占比达到了0.4以上,则从单
   // 应矩阵恢复运动,否则从基础矩阵恢复运动
-  if (RH > 0.40)
+  if (RH > 0.40) {
+    PRINT_DEBUG("use H");
     // 此时从单应矩阵恢复，函数ReconstructH返回bool型结果
     return ReconstructH(
         vbMatchesInliersH,  // 输入，匹配成功的特征点对Inliers标记
@@ -226,16 +230,18 @@ bool Initializer::Initialize(const Frame &CurrentFrame,
         t21,  // 输出，计算出来的相机从参考帧1到当前帧2所发生的旋转和位移变换
         vP3D,  // 特征点对经过三角测量之后的空间坐标，也就是地图点
         vbTriangulated,  // 特征点对是否成功三角化的标记
-        1.0,  // 这个对应的形参为minParallax，即认为某对特征点的三角化测量中，认
+        0.4,  // 这个对应的形参为minParallax，即认为某对特征点的三角化测量中，认
               // 为其测量有效时需要满足的最小视差角（如果视差角过小则会引起非常
               // 大的观测误差）, 单位是角度
-        50);  // 为了进行运动恢复，所需要的最少的三角化测量成功的点个数
-  else        // if(pF_HF>0.6)
+        40);  // 为了进行运动恢复，所需要的最少的三角化测量成功的点个数
+
+  } else {
+    // if(pF_HF>0.6)
     // 从基础矩阵恢复
+    PRINT_DEBUG("use F");
     return ReconstructF(vbMatchesInliersF, F, mK, R21, t21, vP3D,
                         vbTriangulated, 1.0, 50);
-
-  // 一般地程序不应该执行到这里，如果执行到这里说明程序跑飞了
+  }  // 一般地程序不应该执行到这里，如果执行到这里说明程序跑飞了
   return false;
 }
 
@@ -1347,9 +1353,7 @@ bool Initializer::ReconstructH(vector<bool> &vbMatchesInliers, cv::Mat &H21,
       bestParallax = parallaxi;
       bestP3D = vP3Di;
       bestTriangulated = vbTriangulatedi;
-    }
-    // 如果当前组的good计数小于历史最优但却大于历史次优
-    else if (nGood > secondBestGood) {
+    } else if (nGood > secondBestGood) {
       // 说明当前组解是历史次优点，更新之
       secondBestGood = nGood;
     }
@@ -1360,7 +1364,12 @@ bool Initializer::ReconstructH(vector<bool> &vbMatchesInliers, cv::Mat &H21,
   // 2. 视角差大于规定的阈值
   // 3. good点数要大于规定的最小的被三角化的点数量
   // 4. good数要足够多，达到总数的90%以上
-  if (secondBestGood < 0.75 * bestGood && bestParallax >= minParallax &&
+  PRINT_INFO("cond1: %d", secondBestGood < 0.999 * bestGood);
+  PRINT_INFO("cond2: %d", bestParallax >= minParallax);
+  PRINT_INFO("cond3: %d", bestGood > minTriangulated);
+  PRINT_INFO("cond3: %d", bestGood > 0.9 * N);
+
+  if (secondBestGood <  0.999 * bestGood && bestParallax >= minParallax &&
       bestGood > minTriangulated && bestGood > 0.9 * N) {
     // 从最佳的解的索引访问到R，t
     vR[bestSolutionIdx].copyTo(R21);

@@ -126,3 +126,6 @@ add_executable(
   Examples/Monocular/mono_euroc.cc
 )
 target_link_libraries(mono_euroc ${PROJECT_NAME})
+
+add_executable(m300_depth_filter Examples/Monocular/m300_depth_filter.cc)
+target_link_libraries(m300_depth_filter ${PROJECT_NAME})
