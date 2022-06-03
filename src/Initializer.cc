@@ -1364,12 +1364,12 @@ bool Initializer::ReconstructH(vector<bool> &vbMatchesInliers, cv::Mat &H21,
   // 2. 视角差大于规定的阈值
   // 3. good点数要大于规定的最小的被三角化的点数量
   // 4. good数要足够多，达到总数的90%以上
-  PRINT_INFO("cond1: %d", secondBestGood < 0.999 * bestGood);
+  PRINT_INFO("cond1: %d", secondBestGood < bestGood);
   PRINT_INFO("cond2: %d", bestParallax >= minParallax);
   PRINT_INFO("cond3: %d", bestGood > minTriangulated);
   PRINT_INFO("cond3: %d", bestGood > 0.9 * N);
 
-  if (secondBestGood <  0.999 * bestGood && bestParallax >= minParallax &&
+  if (secondBestGood <= bestGood && bestParallax >= minParallax &&
       bestGood > minTriangulated && bestGood > 0.9 * N) {
     // 从最佳的解的索引访问到R，t
     vR[bestSolutionIdx].copyTo(R21);
