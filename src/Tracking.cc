@@ -1331,7 +1331,8 @@ bool Tracking::TrackWithMotionModel() {
  *
  * Step: 1：更新局部关键帧mvpLocalKeyFrames和局部地图点mvpLocalMapPoints
  * Step: 2：在局部地图中查找与当前帧匹配的MapPoints,
- * 其实也就是对局部地图点进行跟踪 Step 3：更新局部所有MapPoints后对位姿再次优化
+ * 其实也就是对局部地图点进行跟踪 
+ * Step 3：更新局部所有MapPoints后对位姿再次优化
  * Step: 4：更新当前帧的MapPoints被观测程度，并统计跟踪局部地图的效果
  * Step: 5：决定是否跟踪成功
  */
@@ -1341,22 +1342,23 @@ bool Tracking::TrackLocalMap() {
   // local map.
 
   // Update Local KeyFrames and Local Points
-  // Step: 1：更新局部关键帧 mvpLocalKeyFrames 和局部地图点 mvpLocalMapPoints
+  // STEP: 1：更新局部关键帧 mvpLocalKeyFrames 和局部地图点 mvpLocalMapPoints
   UpdateLocalMap();
 
-  // Step: 2：筛选局部地图中新增的在视野范围内的地图点，投影到当前帧搜索匹配，得
+  // STEP: 2：筛选局部地图中新增的在视野范围内的地图点，投影到当前帧搜索匹配，得
   // 到更多的匹配关系
   SearchLocalPoints();
 
   // Optimize Pose
   // 在这个函数之前，在
   // Relocalization、TrackReferenceKeyFrame、TrackWithMotionModel
-  // 中都有位姿优化， Step 3：前面新增了更多的匹配关系，BA优化得到更准确的位姿
+  // 中都有位姿优化， 
+  // STEP: 3：前面新增了更多的匹配关系，BA优化得到更准确的位姿
   Optimizer::PoseOptimization(&mCurrentFrame);
   mnMatchesInliers = 0;
 
   // Update MapPoints Statistics
-  // Step: 4：更新当前帧的地图点被观测程度，并统计跟踪局部地图后匹配数目
+  // STEP: 4：更新当前帧的地图点被观测程度，并统计跟踪局部地图后匹配数目
   for (int i = 0; i < mCurrentFrame.N; i++) {
     if (mCurrentFrame.mvpMapPoints[i]) {
       // 由于当前帧的地图点可以被当前帧观测到，其被观测统计量加1
@@ -1382,7 +1384,7 @@ bool Tracking::TrackLocalMap() {
 
   // Decide if the tracking was succesful
   // More restrictive if there was a relocalization recently
-  // Step 5：根据跟踪匹配数目及重定位情况决定是否跟踪成功
+  // STEP: 5：根据跟踪匹配数目及重定位情况决定是否跟踪成功
   // 如果最近刚刚发生了重定位,那么至少成功匹配50个点才认为是成功跟踪
   if (mCurrentFrame.mnId < mnLastRelocFrameId + mMaxFrames &&
       mnMatchesInliers < 50)
@@ -1640,7 +1642,7 @@ void Tracking::CreateNewKeyFrame() {
  */
 void Tracking::SearchLocalPoints() {
   // Do not search map points already matched
-  // Step 1：遍历当前帧的地图点，标记这些地图点不参与之后的投影搜索匹配
+  // STEP: 1：遍历当前帧的地图点，标记这些地图点不参与之后的投影搜索匹配
   for (vector<MapPoint *>::iterator vit = mCurrentFrame.mvpMapPoints.begin(),
                                     vend = mCurrentFrame.mvpMapPoints.end();
        vit != vend; vit++) {
@@ -1663,7 +1665,7 @@ void Tracking::SearchLocalPoints() {
   int nToMatch = 0;
 
   // Project points in frame and check its visibility
-  // Step 2：判断所有局部地图点中除当前帧地图点外的点，是否在当前帧视野范围内
+  // STEP: 2：判断所有局部地图点中除当前帧地图点外的点，是否在当前帧视野范围内
   for (vector<MapPoint *>::iterator vit = mvpLocalMapPoints.begin(),
                                     vend = mvpLocalMapPoints.end();
        vit != vend; vit++) {
@@ -1684,8 +1686,7 @@ void Tracking::SearchLocalPoints() {
     }
   }
 
-  // Step
-  // 3：如果需要进行投影匹配的点的数目大于0，就进行投影匹配，增加更多的匹配关系
+  // STEP: 3：如果需要进行投影匹配的点的数目大于0，就进行投影匹配，增加更多的匹配关系
   if (nToMatch > 0) {
     ORBmatcher matcher(0.8);
     int th = 1;
@@ -1725,17 +1726,17 @@ void Tracking::UpdateLocalMap() {
  * 更新局部关键点。先把局部地图清空，然后将局部关键帧的有效地图点添加到局部地图中
  */
 void Tracking::UpdateLocalPoints() {
-  // Step 1：清空局部地图点
+  // STEP: 1：清空局部地图点
   mvpLocalMapPoints.clear();
 
-  // Step 2：遍历局部关键帧 mvpLocalKeyFrames
+  // STEP: 2：遍历局部关键帧 mvpLocalKeyFrames
   for (vector<KeyFrame *>::const_iterator itKF = mvpLocalKeyFrames.begin(),
                                           itEndKF = mvpLocalKeyFrames.end();
        itKF != itEndKF; itKF++) {
     KeyFrame *pKF = *itKF;
     const vector<MapPoint *> vpMPs = pKF->GetMapPointMatches();
 
-    // step 2：将局部关键帧的地图点添加到mvpLocalMapPoints
+    // STEP: 2：将局部关键帧的地图点添加到mvpLocalMapPoints
     for (vector<MapPoint *>::const_iterator itMP = vpMPs.begin(),
                                             itEndMP = vpMPs.end();
          itMP != itEndMP; itMP++) {
@@ -1755,16 +1756,16 @@ void Tracking::UpdateLocalPoints() {
 /**
  * @brief 跟踪局部地图函数里，更新局部关键帧
  * 方法是遍历当前帧的地图点，将观测到这些地图点的关键帧和相邻的关键帧及其父子关键帧，作为mvpLocalKeyFrames
- * Step 1：遍历当前帧的地图点，记录所有能观测到当前帧地图点的关键帧
- * Step 2：更新局部关键帧（mvpLocalKeyFrames），添加局部关键帧包括以下3种类型
+ * STEP: 1：遍历当前帧的地图点，记录所有能观测到当前帧地图点的关键帧
+ * STEP: 2：更新局部关键帧（mvpLocalKeyFrames），添加局部关键帧包括以下3种类型
  *      类型1：能观测到当前帧地图点的关键帧，也称一级共视关键帧
  *      类型2：一级共视关键帧的共视关键帧，称为二级共视关键帧
  *      类型3：一级共视关键帧的子关键帧、父关键帧
- * Step 3：更新当前帧的参考关键帧，与自己共视程度最高的关键帧作为参考关键帧
+ * STEP: 3：更新当前帧的参考关键帧，与自己共视程度最高的关键帧作为参考关键帧
  */
 void Tracking::UpdateLocalKeyFrames() {
   // Each map point vote for the keyframes in which it has been observed
-  // Step 1：遍历当前帧的地图点，记录所有能观测到当前帧地图点的关键帧
+  // STEP: 1：遍历当前帧的地图点，记录所有能观测到当前帧地图点的关键帧
   map<KeyFrame *, int> keyframeCounter;
   for (int i = 0; i < mCurrentFrame.N; i++) {
     if (mCurrentFrame.mvpMapPoints[i]) {
@@ -1782,7 +1783,7 @@ void Tracking::UpdateLocalKeyFrames() {
           // it->first
           // 是地图点看到的关键帧，同一个关键帧看到的地图点会累加到该关键帧计数
           // 所以最后keyframeCounter
-          // 第一个参数表示某个关键帧，第2个参数表示该关键帧看到了多少当前帧(mCurrentFrame)的地图点，也就是共视程度
+          // NOTE: 第一个参数表示某个关键帧，第2个参数表示该关键帧看到了多少当前帧(mCurrentFrame)的地图点，也就是共视程度
           keyframeCounter[it->first]++;
       } else {
         mCurrentFrame.mvpMapPoints[i] = NULL;
@@ -1793,11 +1794,11 @@ void Tracking::UpdateLocalKeyFrames() {
   // 没有当前帧没有共视关键帧，返回
   if (keyframeCounter.empty()) return;
 
-  // 存储具有最多观测次数（max）的关键帧
+  // NOTE: 存储具有最多观测次数（max）的关键帧
   int max = 0;
   KeyFrame *pKFmax = static_cast<KeyFrame *>(NULL);
 
-  // Step 2：更新局部关键帧（mvpLocalKeyFrames），添加局部关键帧有3种类型
+  // STEP: 2：更新局部关键帧（mvpLocalKeyFrames），添加局部关键帧有3种类型
   // 先清空局部关键帧
   mvpLocalKeyFrames.clear();
   // 先申请3倍内存，不够后面再加
@@ -1805,7 +1806,7 @@ void Tracking::UpdateLocalKeyFrames() {
 
   // All keyframes that observe a map point are included in the local map. Also
   // check which keyframe shares most points Step 2.1
-  // 类型1：能观测到当前帧地图点的关键帧作为局部关键帧
+  // NOTE: 类型1：能观测到当前帧地图点的关键帧作为局部关键帧
   // （将邻居拉拢入伙）（一级共视关键帧）
   for (map<KeyFrame *, int>::const_iterator it = keyframeCounter.begin(),
                                             itEnd = keyframeCounter.end();
@@ -1821,7 +1822,7 @@ void Tracking::UpdateLocalKeyFrames() {
       pKFmax = pKF;
     }
 
-    // 添加到局部关键帧的列表里
+    // NOTE: 添加到局部关键帧的列表里 一级局部关键帧
     mvpLocalKeyFrames.push_back(it->first);
 
     // 用该关键帧的成员变量mnTrackReferenceForFrame 记录当前帧的id
@@ -1830,8 +1831,8 @@ void Tracking::UpdateLocalKeyFrames() {
   }
 
   // Include also some not-already-included keyframes that are neighbors to
-  // already-included keyframes Step 2.2
-  // 遍历一级共视关键帧，寻找更多的局部关键帧
+  // already-included keyframes 
+  // STEP: 2.2 遍历一级共视关键帧，寻找更多的局部关键帧
   for (vector<KeyFrame *>::const_iterator itKF = mvpLocalKeyFrames.begin(),
                                           itEndKF = mvpLocalKeyFrames.end();
        itKF != itEndKF; itKF++) {
@@ -1841,7 +1842,7 @@ void Tracking::UpdateLocalKeyFrames() {
 
     KeyFrame *pKF = *itKF;
 
-    // 类型2:一级共视关键帧的共视（前10个）关键帧，称为二级共视关键帧（将邻居的邻居拉拢入伙）
+    // NOTE: 类型2:一级共视关键帧的共视（前10个）关键帧，称为二级共视关键帧（将邻居的邻居拉拢入伙）
     // 如果共视帧不足10帧,那么就返回所有具有共视关系的关键帧
     const vector<KeyFrame *> vNeighs = pKF->GetBestCovisibilityKeyFrames(10);
     // vNeighs 是按照共视程度从大到小排列
@@ -1860,7 +1861,7 @@ void Tracking::UpdateLocalKeyFrames() {
       }
     }
 
-    // 类型3:将一级共视关键帧的子关键帧作为局部关键帧（将邻居的孩子们拉拢入伙）
+    // NOTE: 类型3:将一级共视关键帧的子关键帧作为局部关键帧（将邻居的孩子们拉拢入伙）
     const set<KeyFrame *> spChilds = pKF->GetChilds();
     for (set<KeyFrame *>::const_iterator sit = spChilds.begin(),
                                          send = spChilds.end();
@@ -1876,7 +1877,7 @@ void Tracking::UpdateLocalKeyFrames() {
       }
     }
 
-    // 类型3:将一级共视关键帧的父关键帧（将邻居的父母们拉拢入伙）
+    // NOTE: 类型3:将一级共视关键帧的父关键帧（将邻居的父母们拉拢入伙）
     KeyFrame *pParent = pKF->GetParent();
     if (pParent) {
       // mnTrackReferenceForFrame防止重复添加局部关键帧
@@ -1889,7 +1890,7 @@ void Tracking::UpdateLocalKeyFrames() {
     }
   }
 
-  // Step 3：更新当前帧的参考关键帧，与自己共视程度最高的关键帧作为参考关键帧
+  // STEP: 3：更新当前帧的参考关键帧，与自己共视程度最高的关键帧作为参考关键帧
   if (pKFmax) {
     mpReferenceKF = pKFmax;
     mCurrentFrame.mpReferenceKF = mpReferenceKF;
@@ -1985,7 +1986,7 @@ bool Tracking::Relocalization() {
   bool bMatch = false;
   ORBmatcher matcher2(0.9, true);
 
-  // Step 4: 通过一系列操作,直到找到能够匹配上的关键帧
+  // STEP: 4: 通过一系列操作,直到找到能够匹配上的关键帧
   // 为什么搞这么复杂？答：是担心误闭环
   while (nCandidates > 0 && !bMatch) {
     // 遍历当前所有的候选关键帧
