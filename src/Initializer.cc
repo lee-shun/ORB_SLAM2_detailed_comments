@@ -1353,7 +1353,7 @@ bool Initializer::ReconstructH(vector<bool> &vbMatchesInliers, cv::Mat &H21,
       bestParallax = parallaxi;
       bestP3D = vP3Di;
       bestTriangulated = vbTriangulatedi;
-    } else if (nGood > secondBestGood) {
+    } else if (nGood > secondBestGood && nGood != bestGood) {
       // 说明当前组解是历史次优点，更新之
       secondBestGood = nGood;
     }
@@ -1364,12 +1364,14 @@ bool Initializer::ReconstructH(vector<bool> &vbMatchesInliers, cv::Mat &H21,
   // 2. 视角差大于规定的阈值
   // 3. good点数要大于规定的最小的被三角化的点数量
   // 4. good数要足够多，达到总数的90%以上
-  PRINT_INFO("cond1: %d", secondBestGood < bestGood);
+  // NOTE: 17.1==1 42.1==?
+  PRINT_INFO("cond1: %d second: %d, best :%d", secondBestGood < 0.95 * bestGood,
+             secondBestGood, bestGood);
   PRINT_INFO("cond2: %d", bestParallax >= minParallax);
   PRINT_INFO("cond3: %d", bestGood > minTriangulated);
   PRINT_INFO("cond3: %d", bestGood > 0.9 * N);
 
-  if (secondBestGood <= bestGood && bestParallax >= minParallax &&
+  if (secondBestGood < 0.95 * bestGood && bestParallax >= minParallax &&
       bestGood > minTriangulated && bestGood > 0.9 * N) {
     // 从最佳的解的索引访问到R，t
     vR[bestSolutionIdx].copyTo(R21);
@@ -1652,14 +1654,14 @@ int Initializer::CheckRT(const cv::Mat &R, const cv::Mat &t,
     // 对应的角度为0.36°,这里不应该是 cosParallax>0.99998 吗？
     // ?因为后面判断vbGood 点时的条件也是 cosParallax<0.99998
     // BUG: 可能导致初始化不稳定
-    if (p3dC1.at<float>(2) <= 0 && cosParallax < 0.99998) continue;
+    if (p3dC1.at<float>(2) <= 0 && cosParallax > 0.99998) continue;
 
     // Check depth in front of second camera (only if enough parallax, as
     // "infinite" points can easily go to negative depth)
     // 讲空间点p3dC1变换到第2个相机坐标系下变为p3dC2
     cv::Mat p3dC2 = R * p3dC1 + t;
     // 判断过程和上面的相同
-    if (p3dC2.at<float>(2) <= 0 && cosParallax < 0.99998) continue;
+    if (p3dC2.at<float>(2) <= 0 && cosParallax > 0.99998) continue;
 
     // STEP: 5 第三关：计算空间点在参考帧和当前帧上的重投影误差，如果大于阈值则
     // 舍弃
@@ -1703,13 +1705,14 @@ int Initializer::CheckRT(const cv::Mat &R, const cv::Mat &t,
     // 存储这个三角化测量后的3D点在世界坐标系下的坐标
     vP3D[vMatches12[i].first] =
         cv::Point3f(p3dC1.at<float>(0), p3dC1.at<float>(1), p3dC1.at<float>(2));
-    // good点计数++
-    nGood++;
 
     // 判断视差角，只有视差角稍稍大一丢丢的才会给打good点标记
     // ? BUG: 我觉得这个写的位置不太对。你的good点计数都++了然后才判断，不是会让
     // good点标志和good点计数不一样吗
     if (cosParallax < 0.99998) vbGood[vMatches12[i].first] = true;
+
+    // good点计数++
+    nGood++;
   }
 
   // STEP: 7 得到3D点中较大的视差角，并且转换成为角度制表示
