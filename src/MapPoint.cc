@@ -291,16 +291,17 @@ void MapPoint::Replace(MapPoint *pMP) {
     KeyFrame *pKF = mit->first;
 
     if (!pMP->IsInKeyFrame(pKF)) {
-      // 该关键帧中没有对"要替换本地图点的地图点"的观测
+      // 该关键帧中没有对"要替换本地图点的地图点"的观测, 感觉是添加
       pKF->ReplaceMapPointMatch(mit->second,
                                 pMP);  // 让KeyFrame用pMP替换掉原来的MapPoint
-      pMP->AddObservation(pKF, mit->second);  // 让MapPoint替换掉对应的KeyFrame
+      pMP->AddObservation(pKF, mit->second);  // 让替换地图点添加KeyFrame
     } else {
       // 这个关键帧对当前的地图点和"要替换本地图点的地图点"都具有观测
       // 产生冲突，即pKF中有两个特征点a,b（这两个特征点的描述子是近似相同的），这两个特征点对应两个
       // MapPoint 为this,pMP
       // 然而在fuse的过程中pMP的观测更多，需要替换this，因此保留b与pMP的联系，去掉a与this的联系
-      // 说白了,既然是让对方的那个地图点来代替当前的地图点,就是说明对方更好,所以删除这个关键帧对当前帧的观测
+      // 说白了,既然是让对方的那个地图点来代替当前的地图点,就是说明对方更好,所以删除这个关键帧对当前地图点的观测
+      // 保留对替换点的观测
       pKF->EraseMapPointMatch(mit->second);
     }
   }
