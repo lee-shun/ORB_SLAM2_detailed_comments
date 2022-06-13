@@ -589,7 +589,8 @@ int Optimizer::PoseOptimization(Frame *pFrame) {
  *     -
  * g2o::VertexSE3Expmap()，LocalKeyFrames，即当前关键帧的位姿、与当前关键帧相连的关键帧的位姿
  *     -
- * g2o::VertexSE3Expmap()，FixedCameras，即能观测到LocalMapPoints的关键帧（并且不属于LocalKeyFrames）的位姿，在优化中这些关键帧的位姿不变
+ * g2o::VertexSE3Expmap()，FixedCameras，即能观测到LocalMapPoints的关键帧（并且
+ * 不属于LocalKeyFrames）的位姿，在优化中这些关键帧的位姿不变
  *     -
  * g2o::VertexSBAPointXYZ()，LocalMapPoints，即LocalKeyFrames能观测到的所有MapPoints的位置
  * 2. Edge:
@@ -615,7 +616,7 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool *pbStopFlag,
   // 局部关键帧
   list<KeyFrame *> lLocalKeyFrames;
 
-  // Step 1 将当前关键帧及其共视关键帧加入局部关键帧
+  // STEP: 1 将当前关键帧及其共视关键帧加入局部关键帧
   lLocalKeyFrames.push_back(pKF);
   pKF->mnBALocalForKF = pKF->mnId;
 
@@ -633,7 +634,7 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool *pbStopFlag,
   }
 
   // Local MapPoints seen in Local KeyFrames
-  // Step 2 遍历局部关键帧中(一级相连)关键帧，将它们观测的地图点加入到局部地图点
+  // STEP: 2 遍历局部关键帧中(一级相连)关键帧，将它们观测的地图点加入到局部地图点
   list<MapPoint *> lLocalMapPoints;
   // 遍历局部关键帧中的每一个关键帧
   for (list<KeyFrame *>::iterator lit = lLocalKeyFrames.begin(),
@@ -658,8 +659,9 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool *pbStopFlag,
   }      // 遍历 lLocalKeyFrames 中的每一个关键帧
 
   // Fixed Keyframes. Keyframes that see Local MapPoints but that are not Local
-  // Keyframes Step 3
-  // 得到能被局部地图点观测到，但不属于局部关键帧的关键帧(二级相连)，这些二级相连关键帧在局部BA优化时不优化
+  // Keyframes
+  // STEP: 3 得到能观测到局部地图点，但不属于局部关键帧的关键帧(二级相连)，这些
+  // 二级相连关键帧在局部BA优化时不优化
   list<KeyFrame *> lFixedCameras;
   // 遍历局部地图中的每个地图点
   for (list<MapPoint *>::iterator lit = lLocalMapPoints.begin(),
@@ -677,7 +679,8 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool *pbStopFlag,
       // pKFi->mnBAFixedForKF!=pKF->mnId 表示还未标记为fixed（固定的）关键帧
       if (pKFi->mnBALocalForKF != pKF->mnId &&
           pKFi->mnBAFixedForKF != pKF->mnId) {
-        // 将局部地图点能观测到的、但是不属于局部BA范围的关键帧的mnBAFixedForKF标记为pKF（触发局部BA的当前关键帧）的mnId
+        // 将局部地图点能观测到的、但是不属于局部BA范围的关键帧的mnBAFixedForKF
+        // 标记为pKF（触发局部BA的当前关键帧）的mnId
         pKFi->mnBAFixedForKF = pKF->mnId;
         if (!pKFi->isBad()) lFixedCameras.push_back(pKFi);
       }
@@ -685,7 +688,7 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool *pbStopFlag,
   }
 
   // Setup optimizer
-  // Step 4 构造g2o优化器
+  // STEP: 4 构造g2o优化器
   g2o::SparseOptimizer optimizer;
   g2o::BlockSolver_6_3::LinearSolverType *linearSolver;
 
@@ -706,7 +709,7 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool *pbStopFlag,
   unsigned long maxKFid = 0;
 
   // Set Local KeyFrame vertices
-  // Step 5 添加待优化的位姿顶点：局部关键帧的位姿
+  // STEP: 5 添加待优化的位姿顶点：局部关键帧的位姿
   for (list<KeyFrame *>::iterator lit = lLocalKeyFrames.begin(),
                                   lend = lLocalKeyFrames.end();
        lit != lend; lit++) {
@@ -722,9 +725,8 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool *pbStopFlag,
   }
 
   // Set Fixed KeyFrame vertices
-  // Step  6
-  // 添加不优化的位姿顶点：固定关键帧的位姿，注意这里调用了vSE3->setFixed(true)
-  // 不优化为啥也要添加？回答：为了增加约束信息
+  // Step: 6 添加不优化的位姿顶点：固定关键帧的位姿，注意这里调用了vSE3->
+  // setFixed(true) 不优化为啥也要添加？回答：为了增加约束信息
   for (list<KeyFrame *>::iterator lit = lFixedCameras.begin(),
                                   lend = lFixedCameras.end();
        lit != lend; lit++) {
@@ -732,14 +734,14 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool *pbStopFlag,
     g2o::VertexSE3Expmap *vSE3 = new g2o::VertexSE3Expmap();
     vSE3->setEstimate(Converter::toSE3Quat(pKFi->GetPose()));
     vSE3->setId(pKFi->mnId);
-    // 所有的这些顶点的位姿都不优化，只是为了增加约束项
+    // 所有的这些顶点的位姿都不优化，只是为了增加约束项, 就是重投影误差
     vSE3->setFixed(true);
     optimizer.addVertex(vSE3);
     if (pKFi->mnId > maxKFid) maxKFid = pKFi->mnId;
   }
 
   // Set MapPoint vertices
-  // Step  7 添加待优化的局部地图点顶点
+  // Step: 7 添加待优化的局部地图点顶点
   // 边的最大数目 = 位姿数目 * 地图点数目
   const int nExpectedSize =
       (lLocalKeyFrames.size() + lFixedCameras.size()) * lLocalMapPoints.size();
@@ -777,9 +779,10 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool *pbStopFlag,
     g2o::VertexSBAPointXYZ *vPoint = new g2o::VertexSBAPointXYZ();
     vPoint->setEstimate(Converter::toVector3d(pMP->GetWorldPos()));
     // 前面记录maxKFid的作用在这里体现
+    // NOTE: vertex ID 防止重复, 前面排的是keyframes, 后面是地图点
     int id = pMP->mnId + maxKFid + 1;
     vPoint->setId(id);
-    // 因为使用了LinearSolverType，所以需要将所有的三维点边缘化掉
+    // 因为使用了LinearSolverType，所以需要将所有的三维点边缘化掉, 加速
     vPoint->setMarginalized(true);
     optimizer.addVertex(vPoint);
 
@@ -787,8 +790,8 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool *pbStopFlag,
     const map<KeyFrame *, size_t> observations = pMP->GetObservations();
 
     // Set edges
-    // Step 8 在添加完了一个地图点之后, 对每一对关联的地图点和关键帧构建边
-    // 遍历所有观测到当前地图点的关键帧
+    // STEP: 8 在添加完了一个地图点之后, 对每一对关联的地图点和关键帧构建边
+    // 遍历所有观测到当前地图点的关键帧, 为边添加顶点
     for (map<KeyFrame *, size_t>::const_iterator mit = observations.begin(),
                                                  mend = observations.end();
          mit != mend; mit++) {
@@ -807,7 +810,7 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool *pbStopFlag,
           // 边的第一个顶点是地图点
           e->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex *>(
                               optimizer.vertex(id)));
-          // 边的第一个顶点是观测到该地图点的关键帧
+          // 边的第二个顶点是观测到该地图点的关键帧
           e->setVertex(1, dynamic_cast<g2o::OptimizableGraph::Vertex *>(
                               optimizer.vertex(pKFi->mnId)));
           e->setMeasurement(obs);
@@ -871,7 +874,7 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool *pbStopFlag,
   if (pbStopFlag)
     if (*pbStopFlag) return;
 
-  // Step 9 分成两个阶段开始优化。
+  // STEP: 9 分成两个阶段开始优化。
   // 第一阶段优化
   optimizer.initializeOptimization();
   // 迭代5次
@@ -886,7 +889,7 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool *pbStopFlag,
   // 如果有外部请求停止,那么就不在进行第二阶段的优化
   if (bDoMore) {
     // Check inlier observations
-    // Step 10 检测outlier，并设置下次不优化
+    // STEP: 10 检测outlier，并设置下次不优化
     // 遍历所有的单目误差边
     for (size_t i = 0, iend = vpEdgesMono.size(); i < iend; i++) {
       g2o::EdgeSE3ProjectXYZ *e = vpEdgesMono[i];
@@ -921,7 +924,7 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool *pbStopFlag,
     }
 
     // Optimize again without the outliers
-    // Step 11：排除误差较大的outlier后再次优化 -- 第二阶段优化
+    // STEP: 11：排除误差较大的outlier后再次优化 -- 第二阶段优化
     optimizer.initializeOptimization(0);
     optimizer.optimize(10);
   }
@@ -930,7 +933,7 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool *pbStopFlag,
   vToErase.reserve(vpEdgesMono.size() + vpEdgesStereo.size());
 
   // Check inlier observations
-  // Step 12：在优化后重新计算误差，剔除连接误差比较大的关键帧和地图点
+  // STEP: 12：在优化后重新计算误差，剔除连接误差比较大的关键帧和地图点
   // 对于单目误差边
   for (size_t i = 0, iend = vpEdgesMono.size(); i < iend; i++) {
     g2o::EdgeSE3ProjectXYZ *e = vpEdgesMono[i];
@@ -978,7 +981,7 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool *pbStopFlag,
   }
 
   // Recover optimized data
-  // Step 13：优化后更新关键帧位姿以及地图点的位置、平均观测方向等属性
+  // STEP: 13：优化后更新关键帧位姿以及地图点的位置、平均观测方向等属性
 
   // Keyframes
   for (list<KeyFrame *>::iterator lit = lLocalKeyFrames.begin(),
