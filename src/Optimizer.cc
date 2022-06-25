@@ -1031,7 +1031,7 @@ void Optimizer::OptimizeEssentialGraph(
     const map<KeyFrame *, set<KeyFrame *>> &LoopConnections,
     const bool &bFixScale) {
   // Setup optimizer
-  // Step 1：构造优化器
+  // STEP: 1：构造优化器
   g2o::SparseOptimizer optimizer;
   optimizer.setVerbose(false);
   g2o::BlockSolver_7_3::LinearSolverType *linearSolver =
@@ -1064,7 +1064,7 @@ void Optimizer::OptimizeEssentialGraph(
   const int minFeat = 100;
 
   // Set KeyFrame vertices
-  // Step 2：将地图中所有关键帧的位姿作为顶点添加到优化器
+  // STEP: 2：将地图中所有关键帧的位姿作为顶点添加到优化器
   // 尽可能使用经过Sim3调整的位姿
   // 遍历全局地图中的所有的关键帧
   for (size_t i = 0, iend = vpKFs.size(); i < iend; i++) {
@@ -1112,7 +1112,7 @@ void Optimizer::OptimizeEssentialGraph(
       Eigen::Matrix<double, 7, 7>::Identity();
 
   // Set Loop edges
-  // Step 3：添加第1种边：闭环时因为地图点调整而出现的关键帧间的新连接关系
+  // STEP: 3：添加第1种边：闭环时因为地图点调整而出现的关键帧间的新连接关系
   for (map<KeyFrame *, set<KeyFrame *>>::const_iterator
            mit = LoopConnections.begin(),
            mend = LoopConnections.end();
@@ -1160,7 +1160,7 @@ void Optimizer::OptimizeEssentialGraph(
   }
 
   // Set normal edges
-  // Step 4：添加跟踪时形成的边、闭环匹配成功形成的边
+  // STEP: 4：添加跟踪时形成的边、闭环匹配成功形成的边
   for (size_t i = 0, iend = vpKFs.size(); i < iend; i++) {
     KeyFrame *pKF = vpKFs[i];
     const int nIDi = pKF->mnId;
@@ -1176,7 +1176,7 @@ void Optimizer::OptimizeEssentialGraph(
     KeyFrame *pParentKF = pKF->GetParent();
 
     // Spanning tree edge
-    // Step 4.1：添加第2种边：生成树的边（有父关键帧）
+    // STEP: 4.1：添加第2种边：生成树的边（有父关键帧）
     // 父关键帧就是和当前帧共视程度最高的关键帧
     if (pParentKF) {
       // 父关键帧id
@@ -1207,7 +1207,8 @@ void Optimizer::OptimizeEssentialGraph(
     }
 
     // Loop edges
-    // Step 4.2：添加第3种边：当前帧与闭环匹配帧之间的连接关系(这里面也包括了当前遍历到的这个关键帧之前曾经存在过的回环边)
+    // STEP: 4.2：添加第3种边：当前帧与闭环匹配帧之间的连接关系(这里面也包括了当
+    // 前遍历到的这个关键帧之前曾经存在过的回环边)
     // 获取和当前关键帧形成闭环关系的关键帧
     const set<KeyFrame *> sLoopEdges = pKF->GetLoopEdges();
     for (set<KeyFrame *>::const_iterator sit = sLoopEdges.begin(),
@@ -1239,7 +1240,7 @@ void Optimizer::OptimizeEssentialGraph(
     }
 
     // Covisibility graph edges
-    // Step 4.3：添加第4种边：共视程度超过100的关键帧也作为边进行优化
+    // STEP: 4.3：添加第4种边：共视程度超过100的关键帧也作为边进行优化
     // 取出和当前关键帧共视程度超过100的关键帧
     const vector<KeyFrame *> vpConnectedKFs =
         pKF->GetCovisiblesByWeight(minFeat);

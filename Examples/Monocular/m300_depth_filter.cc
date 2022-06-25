@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
 
   // Main loop
   cv::Mat im;
-  FFDS::TOOLS::FileWritter pose_writer("pose_m300.csv", 9);
+  FFDS::TOOLS::FileWritter pose_writer("Monoslam_pose.csv", 9);
   pose_writer.new_open();
   for (int ni = 0; ni < nImages; ni++) {
     // Read image from file
