@@ -81,7 +81,9 @@ Tracking::Tracking(System *pSys,               // 系统实例
           static_cast<Initializer *>(NULL)),  // 暂时给地图初始化器设置为空指针
       mpSystem(pSys),
       mpViewer(
-          NULL),  // 注意可视化的查看器是可选的，因为ORB-SLAM2最后是被编译成为一个库，所以对方人拿过来用的时候也应该有权力说我不要可视化界面（何况可视化界面也要占用不少的CPU资源）
+          NULL),  // 注意可视化的查看器是可选的，因为ORB-SLAM2最后是被编译成为一
+                  // 个库，所以对方人拿过来用的时候也应该有权力说我不要可视化界
+                  // 面（何况可视化界面也要占用不少的CPU资源）
       mpFrameDrawer(pFrameDrawer),
       mpMapDrawer(pMapDrawer),
       mpMap(pMap),
@@ -2046,8 +2048,8 @@ bool Tracking::Relocalization() {
 
         // If few inliers, search by projection in a coarse window and optimize
         // again
-        // Step 4.3：如果内点较少，则通过投影的方式对之前未匹配的点进行匹配，再进行优化求解
-        // 前面的匹配关系是用词袋匹配过程得到的
+        // Step 4.3：如果内点较少，则通过投影的方式对之前未匹配的点进行匹配，再
+        // 进行优化求解前面的匹配关系是用词袋匹配过程得到的
         if (nGood < 50) {
           // 通过投影的方式将关键帧中未匹配的地图点投影到当前帧中, 生成新的匹配
           int nadditional = matcher2.SearchByProjection(
@@ -2065,9 +2067,10 @@ bool Tracking::Relocalization() {
             // If many inliers but still not enough, search by projection again
             // in a narrower window the camera has been already optimized with
             // many points
-            // Step 4.4：如果BA后内点数还是比较少(<50)但是还不至于太少(>30)，可以挽救一下,
-            // 最后垂死挣扎 重新执行上一步 4.3的过程，只不过使用更小的搜索窗口
-            // 这里的位姿已经使用了更多的点进行了优化,应该更准，所以使用更小的窗口搜索
+            // STEP: 4.4：如果BA后内点数还是比较少(<50)但是还不至于太少(>30)，可
+            // 以挽救一下, 最后垂死挣扎 重新执行上一步 4.3的过程，只不过使用更小
+            // 的搜索窗口这里的位姿已经使用了更多的点进行了优化,应该更准，所以使
+            // 用更小的窗口搜索
             if (nGood > 30 && nGood < 50) {
               // 用更小窗口、更严格的描述子阈值，重新进行投影搜索匹配
               sFound.clear();

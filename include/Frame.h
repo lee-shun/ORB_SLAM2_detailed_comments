@@ -408,7 +408,8 @@ class Frame {
   // when projecting MapPoints.
   // 原来通过对图像分区域还能够降低重投影地图点时候的匹配复杂度啊。。。。。
   /// @note 注意到上面也是类的静态成员变量，
-  /// 有一个专用的标志mbInitialComputations用来在帧的构造函数中标记这些静态成员变量是否需要被赋值
+  /// 有一个专用的标志mbInitialComputations用来在帧的构造函数中标记这些静态成员
+  /// 变量是否需要被赋值
   ///  坐标乘以mfGridElementWidthInv和mfGridElementHeightInv就可以确定在哪个格子
   static float mfGridElementWidthInv;
   ///  坐标乘以mfGridElementWidthInv和mfGridElementHeightInv就可以确定在哪个格子

@@ -2333,7 +2333,7 @@ static void computeDescriptors(const Mat &image, vector<KeyPoint> &keypoints,
 void ORBextractor::operator()(InputArray _image, InputArray _mask,
                               vector<KeyPoint> &_keypoints,
                               OutputArray _descriptors) {
-  // Step 1 检查图像有效性。如果图像为空，那么就直接返回
+  // STEP: 1 检查图像有效性。如果图像为空，那么就直接返回
   if (_image.empty()) return;
 
   // 获取图像的大小
