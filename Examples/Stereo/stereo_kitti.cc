@@ -24,6 +24,9 @@
 #include <iomanip>
 #include <iostream>
 #include <opencv2/core/core.hpp>
+#ifdef OPENCV4
+#include <opencv2/imgcodecs/legacy/constants_c.h>
+#endif
 #include <unistd.h>
 
 #include <System.h>

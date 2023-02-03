@@ -22,6 +22,9 @@
 #include <algorithm>
 #include <fstream>
 #include <chrono>
+#ifdef OPENCV4
+#include <opencv2/imgcodecs/legacy/constants_c.h>
+#endif
 #include <opencv2/core/core.hpp>
 #include <System.h>
 #include <unistd.h>

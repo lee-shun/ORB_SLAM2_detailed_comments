@@ -64,6 +64,10 @@
 #ifndef PNPSOLVER_H
 #define PNPSOLVER_H
 
+#ifdef OPENCV4
+#include <opencv2/core.hpp>
+#include <opencv2/core/core_c.h>
+#endif
 #include "Frame.h"
 #include "MapPoint.h"
 #include <opencv2/core/core.hpp>
